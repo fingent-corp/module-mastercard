@@ -1,0 +1,138 @@
+<?php
+/**
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * @var \Mastercard\Mastercard\Block\Adminhtml\Order\View\Info\Card $block
+ */
+?>
+<?php
+    $risk = null;
+?>
+<div class="admin__page-section-item-content">
+    <div class="order-payment-additional" data-mage-init='{"Mastercard_Mastercard/js/order/view/info/details": {}}'>
+        <div class="primary">
+            <button data-role="tns-full-payment-details-button" type="button" class="button action secondary">
+                <span><?php echo __('Show Payment Details') ?></span>
+            </button>
+        </div>
+        <div data-role="tns-full-payment-details-content" style="display: none">
+            <table class="data-table admin__table-secondary">
+                <tbody>
+                    <?php $payment = $block->getPayment(); ?>
+                    <?php $info = $payment->getAdditionalInformation(); ?>
+                    <tr>
+                        <th><?php echo __('gateway_code') ?></th>
+                        <td><?php echo $block->safeValue($info['gateway_code'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php echo __('txn_result') ?></th>
+                        <td><?php echo $block->safeValue($info['txn_result'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php echo __('card_scheme') ?></th>
+                        <td><?php echo $block->safeValue($info['card_scheme'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php echo __('card_number') ?></th>
+                        <td><?php echo $block->safeValue($info['card_number'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php echo __('card_expiry_date') ?></th>
+                        <td><?php echo $block->safeValue($info['card_expiry_date'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php echo __('auth_code') ?></th>
+                        <td><?php echo $block->safeValue($info['auth_code'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo __('funding_method') ?></td>
+                        <td><?php echo $block->safeValue($info['fundingMethod'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo __('issuer') ?></td>
+                        <td><?php echo $block->safeValue($info['issuer'] ?? null) ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo __('name_on_card') ?></td>
+                        <td><?php echo $block->safeValue($info['nameOnCard'] ?? null) ?></td>
+                    </tr>
+                    <?php if (is_array($block->getRiskData()) && isset($block->getRiskData()['response'])): ?>
+                        <?php $risk = $block->getRiskData()['response'] ?>
+                        <tr>
+                            <td><?php echo __('Risk Status') ?></td>
+                            <td><?php echo $block->escapeHtml($risk['gatewayCode']) ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo __('Total Score') ?></td>
+                            <td><?php echo $block->safeValue($risk, 'totalScore') ?></td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+
+            <?php if ($risk !== null && isset($risk['review'])): ?>
+                <br />
+                <h3><?php echo __('Decision') ?></h3>
+                <table class="data-table admin__table-secondary">
+                    <tbody>
+                        <tr>
+                            <td><?php echo __('Decision') ?></td>
+                            <td><?php echo $block->safeValue($risk['review'], 'decision') ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo __('Decision Reason') ?></td>
+                            <td><?php echo $block->safeValue($risk['review'], 'decisionReason') ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo __('Note') ?></td>
+                            <td><?php echo $block->safeValue($risk['review'], 'note') ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo __('Time Of Decision') ?></td>
+                            <td><?php echo $block->safeValue($risk['review'], 'timeOfDecision') ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+            <?php if ($risk !== null): ?>
+                <br />
+                <h3><?php echo __('Rules') ?></h3>
+                <table class="data-table admin__table-secondary">
+                    <thead>
+                        <tr>
+                            <th><?php echo __('Rule') ?></th>
+                            <th><?php echo __('Recommendation') ?></th>
+                            <th><?php echo __('Score') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($risk['rule'] as $rule): ?>
+                            <tr>
+                                <td><?php echo $block->safeValue($rule, 'name') ?></td>
+                                <td><?php echo $block->safeValue($rule, 'recommendation') ?></td>
+                                <td><?php echo $block->safeValue($rule, 'score') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

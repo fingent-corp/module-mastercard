@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright (c) 2016-2021 Mastercard
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </type>
+    <type name="Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </type>
+    <type name="Mastercard\Mastercard\Model\Ui\Ach\ConfigProvider">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="tns_hosted" xsi:type="string">tns_hosted</item>
+                <item name="tns_hpf" xsi:type="string">tns_hpf</item>
+                <item name="tns_hpf_vault" xsi:type="string">tns_hpf_vault</item>
+                <item name="mpgs_ach" xsi:type="string">mpgs_ach</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="tns_hosted" xsi:type="object">Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider</item>
+                <item name="tns_hpf" xsi:type="object">Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider</item>
+                <item name="mpgs_ach" xsi:type="object">Mastercard\Mastercard\Model\Ui\Ach\ConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Mastercard\Mastercard\Controller\Webhook\Response">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="tns_hosted" xsi:type="object">TnsHostedConfig</item>
+                <item name="tns_hpf" xsi:type="object">TnsHpfConfig</item>
+                <item name="mpgs_ach" xsi:type="object">MpgsAchConfig</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Vault\Model\Ui\TokensConfigProvider">
+        <arguments>
+            <argument name="tokenUiComponentProviders" xsi:type="array">
+                <item name="tns_hpf" xsi:type="object">Mastercard\Mastercard\Model\Ui\TokenUiComponentProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Mastercard\Mastercard\Gateway\Config\VaultConfigProvider">
+        <arguments>
+            <argument name="config" xsi:type="array">
+                <item name="tns_hpf" xsi:type="object">TnsHpfConfig</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
