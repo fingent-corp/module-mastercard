@@ -1,0 +1,1378 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright (c) 2016-2022 Mastercard
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Mastercard\Mastercard\Api\SessionInformationManagementInterface" type="Mastercard\Mastercard\Model\SessionInformationManagement" />
+    <preference for="Mastercard\Mastercard\Api\VerifyPaymentFlagInterface" type="Mastercard\Mastercard\Model\VerifyPaymentFlag" />
+
+    <type name="Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest" shared="false" />
+
+    <type name="Mastercard\Mastercard\Model\System\Config\Backend\Cert">
+        <arguments>
+            <argument name="resource" xsi:type="object">Magento\Config\Model\ResourceModel\Config\Data</argument>
+            <argument name="resourceCollection" xsi:type="object">Magento\Config\Model\ResourceModel\Config\Data\Collection\Proxy</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="MpgsHpfLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHostedLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Virtual operation classes that specify apiOperation generically -->
+    <virtualType name="AuthorizeOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">AUTHORIZE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CreateSessionOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">CREATE_CHECKOUT_SESSION</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CaptureOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">CAPTURE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="VerifyOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">VERIFY</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="PayOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">PAY</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="RefundOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">REFUND</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="VoidOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">VOID</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="ThreeDSecureCheckOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">CHECK_3DS_ENROLLMENT</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="ThreeDSecureProcessOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">PROCESS_ACS_RESULT</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="InitiateAuthenticationOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">INITIATE_AUTHENTICATION</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuthenticatePayerOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
+        <arguments>
+            <argument name="operation" xsi:type="string">AUTHENTICATE_PAYER</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfRestClient" type="Mastercard\Mastercard\Gateway\Http\Client\Rest">
+        <arguments>
+            <argument name="logger" xsi:type="object">MpgsHpfLogger</argument>
+            <argument name="converter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Converter\JsonToArray</argument>
+            <argument name="adapter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHostedRestClient" type="Mastercard\Mastercard\Gateway\Http\Client\Rest">
+        <arguments>
+            <argument name="logger" xsi:type="object">MpgsHostedLogger</argument>
+            <argument name="converter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Converter\JsonToArray</argument>
+            <argument name="adapter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Check 3D-Secure enrollment -->
+    <virtualType name="TnsHpfThreeDSecureEnrollmentCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsThreeDSecureDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHpfTransferFactoryEnrolment</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ThreeDSecureValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\ThreeDSecure\CheckHandler</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Init Auth 3D-Secure 2 -->
+    <virtualType name="TnsHpfThreeDSecure2InitiateAuthenticationCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsThreeDSecure2DataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactoryInitiateAuthentication</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\Authentication\InitiateAuthenticationValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Authentication\InitiateAuthenticationHandler</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfThreeDSecure2AuthenticatePayerCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsThreeDSecure2AuthenticatePayerDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactoryInitiateAuthentication</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\Authentication\AuthenticatePayerValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Authentication\AuthenticatePayerHandler</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfTransferFactoryInitiateAuthentication" type="Mastercard\Mastercard\Gateway\Http\Authentication\TransferFactoryInitiateAuthentication">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfTransferFactoryEnrolment" type="Mastercard\Mastercard\Gateway\Http\ThreeDSecure\TransferFactoryEnrolment">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsThreeDSecureDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">ThreeDSecureCheckOperationDataBuilder</item>
+                <item name="3ds_check" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ThreeDSecure\CheckDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsThreeDSecure2DataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">InitiateAuthenticationOperationDataBuilder</item>
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\SessionDataBuilder</item>
+                <item name="order_currency" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderCurrencyBuilder</item>
+                <item name="authentication" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\InitAuthTransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsThreeDSecure2AuthenticatePayerDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">AuthenticatePayerOperationDataBuilder</item>
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\SessionDataBuilder</item>
+                <item name="order_currency" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderCurrencyBuilder</item>
+                <item name="order_amount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderAmountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="device" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\DeviceBuilder</item>
+                <item name="authentication" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticatePayerBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsVoidDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">VoidOperationDataBuilder</item>
+                <item name="void" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VoidDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsRefundDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">RefundOperationDataBuilder</item>
+                <item name="refund" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsCaptureDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">CaptureOperationDataBuilder</item>
+                <item name="capture" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Tns3DSecureVerifyDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">ThreeDSecureProcessOperationDataBuilder</item>
+                <item name="3ds_process" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ThreeDSecure\ProcessDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsVerifyResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="transaction" xsi:type="string">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</item>
+                <item name="payment" xsi:type="string">Mastercard\Mastercard\Gateway\Response\PaymentHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsAuthorizeResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="transaction" xsi:type="string">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</item>
+                <item name="authorize" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AuthorizeHandler</item>
+                <item name="payment" xsi:type="string">Mastercard\Mastercard\Gateway\Response\PaymentHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Mastercard\Mastercard\Gateway\Command\UpdateOrderCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\RequestParamsBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Mastercard\Mastercard\Gateway\Http\GetTransferFactory</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\UpdateOrderHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </type>
+    <virtualType name="HpfInformationTransferFactory" type="Mastercard\Mastercard\Gateway\Http\InformationTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsCheckHpfGatewayCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\NullDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">HpfInformationTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\PaymentOptionsInquiryValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HostedInformationTransferFactory" type="Mastercard\Mastercard\Gateway\Http\InformationTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsCheckHostedGatewayCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\NullDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">HostedInformationTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\PaymentOptionsInquiryValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfUpdateOrderCommand" type="Mastercard\Mastercard\Gateway\Command\UpdateOrderCommand">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">MpgsHpfGetTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfGetTransferFactory" type="Mastercard\Mastercard\Gateway\Http\GetTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHostedUpdateOrderCommand" type="Mastercard\Mastercard\Gateway\Command\UpdateOrderCommand">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">MpgsHostedGetTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHostedGetTransferFactory" type="Mastercard\Mastercard\Gateway\Http\GetTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+    <type name="Mastercard\Mastercard\Controller\Webhook\Response">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">WebhookCommandPool</argument>
+        </arguments>
+    </type>
+    <virtualType name="WebhookCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="tns_hpf" xsi:type="string">MpgsHpfUpdateOrderCommand</item>
+                <item name="tns_hosted" xsi:type="string">MpgsHostedUpdateOrderCommand</item>
+                <!-- @todo: multistep_ach -->
+                <!-- Webhook based ACH updates currently not supported -->
+                <!--<item name="mpgs_ach" xsi:type="string">MpgsAchUpdateOrderCommand</item>-->
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MetaCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="check_gateway_tns_hpf" xsi:type="string">MpgsCheckHpfGatewayCommand</item>
+                <item name="check_gateway_tns_hosted" xsi:type="string">MpgsCheckHostedGatewayCommand</item>
+                <item name="check_gateway_mpgs_ach" xsi:type="string">MpgsCheckAchGatewayCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Payment\Gateway\Command\CommandManagerPool">
+        <arguments>
+            <argument name="executors" xsi:type="array">
+                <item name="tns_hpf" xsi:type="string">TnsHpfCommandManager</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- *************** -->
+    <!-- HOSTED CHECKOUT -->
+    <!-- *************** -->
+    <virtualType name="TnsHostedInfoBlock" type="Mastercard\Mastercard\Block\Info">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item xsi:type="string" name="is_secure_mode">0</item>
+            </argument>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Mastercard\Mastercard\Model\SessionInformationManagement">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="TnsHostedConfig" type="Mastercard\Mastercard\Gateway\Config\Hosted\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider::METHOD_CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="create_session" xsi:type="string">TnsHostedCreateSessionCommand</item>
+                <item name="authorize" xsi:type="string">TnsHostedAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">TnsHostedCaptureStrategyCommand</item>
+                <item name="capture_simple" xsi:type="string">TnsHostedPreAuthCaptureCommand</item>
+                <item name="sale" xsi:type="string">TnsHostedSaleCommand</item>
+                <item name="refund" xsi:type="string">TnsHostedRefundCommand</item>
+                <item name="void" xsi:type="string">TnsHostedVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsHostedFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider::METHOD_CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form\Cc</argument>
+            <argument name="infoBlockType" xsi:type="string">TnsHostedInfoBlock</argument>
+            <argument name="valueHandlerPool" xsi:type="object">TnsHostedValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">TnsHostedValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">TnsHostedCountryValidator</item>
+                <item name="currency" xsi:type="string">TnsHostedCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedCurrencyValidator" type="Mastercard\Mastercard\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">TnsHostedConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize -->
+    <virtualType name="TnsHostedAuthorizeCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsHostedAuthorizeDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHostedTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="handler" xsi:type="object">TnsAuthorizeResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedAuthorizeDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">AuthorizeOperationDataBuilder</item>
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Purchase -->
+    <virtualType name="TnsHostedSaleCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHostedSaleDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHostedTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsSaleResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHostedSaleDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">PayOperationDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture -->
+    <virtualType name="TnsHostedCaptureStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\Hosted\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Create a HC session -->
+    <virtualType name="TnsHostedCreateSessionCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsHostedSessionDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Hosted\TransferFactorySession</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Hosted\SessionHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture a pre-authorized payment (HC) -->
+    <virtualType name="TnsHostedPreAuthCaptureCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsCaptureDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHostedTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Refund (HC) -->
+    <virtualType name="TnsHostedRefundCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsRefundDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHostedTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void (HC) -->
+    <virtualType name="TnsHostedVoidCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsVoidDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHostedTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Mastercard\Mastercard\Gateway\Http\Hosted\TransferFactorySession">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="MpgsHostedTransferFactory" type="Mastercard\Mastercard\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHostedSessionDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">CreateSessionOperationDataBuilder</item>
+                <item name="interaction" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hosted\InteractionBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\QuoteDataBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="references" xsi:type="string">Mastercard\Mastercard\Gateway\Request\QuoteReferencesBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHostedCreateSessionExtraDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHostedCreateSessionExtraDataBuilder" type="Mastercard\Mastercard\Gateway\Request\ExtraDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+            <argument name="field" xsi:type="string">custom_create_session_request_data</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- ******************* -->
+    <!-- HOSTED PAYMENT FORM -->
+    <!-- ******************* -->
+    <virtualType name="TnsHpfCommandManager" type="Magento\Payment\Gateway\Command\CommandManager">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfInfoBlock" type="Mastercard\Mastercard\Block\Info">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item xsi:type="string" name="is_secure_mode">0</item>
+            </argument>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsHpfConfig" type="Mastercard\Mastercard\Gateway\Config\Hpf\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider::METHOD_CODE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsHpfValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">TnsHpfConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsHpfConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsHpfFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider::METHOD_CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form\Cc</argument>
+            <argument name="infoBlockType" xsi:type="string">TnsHpfInfoBlock</argument>
+            <argument name="valueHandlerPool" xsi:type="object">TnsHpfValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">TnsHpfValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">TnsHpfCountryValidator</item>
+                <item name="currency" xsi:type="string">TnsHpfCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfCurrencyValidator" type="Mastercard\Mastercard\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">TnsHpfAuthorizeStrategyCommand</item>
+                <item name="authorize_simple" xsi:type="string">TnsHpfAuthorizeCommand</item>
+                <item name="3ds_process" xsi:type="string">TnsHpf3dsProcessCommand</item>
+                <item name="capture" xsi:type="string">TnsHpfCaptureStrategyCommand</item>
+                <item name="capture_simple" xsi:type="string">TnsHpfSaleStrategyCommand</item>
+                <item name="sale" xsi:type="string">TnsHpfSaleCommand</item>
+                <item name="pre_auth_capture" xsi:type="string">TnsHpfPreAuthCaptureCommand</item>
+                <item name="refund" xsi:type="string">TnsHpfRefundCommand</item>
+                <item name="void" xsi:type="string">TnsHpfVoidCommand</item>
+                <item name="create_token" xsi:type="string">MpgsHpfCreateTokenCommand</item>
+                <item name="initiate_authentication" xsi:type="string">TnsHpfThreeDSecure2InitiateAuthenticationCommand</item>
+                <item name="authenticate_payer" xsi:type="string">TnsHpfThreeDSecure2AuthenticatePayerCommand</item>
+                <item name="order" xsi:type="string">TnsHpfOrderCommand</item>
+                <item name="verify" xsi:type="string">TnsHpfVerifyStrategyCommand</item>
+                <item name="verify_simple" xsi:type="string">TnsHpfVerifyCommand</item>
+                <item name="tokenize" xsi:type="string">TnsHpfCreateOrderTokenCommand</item>
+                <item name="vault_sale" xsi:type="string">MpgsHpfVaultSaleCommand</item>
+                <item name="vault_authorize" xsi:type="string">MpgsHpfVaultAuthorizeCommand</item>
+                <item name="vault_order" xsi:type="string">MpgsHpfVaultOrderCommand</item>
+                <item name="vault_tokenize" xsi:type="string">MpgsHpfVaultCreateOrderTokenCommand</item>
+                <item name="vault_verify" xsi:type="string">MpgsHpfVaultVerifyCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfOrderCommand" type="Mastercard\Mastercard\Gateway\Command\ChainCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="commandChain" xsi:type="array">
+                <item name="tokenize" xsi:type="string">tokenize</item>
+                <item name="verify" xsi:type="string">verify</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultOrderCommand" type="Mastercard\Mastercard\Gateway\Command\ChainCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="commandChain" xsi:type="array">
+                <item name="tokenize" xsi:type="string">vault_tokenize</item>
+                <item name="verify" xsi:type="string">vault_verify</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- HPF Vault -->
+    <virtualType name="MpgsHpfVaultFacade" type="Mastercard\Mastercard\Model\Method\Vault">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsHpfVaultPaymentConfig</argument>
+            <argument name="valueHandlerPool" xsi:type="object">MpgsHpfVaultPaymentValueHandlerPool</argument>
+            <argument name="vaultProvider" xsi:type="object">TnsHpfFacade</argument>
+            <argument name="code" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider::CC_VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultPaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider::CC_VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultPaymentValueHandlerPool" type="VaultPaymentValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">MpgsHpfVaultPaymentValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultPaymentValueHandler" type="VaultPaymentDefaultValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">MpgsHpfVaultPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfCreateTokenCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHpfCreateTokenDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHpfTransferFactoryCreateToken</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsHpfTokenCreateHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\TokenCreateValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfCreateTokenDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfCreateTokenExtraDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfCreateTokenExtraDataBuilder" type="Mastercard\Mastercard\Gateway\Request\ExtraDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="field" xsi:type="string">custom_create_token_request_data</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfCreateOrderTokenCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHpfCreateTokenDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHpfTransferFactoryCreateToken</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\OrderTokenCreateHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\TokenCreateValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfTransferFactoryCreateToken" type="Mastercard\Mastercard\Gateway\Http\Vault\TransferFactoryCreateToken">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfTokenCreateHandler" type="Mastercard\Mastercard\Gateway\Response\TokenCreateHandler">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultSaleCommand" type="TnsHpfSaleCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHpfVaultSaleDataBuilder</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultSaleDataBuilder" type="TnsHpfSaleDataBuilder">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfSaleExtraDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultVerifyCommand" type="TnsHpfVerifyCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHpfVaultVerifyDataBuilder</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfVaultCreateOrderTokenCommand" type="TnsHpfCreateOrderTokenCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHpfVaultCreateTokenDataBuilder</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfVaultCreateTokenDataBuilder" type="MpgsHpfCreateTokenDataBuilder">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfVaultVerifyDataBuilder" type="TnsHpfVerifyDataBuilder">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfVerifyExtraDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfVaultAuthorizeCommand" type="TnsHpfAuthorizeCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsHpfVaultAuthorizeDataBuilder</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVaultAuthorizeDataBuilder" type="TnsHpfAuthorizeDataBuilder">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfAuthorizeExtraDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void -->
+    <virtualType name="TnsHpfVoidCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsVoidDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Refund -->
+    <virtualType name="TnsHpfRefundCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsRefundDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize + Capture command aka. Sale -->
+    <virtualType name="TnsHpfSaleCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsHpfSaleDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsSaleResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsSaleResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="transaction" xsi:type="string">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</item>
+                <item name="capture" xsi:type="string">Mastercard\Mastercard\Gateway\Response\CaptureHandler</item>
+                <item name="payment" xsi:type="string">Mastercard\Mastercard\Gateway\Response\PaymentHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsHpfSaleDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">PayOperationDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="authentication_transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationTransactionIdBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="3ds_results" xsi:type="string">TnsHpfThreeDSecureResultDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfSaleExtraDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsHpfSaleExtraDataBuilder" type="Mastercard\Mastercard\Gateway\Request\ExtraDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="field" xsi:type="string">custom_sale_request_data</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture a pre-authorized payment (HPF) -->
+    <virtualType name="TnsHpfPreAuthCaptureCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsCaptureDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Verify -->
+    <virtualType name="TnsHpfVerifyStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\VerificationStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="successCommand" xsi:type="string">verify_simple</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture -->
+    <virtualType name="TnsHpfCaptureStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\VerificationStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="successCommand" xsi:type="string">capture_simple</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfSaleStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\SaleStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize -->
+    <virtualType name="TnsHpfAuthorizeStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\VerificationStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="successCommand" xsi:type="string">authorize_simple</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Pure authorize command -->
+    <virtualType name="TnsHpfAuthorizeCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsHpfAuthorizeDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="handler" xsi:type="object">TnsAuthorizeResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Verify command -->
+    <virtualType name="TnsHpfVerifyCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsHpfVerifyDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="handler" xsi:type="object">TnsVerifyResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Verify 3D-Secure results -->
+    <virtualType name="TnsHpf3dsProcessCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Tns3DSecureVerifyDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHpfTransferFactoryProcess</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">TnsHpfThreeDSecureResultValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\ThreeDSecure\ResultHandler</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfTransferFactoryProcess" type="Mastercard\Mastercard\Gateway\Http\ThreeDSecure\TransferFactoryProcess">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfThreeDSecureResultValidator" type="Magento\Payment\Gateway\Validator\ValidatorComposite">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="response" xsi:type="string">Mastercard\Mastercard\Gateway\Validator\ThreeDSecureValidator</item>
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Validator\ThreeDSecure\ProcessValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfVerifyDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">VerifyOperationDataBuilder</item>
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="authentication_transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationTransactionIdBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="3ds_results" xsi:type="string">TnsHpfThreeDSecureResultDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfVerifyExtraDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfVerifyExtraDataBuilder" type="Mastercard\Mastercard\Gateway\Request\ExtraDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="field" xsi:type="string">custom_verify_request_data</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfAuthorizeDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">AuthorizeOperationDataBuilder</item>
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="authentication_transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationTransactionIdBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="3ds_results" xsi:type="string">TnsHpfThreeDSecureResultDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+                <item name="extra" xsi:type="string">MpgsHpfAuthorizeExtraDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsHpfAuthorizeExtraDataBuilder" type="Mastercard\Mastercard\Gateway\Request\ExtraDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+            <argument name="field" xsi:type="string">custom_authorize_request_data</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfTransferFactory" type="Mastercard\Mastercard\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsHpfThreeDSecureResultDataBuilder" type="Mastercard\Mastercard\Gateway\Request\ThreeDSecure\ResultsDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHpfConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Framework\Session\SessionManager">
+        <plugin name="Mastercard_Mastercard::Magento\Framework\Session\SessionManager::beforeStart" type="Mastercard\Mastercard\Plugin\Magento\Framework\Session\SessionManagerPlugin" />
+    </type>
+
+    <type name="Mastercard\Mastercard\Observer\ConfigSaveAfter">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">MetaCommandPool</argument>
+            <argument name="methods" xsi:type="array">
+                <item name="tns_hpf" xsi:type="string">tns_hpf</item>
+                <item name="tns_hosted" xsi:type="string">tns_hosted</item>
+                <item name="mpgs_ach" xsi:type="string">mpgs_ach</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Mastercard\Mastercard\Controller\ThreedsecureV2\AuthenticatePayer">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+
+    <type name="Mastercard\Mastercard\Controller\ThreedsecureV2\InitiateAuthentication">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- ACH Payments -->
+    <virtualType name="MpgsAchFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Mastercard\Mastercard\Model\Ui\Ach\ConfigProvider::METHOD_CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form\Cc</argument>
+            <argument name="infoBlockType" xsi:type="string">MpgsAchInfoBlock</argument>
+            <argument name="valueHandlerPool" xsi:type="object">MpgsAchValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">MpgsAchValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">MpgsAchCommandPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchConfig" type="Mastercard\Mastercard\Gateway\Config\Ach\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Ach\ConfigProvider::METHOD_CODE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">MpgsAchCountryValidator</item>
+                <item name="currency" xsi:type="string">MpgsAchCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchCurrencyValidator" type="Mastercard\Mastercard\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="order" xsi:type="string">MpgsAchOrderCommand</item>
+                <item name="pay" xsi:type="string">MpgsAchPayCommand</item>
+                <item name="capture" xsi:type="string">MpgsAchCaptureCommand</item>
+                <item name="verify" xsi:type="string">MpgsAchVerifyCommand</item>
+                <item name="tokenize" xsi:type="string">MpgsAchTokenizeCommand</item>
+                <item name="tokenize_if_enabled" xsi:type="string">MpgsAchTokenizeIfEnabledCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchTokenizeIfEnabledCommand" type="Mastercard\Mastercard\Gateway\Command\ConditionalCommand">
+        <arguments>
+            <argument name="configProvider" xsi:type="object">MpgsAchConfig</argument>
+            <argument name="commandPool" xsi:type="object">MpgsAchCommandPool</argument>
+            <argument name="configKey" xsi:type="string">add_token_to_order</argument>
+            <argument name="commandName" xsi:type="string">tokenize</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchOrderCommand" type="Mastercard\Mastercard\Gateway\Command\MappedCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">MpgsAchCommandPool</argument>
+            <argument name="configProvider" xsi:type="object">MpgsAchConfig</argument>
+            <argument name="configKey" xsi:type="string">mapped_payment_action</argument>
+            <argument name="commandMap" xsi:type="array">
+                <item name="order_pay" xsi:type="array">
+                    <item name="tokenize_if_enabled" xsi:type="string">tokenize_if_enabled</item>
+                    <item name="pay" xsi:type="string">pay</item>
+                </item>
+                <item name="order_verify" xsi:type="array">
+                    <item name="tokenize" xsi:type="string">tokenize</item>
+                    <item name="verify" xsi:type="string">verify</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchPayCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsAchPayDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsAchTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsAchRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsAchPayResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\AchValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">MpgsAchErrorMapper</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchVerifyCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsAchVerifyDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsAchTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsAchRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsAchVerifyResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\AchValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">MpgsAchErrorMapper</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchTokenizeCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsAchCreateTokenDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsAchTransferFactoryCreateToken</argument>
+            <argument name="client" xsi:type="object">MpgsAchRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\OrderTokenCreateHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\TokenCreateValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchCaptureCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">MpgsAchCaptureDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsAchTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsAchRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsAchPayResponseHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\AchValidator</argument>
+            <argument name="errorMessageMapper" xsi:type="object">MpgsAchErrorMapper</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchCreateTokenDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Ach\SessionDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsAchTransferFactoryCreateToken" type="Mastercard\Mastercard\Gateway\Http\Vault\TransferFactoryCreateToken">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MpgsAchPayResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</item>
+                <item name="payment_details" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AchPaymentDetails</item>
+                <!-- @todo: multistep_ach -->
+                <!-- Order is invoiced immediately, instead of using webhook -->
+                <item name="invoice" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AchInvoiceHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchVerifyResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</item>
+                <item name="payment_details" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AchPaymentDetails</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchWebhookUpdateHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AchWebookNotify</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchErrorMapper" type="Magento\Payment\Gateway\ErrorMapper\ErrorMessageMapper">
+        <arguments>
+            <argument name="messageMapping" xsi:type="object">Mastercard\Mastercard\Gateway\ErrorMapper\AchMessages</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchPayDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">PayOperationDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Ach\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchVerifyDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">VerifyOperationDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Ach\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchCaptureDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">PayOperationDataBuilder</item>
+                <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Ach\SessionDataBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderTokenSourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">TnsAchConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsAchConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchInfoBlock" type="Mastercard\Mastercard\Block\Info">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item xsi:type="string" name="is_secure_mode">0</item>
+            </argument>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsCheckAchGatewayCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\NullDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsAchInformationTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsAchRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\PaymentOptionsInquiryValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchTransferFactory" type="Mastercard\Mastercard\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchInformationTransferFactory" type="Mastercard\Mastercard\Gateway\Http\InformationTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchRestClient" type="Mastercard\Mastercard\Gateway\Http\Client\Rest">
+        <arguments>
+            <argument name="logger" xsi:type="object">MpgsAchLogger</argument>
+            <argument name="converter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Converter\JsonToArray</argument>
+            <argument name="adapter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchUpdateOrderCommand" type="Mastercard\Mastercard\Gateway\Command\UpdateOrderCommand">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">MpgsAchGetTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsAchRestClient</argument>
+            <argument name="handler" xsi:type="object">MpgsAchWebhookUpdateHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\AchValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsAchGetTransferFactory" type="Mastercard\Mastercard\Gateway\Http\GetTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">MpgsAchConfig</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Sales\Model\Order\Payment\State\OrderCommand">
+        <plugin name="Mastercard_Mastercard::Magento\Sales\Model\Order\Payment\State\OrderCommand::afterExecute" type="Mastercard\Mastercard\Plugin\Magento\Sales\Model\Order\Payment\State\OrderCommand\AfterExecutePlugin" />
+    </type>
+    <type name="Magento\Sales\Model\Order\Payment\Transaction">
+        <plugin name="Mastercard_Mastercard::Magento\Sales\Model\Order\Payment\Transaction::afterGetTransactionTypes" type="Mastercard\Mastercard\Plugin\Magento\Sales\Model\Order\Payment\Transaction\AfterGetTransactionTypesPlugin" />
+        <plugin name="Mastercard_Mastercard::Magento\Sales\Model\Order\Payment\Transaction::aroundSetTxnType" type="Mastercard\Mastercard\Plugin\Magento\Sales\Model\Order\Payment\Transaction\AroundSetTxnTypePlugin" />
+    </type>
+    <type name="Magento\Sales\Model\Order\Payment">
+        <plugin name="Mastercard_Mastercard::Magento\Sales\Model\Order\Payment::aroundAddTransactionPlugin" type="Mastercard\Mastercard\Plugin\Magento\Sales\Model\Order\Payment\AroundAddTransactionPlugin" />
+    </type>
+    <type name="Mastercard\Mastercard\Model\VerifyPaymentFlag">
+        <arguments>
+            <argument name="configPool" xsi:type="array">
+                <item name="mpgs_ach" xsi:type="array">
+                    <item name="configProvider" xsi:type="object">MpgsAchConfig</item>
+                    <item name="configPath" xsi:type="string">mapped_payment_action</item>
+                    <item name="configValue" xsi:type="const">Mastercard\Mastercard\Api\MethodInterface::MAPPED_ACTION_ORDER_VERIFY</item>
+                </item>
+                <item name="tns_hpf" xsi:type="array">
+                    <item name="configProvider" xsi:type="object">TnsHpfConfig</item>
+                    <item name="configPath" xsi:type="string">payment_action</item>
+                    <item name="configValue" xsi:type="const">Magento\Payment\Model\MethodInterface::ACTION_ORDER</item>
+                </item>
+                <item name="tns_hpf_vault" xsi:type="array">
+                    <item name="configProvider" xsi:type="object">TnsHpfConfig</item>
+                    <item name="configPath" xsi:type="string">payment_action</item>
+                    <item name="configValue" xsi:type="const">Magento\Payment\Model\MethodInterface::ACTION_ORDER</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>

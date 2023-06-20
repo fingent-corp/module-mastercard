@@ -1,0 +1,42 @@
+<?php
+/**
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/** @var \Magento\Framework\View\Element\Template $block */
+use Magento\Vault\Model\Ui\TokenUiComponentProviderInterface;
+
+// @codingStandardsIgnoreFile
+
+$details = $block->getData('details');
+$icon = $block->getData('icons')[$details['type']];
+$id = $block->escapeHtml($block->getData('id'));
+?>
+<div data-mage-init='{
+        "Mastercard_Mastercard/js/vault": {
+            "container": "payment_<?php /* @noEscape */ echo $id; ?>",
+            "publicHash": "<?php echo $block->escapeHtml($block->getData(TokenUiComponentProviderInterface::COMPONENT_PUBLIC_HASH)); ?>"
+        }
+    }' id="payment_<?php /* @noEscape */ echo $id;?>" class="admin__field">
+    <div class="admin__field-control control">
+        <input type="radio" id="token_switcher_<?php /* @noEscape */ echo $id; ?>" name="payment[token_switcher]"/>
+        <img src="<?php echo $block->escapeUrl($icon['url']); ?>"
+             width="<?php echo $block->escapeHtml($icon['width']); ?>"
+             height="<?php echo $block->escapeHtml($icon['height']); ?>"
+        >
+        <span><?php echo $block->escapeHtml($details['cc_number']); ?></span>
+        (<span><?php echo $block->escapeHtml(__('expires'));?></span>:
+        <span><?php echo $block->escapeHtml($details['cc_expr_month'] . '/' . $details['cc_expr_year']); ?></span>)
+    </div>
+</div>
