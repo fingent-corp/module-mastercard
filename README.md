@@ -17,3 +17,7 @@ Magento 2 Mastercard Payment Gateway Service module supports the following list 
 - 3DSv1
 - 3DSv2
 - ACH
+
+## Documentation
+
+The official documentation for this module is available on: [https://mpgs.fingent.wiki/target/magento-2-mastercard-payment-gateway-services/version-compatibility/](https://mpgs.fingent.wiki/target/magento-2-mastercard-payment-gateway-services/version-compatibility/)
