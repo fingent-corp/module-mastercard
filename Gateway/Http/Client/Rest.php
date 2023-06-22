@@ -23,8 +23,7 @@ use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\ConverterInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
-use Laminas\Http\Client;
-use Laminas\Uri\Http;
+use Zend_Http_Client_Adapter_Interface;
 
 class Rest implements ClientInterface
 {
@@ -69,7 +68,7 @@ class Rest implements ClientInterface
     private $responseFactory;
 
     /**
-     * @var AdapterInterface
+     * @var Zend_Http_Client_Adapter_Interface
      */
     private $adapter;
 
@@ -79,32 +78,24 @@ class Rest implements ClientInterface
     private $json;
 
     /**
-     * @var Http
-     */
-    private $http;
-
-    /**
      * @param Logger $logger
      * @param ConverterInterface $converter
      * @param ResponseFactory $responseFactory
-     * @param AdapterInterface $adapter
+     * @param Zend_Http_Client_Adapter_Interface $adapter
      * @param Json $json
-     * @param Http $http
      */
     public function __construct(
         Logger $logger,
         ConverterInterface $converter,
         ResponseFactory $responseFactory,
-        Client $adapters,
-        Json $json,
-        Http $http
+        Zend_Http_Client_Adapter_Interface $adapter,
+        Json $json
     ) {
         $this->logger = $logger;
         $this->converter = $converter;
         $this->responseFactory = $responseFactory;
-        $this->adapters = $adapters;
+        $this->adapter = $adapter;
         $this->json = $json;
-        $this->http = $http;
     }
 
     /**
@@ -114,14 +105,8 @@ class Rest implements ClientInterface
     {
         $response = [];
 
-        $client = new Client();
-        
-      //  $adapter = new \Laminas\Http\Client\Adapter\Socket();
-//$client = new \Laminas\Http\Client();
-//$client->setAdapter($adapter);
-
         try {
-            $client->setOptions(
+            $this->adapter->setOptions(
                 [CURLOPT_TIMEOUT => self::REQUEST_TIMEOUT] + $transferObject->getClientConfig()
             );
             $headers = [];
@@ -135,9 +120,9 @@ class Rest implements ClientInterface
                 'request_uri' => $transferObject->getUri(),
             ];
 
-           $client->write(
+            $this->adapter->write(
                 $transferObject->getMethod(),
-                $this->http->parse($transferObject->getUri()),
+                \Zend_Uri_Http::fromString($transferObject->getUri()),
                 self::HTTP_1,
                 $headers,
                 $this->json->serialize($transferObject->getBody())
@@ -159,12 +144,6 @@ class Rest implements ClientInterface
      */
     public function read()
     {
-    
-     $client = new Client();
-     
- //$adapter = new \Laminas\Http\Client\Adapter\Socket();
-//$client = new \Laminas\Http\Client();
-//$client->setAdapter($adapter);
-        return $this->responseFactory->create($client->read())->getBody();
+        return $this->responseFactory->create($this->adapter->read())->getBody();
     }
 }
