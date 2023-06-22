@@ -17,7 +17,7 @@
 
 namespace Mastercard\Mastercard\Gateway\Http\Client;
 
-use Laminas\Http\Response;
+use Zend_Http_Response;
 
 class ResponseFactory
 {
@@ -29,6 +29,6 @@ class ResponseFactory
      */
     public function create($response)
     {
-        return Response::fromString($response);
+        return Zend_Http_Response::fromString($response);
     }
 }

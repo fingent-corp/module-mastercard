@@ -18,9 +18,9 @@
 namespace Mastercard\Mastercard\Gateway\Http\Client\Adapter;
 
 use Magento\Framework\HTTP\Adapter\Curl;
-use Laminas\Http\Client;
+use Zend_Http_Client;
 use Zend_Uri_Exception;
-use Laminas\Uri\Http;
+use Zend_Uri_Http;
 
 class Rest extends Curl
 {
@@ -47,15 +47,15 @@ class Rest extends Curl
         curl_setopt($this->_getResource(), CURLOPT_URL, $url);
         curl_setopt($this->_getResource(), CURLOPT_RETURNTRANSFER, true);
 
-        if ($method == \Laminas\Http\Request::METHOD_POST) {
+        if ($method == Zend_Http_Client::POST) {
             curl_setopt($this->_getResource(), CURLOPT_POST, true);
             curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
             $headers[] = 'Content-Length: ' . strlen($body);
-        } elseif ($method == \Laminas\Http\Request::METHOD_PUT) {
-            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, \Laminas\Http\Request::METHOD_PUT);
+        } elseif ($method == Zend_Http_Client::PUT) {
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, Zend_Http_Client::PUT);
             curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
             $headers[] = 'Content-Length: ' . strlen($body);
-        } elseif ($method == \Laminas\Http\Request::METHOD_GET) {
+        } elseif ($method == Zend_Http_Client::GET) {
             curl_setopt($this->_getResource(), CURLOPT_HTTPGET, true);
         }
 
