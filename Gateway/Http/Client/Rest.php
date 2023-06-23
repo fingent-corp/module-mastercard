@@ -23,7 +23,8 @@ use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\ConverterInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
-use Zend_Http_Client_Adapter_Interface;
+use Laminas\Http\Client\Adapter\AdapterInterface;
+use Laminas\Uri\Http;
 
 class Rest implements ClientInterface
 {
@@ -68,7 +69,7 @@ class Rest implements ClientInterface
     private $responseFactory;
 
     /**
-     * @var Zend_Http_Client_Adapter_Interface
+     * @var AdapterInterface
      */
     private $adapter;
 
@@ -78,24 +79,32 @@ class Rest implements ClientInterface
     private $json;
 
     /**
+     * @var Http
+     */
+    private $http;
+
+    /**
      * @param Logger $logger
      * @param ConverterInterface $converter
      * @param ResponseFactory $responseFactory
-     * @param Zend_Http_Client_Adapter_Interface $adapter
+     * @param AdapterInterface $adapter
      * @param Json $json
+     * @param Http $http
      */
     public function __construct(
         Logger $logger,
         ConverterInterface $converter,
         ResponseFactory $responseFactory,
-        Zend_Http_Client_Adapter_Interface $adapter,
-        Json $json
+        AdapterInterface $adapter,
+        Json $json,
+        Http $http
     ) {
         $this->logger = $logger;
         $this->converter = $converter;
         $this->responseFactory = $responseFactory;
         $this->adapter = $adapter;
         $this->json = $json;
+        $this->http = $http;
     }
 
     /**
@@ -122,7 +131,7 @@ class Rest implements ClientInterface
 
             $this->adapter->write(
                 $transferObject->getMethod(),
-                \Zend_Uri_Http::fromString($transferObject->getUri()),
+                $this->http->parse($transferObject->getUri()),
                 self::HTTP_1,
                 $headers,
                 $this->json->serialize($transferObject->getBody())
