@@ -18,9 +18,9 @@
 namespace Mastercard\Mastercard\Gateway\Http\Client\Adapter;
 
 use Magento\Framework\HTTP\Adapter\Curl;
-use Zend_Http_Client;
-use Zend_Uri_Exception;
-use Zend_Uri_Http;
+use Laminas\Http\Client;
+use Laminas\Uri\Exception\ExceptionInterface;
+use Laminas\Uri\Http;
 
 class Rest extends Curl
 {
@@ -28,17 +28,17 @@ class Rest extends Curl
      * Send request to the remote server
      *
      * @param string $method
-     * @param Zend_Uri_Http|string $url
+     * @param Laminas\Uri\Http|string $url
      * @param string $httpVer
      * @param array $headers
      * @param string $body
      * @return string Request as text
-     * @throws Zend_Uri_Exception
+     * @throws Laminas\Uri\Exception\ExceptionInterface
      */
     public function write($method, $url, $httpVer = '1.1', $headers = [], $body = '')
     {
-        if ($url instanceof Zend_Uri_Http) {
-            $url = $url->getUri();
+        if ($url instanceof Laminas\Uri\Http) {
+            $url = $url->parse($url);
         }
         $this->_applyConfig();
 
@@ -47,15 +47,15 @@ class Rest extends Curl
         curl_setopt($this->_getResource(), CURLOPT_URL, $url);
         curl_setopt($this->_getResource(), CURLOPT_RETURNTRANSFER, true);
 
-        if ($method == Zend_Http_Client::POST) {
+        if ($method == \Laminas\Http\Request::METHOD_POST) {
             curl_setopt($this->_getResource(), CURLOPT_POST, true);
             curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
             $headers[] = 'Content-Length: ' . strlen($body);
-        } elseif ($method == Zend_Http_Client::PUT) {
-            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, Zend_Http_Client::PUT);
+        } elseif ($method == \Laminas\Http\Request::METHOD_PUT) {
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, \Laminas\Http\Request::METHOD_PUT);
             curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
             $headers[] = 'Content-Length: ' . strlen($body);
-        } elseif ($method == Zend_Http_Client::GET) {
+        } elseif ($method == \Laminas\Http\Request::METHOD_GET) {
             curl_setopt($this->_getResource(), CURLOPT_HTTPGET, true);
         }
 
