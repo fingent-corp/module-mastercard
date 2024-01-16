@@ -366,6 +366,12 @@
         </arguments>
     </type>
 
+    <type name="Mastercard\Mastercard\Model\Resolver\Createsession">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+        </arguments>
+    </type>
+
     <virtualType name="TnsHostedConfig" type="Mastercard\Mastercard\Gateway\Config\Hosted\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider::METHOD_CODE</argument>
