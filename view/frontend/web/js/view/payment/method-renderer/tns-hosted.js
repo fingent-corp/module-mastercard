@@ -25,9 +25,11 @@ define(
         'Mastercard_Mastercard/js/view/payment/hosted-adapter',
         'Magento_Checkout/js/action/set-payment-information',
         'Mastercard_Mastercard/js/action/create-session',
+        'Magento_Checkout/js/action/place-order',
+        'mage/url',
         'mage/translate'
     ],
-    function (Component, $, ko, quote, fullScreenLoader, alert, paymentAdapter, setPaymentInformationAction, createSessionAction, $t) {
+    function (Component, $, ko, quote, fullScreenLoader, alert, paymentAdapter, setPaymentInformationAction, createSessionAction,placeOrderAction,url,$t) {
         'use strict';
 
         return Component.extend({
@@ -63,8 +65,13 @@ define(
             },
 
             onActiveChange: function (isActive) {
+                $("#embed-target").removeAttr("style").hide();
                 if (isActive && !this.adapterLoaded()) {
                     this.loadAdapter();
+                    this.savePaymentAndCheckout();
+                }
+                if(this.isChecked() == 'tns_hosted') {
+                  $('#embed-target').show();
                 }
             },
 
@@ -76,7 +83,6 @@ define(
 
             loadAdapter: function (sessionId) {
                 var config = this.getConfig();
-
                 paymentAdapter.loadApi(
                     config.component_url,
                     $.proxy(this.paymentAdapterLoaded, this),
@@ -127,6 +133,8 @@ define(
                         );
 
                         paymentAdapter.showPayment();
+                        fullScreenLoader.stopLoader();
+
                     } else {
                         this.isPlaceOrderActionAllowed(true);
                         this.messageContainer.addErrorMessage({message: "Payment Adapter failed to load"});
@@ -165,16 +173,32 @@ define(
                 this.placeOrder();
                 fullScreenLoader.stopLoader();
             },
+            placeOrder: function () {
+                var self = this;
+                fullScreenLoader.startLoader();
+
+                $.when(
+                    placeOrderAction(this.getData(), self.messageContainer)
+                ).done(function () {
+                        fullScreenLoader.stopLoader();
+                        var successUrl = url.build('checkout/onepage/success'); 
+                        window.location.href = successUrl;
+                    })
+                .fail(function () {
+                    var cartUrl = url.build('checkout/cart');
+                    window.location.href = cartUrl;
+                    fullScreenLoader.stopLoader();
+                });
+
+                return false;
+            },
 
             /**
              * Get payment method data
              */
             getData: function() {
                 var data = this._super();
-                data['additional_data'] = {
-                    resultIndicator: this.resultIndicator,
-                    sessionVersion: this.sessionVersion
-                };
+                data['additional_data'] = this.resultIndicator;
                 return data;
             }
         });
