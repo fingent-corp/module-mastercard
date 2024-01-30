@@ -80,9 +80,10 @@ class InformationTransferFactory implements TransferFactoryInterface
         $storeId = $this->selectedStore->getStoreId();
         $version = $this->config->getValue('api_version');
         $merchantId = $this->config->getMerchantId($storeId);
+        $request["correlationId"] = $merchantId;
 
         $builder = $this->transferBuilder
-            ->setMethod('GET')
+            ->setMethod('POST')
             ->setHeaders(['Content-Type' => 'application/json;charset=UTF-8'])
             ->setBody($request)
             ->setUri(

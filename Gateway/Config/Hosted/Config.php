@@ -21,7 +21,7 @@ use Mastercard\Mastercard\Gateway\Config\ConfigInterface;
 
 class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements ConfigInterface
 {
-    const COMPONENT_URI = '%scheckout/version/%s/checkout.js';
+    const COMPONENT_URI = '%sstatic/checkout/checkout.min.js';
 
     /**
      * @var string

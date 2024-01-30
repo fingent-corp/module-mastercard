@@ -37,15 +37,13 @@ define([
         },
         configureApi: function (merchant, sessionId, sessionVersion) {
             Checkout.configure({
-                merchant: merchant,
                 session: {
-                    id: sessionId,
-                    version: sessionVersion
+                    id: sessionId
                 }
             });
         },
         showPayment: function () {
-            Checkout.showLightbox();
+            Checkout.showEmbeddedPage('#embed-target');
         }
     };
 });
