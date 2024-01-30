@@ -47,7 +47,7 @@
     </virtualType>
     <virtualType name="CreateSessionOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
         <arguments>
-            <argument name="operation" xsi:type="string">CREATE_CHECKOUT_SESSION</argument>
+            <argument name="operation" xsi:type="string">INITIATE_CHECKOUT</argument>
         </arguments>
     </virtualType>
     <virtualType name="CaptureOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
@@ -366,6 +366,12 @@
         </arguments>
     </type>
 
+    <type name="Mastercard\Mastercard\Model\Resolver\Createsession">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+        </arguments>
+    </type>
+    
     <virtualType name="TnsHostedConfig" type="Mastercard\Mastercard\Gateway\Config\Hosted\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider::METHOD_CODE</argument>

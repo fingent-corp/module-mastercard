@@ -62,8 +62,6 @@ class InteractionBuilder implements BuilderInterface
                 'displayControl' => [
                     'customerEmail' => 'HIDE',
                     'billingAddress' => 'HIDE',
-                    'orderSummary' => 'HIDE',
-                    'paymentTerms' => 'HIDE',
                     'shipping' => 'HIDE',
                 ],
                 'operation' => 'NONE'
