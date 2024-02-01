@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Mastercard_Mastercard" setup_version="2.3.4">
+    <module name="Mastercard_Mastercard" setup_version="2.3.5">
         <sequence>
             <module name="Magento_Payment"/>
             <module name="Magento_Sales"/>
