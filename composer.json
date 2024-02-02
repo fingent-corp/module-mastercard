@@ -4,9 +4,14 @@
   "type": "magento2-module",
   "license": "Apache-2.0",
   "version": "2.3.5",
-  "require": {
-    "magento/framework": "*"
-  },
+  "authors": [
+    {
+      "name": "The Fingent Team",
+      "email": "support@fingent.com",
+      "homepage": "https://www.fingent.com",
+      "role": "Technical Support"
+    }
+  ],
   "autoload": {
     "files": [
       "registration.php"
