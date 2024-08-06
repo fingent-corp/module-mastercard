@@ -21,3 +21,6 @@ Magento 2 Mastercard Payment Gateway Service module supports the following list 
 ## Documentation
 
 The official documentation for this module is available on: [https://mpgs.fingent.wiki/target/magento-2-mastercard-payment-gateway-services/version-compatibility/](https://mpgs.fingent.wiki/target/magento-2-mastercard-payment-gateway-services/version-compatibility/)
+
+## Support
+For customer support: [https://mpgsfgs.atlassian.net/servicedesk/customer/portals](https://mpgsfgs.atlassian.net/servicedesk/customer/portals/)

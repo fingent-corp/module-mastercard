@@ -22,6 +22,7 @@
                 <value id="ap-gateway_mastercard_com" type="host">ap-gateway.mastercard.com</value>
                 <value id="na-gateway_mastercard_com" type="host">na-gateway.mastercard.com</value>
                 <value id="gateway_mastercard_com" type="host">*.gateway.mastercard.com</value>
+                <value id="gateway_spring_citi_com" type="host">*.gateway.spring.citi.com</value>
             </values>
         </policy>
         <policy id="frame-src">

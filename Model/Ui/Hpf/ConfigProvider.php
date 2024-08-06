@@ -26,6 +26,7 @@ class ConfigProvider implements ConfigProviderInterface
 {
     const METHOD_CODE = 'tns_hpf';
     const CC_VAULT_CODE = 'tns_hpf_vault';
+    const METHOD_VERIFY = 'order';
 
     /**
      * @var Config
@@ -56,13 +57,16 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
+    
+        $payment_action = $this->config->getValue('payment_action');
+        $threedsecure_version = ($payment_action == static::METHOD_VERIFY) ? 0 : (int)$this->config->getValue('three_d_secure');
         return [
             'payment' => [
                 self::METHOD_CODE => [
                     'merchant_username' => $this->config->getMerchantId(),
                     'component_url' => $this->config->getComponentUrl(),
                     'debug' => (bool)$this->config->getValue('debug'),
-                    'three_d_secure_version' => (int)$this->config->getValue('three_d_secure'),
+                    'three_d_secure_version' => $threedsecure_version,
                     'ccVaultCode' => static::CC_VAULT_CODE,
                     'check_url' => $this->urlBuilder->getUrl(
                         'tns/threedsecure/check',
