@@ -54,4 +54,10 @@
             <argument name="config" xsi:type="object">MpgsAchConfig</argument>
         </arguments>
     </virtualType>
-</config>
+    <type name="Magento\Framework\Notification\MessageList">
+        <arguments>
+            <argument name="messages" xsi:type="array">
+                <item name="releaseNotification" xsi:type="string">Mastercard\Mastercard\Model\System\Message\ReleaseNotification</item>
+            </argument>
+        </arguments>
+    </type></config>

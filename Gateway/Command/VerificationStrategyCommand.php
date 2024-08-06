@@ -34,6 +34,7 @@ class VerificationStrategyCommand implements CommandInterface
     const PROCESS_3DS_RESULT = '3ds_process';
     const CREATE_TOKEN = 'create_token';
     const CREATE_ORDER_TOKEN = 'tokenize';
+    const METHOD_VERIFY = 'order';
 
     /**
      * @var Command\CommandPoolInterface
@@ -81,6 +82,13 @@ class VerificationStrategyCommand implements CommandInterface
     {
         /** @var Payment $paymentInfo */
         $paymentInfo = $paymentDO->getPayment();
+        
+        $payment_action = $this->config->getValue('payment_action');
+        
+        //Don't use 3DS for verify payment action
+        if($payment_action == static::METHOD_VERIFY){
+             return false;
+         }
 
         // Don't use 3DS in admin
         if ($this->state->getAreaCode() === Area::AREA_ADMINHTML) {
