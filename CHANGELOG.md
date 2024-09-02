@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.0] - 2024-09-02
+### Enhancement
+- Module is now compatible with Magento version 2.4.7-p2.
+
 ## [2.3.6] - 2024-08-06
 ### Enhancement
 - Mastercard API version upgraded to 81.

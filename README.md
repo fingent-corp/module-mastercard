@@ -6,7 +6,7 @@
 Payments through this module are processed securely via the Mastercard Payment Gateway. This ensures that card data is managed in compliance with all legal requirements. The gateway monitors every transaction and handles sensitive payment data on PCI Level 1 certified servers, simplifying PCI compliance for your business.
 
 ## Compatibility
-Extension’s latest version supports GraphQl and is compatible with Magento version 2.4.6
+Extension’s latest version supports GraphQl and is compatible with Magento version 2.4.7
 
 ### Customer Information Shared with Gateway
 This module shares the following customer information with the gateway:
@@ -53,7 +53,7 @@ The Headless Magento architecture, coupled with GraphQL, enables us to deliver a
 ## System Requirements
 The latest release of the plugin has the following system requirements:
 - PHP version 8.1 or higher is mandatory.
-- Magento version 2.4.6 or later is required. However, we strongly recommend using the latest available version for optimal performance.
+- Magento version 2.4.7 or later is required. However, we strongly recommend using the latest available version for optimal performance.
 
 ## Installation
 Please refer to this [guide](https://experienceleague.adobe.com/en/docs/commerce-admin/start/resources/commerce-marketplace).

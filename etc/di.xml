@@ -17,7 +17,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Mastercard\Mastercard\Api\SessionInformationManagementInterface" type="Mastercard\Mastercard\Model\SessionInformationManagement" />
     <preference for="Mastercard\Mastercard\Api\VerifyPaymentFlagInterface" type="Mastercard\Mastercard\Model\VerifyPaymentFlag" />
-
+    
+    <!-- Vault PaymentServicesPaypal plugin argument issue -->
+    <preference for="Magento\PaymentServicesPaypal\Plugin\Vault\Method" type="Mastercard\Mastercard\Rewrite\Magento\PaymentServicesPaypal\Plugin\Vault\Method"/>
+    
     <type name="Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest" shared="false" />
 
     <type name="Mastercard\Mastercard\Model\System\Config\Backend\Cert">
