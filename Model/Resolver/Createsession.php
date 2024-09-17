@@ -56,6 +56,21 @@ class Createsession implements ResolverInterface
      * @var GuestCartRepositoryInterface
      */
     private $cartRepository;
+    
+    /**
+     * @var CommandPoolInterface
+     */
+    protected $commandPool;
+    
+    /**
+     * @var PaymentInterface
+     */
+    protected $paymentMethod;
+    
+    /**
+     * @var AddressInterface
+     */
+    protected $billingAddress;
 
     /**
      * SessionInformationManagement constructor.

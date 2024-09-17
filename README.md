@@ -53,7 +53,7 @@ The Headless Magento architecture, coupled with GraphQL, enables us to deliver a
 ## System Requirements
 The latest release of the plugin has the following system requirements:
 - PHP version 8.1 or higher is mandatory.
-- Magento version 2.4.7 or later is required. However, we strongly recommend using the latest available version for optimal performance.
+- Magento version 2.4.6 or later is required. However, we strongly recommend using the latest available version for optimal performance.
 
 ## Installation
 Please refer to this [guide](https://experienceleague.adobe.com/en/docs/commerce-admin/start/resources/commerce-marketplace).

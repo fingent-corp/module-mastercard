@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.1] - 2024-09-17
+### Enhancement
+- The plugin is now compatible with Magento version 2.4.7 and is also backward compatible with version 2.4.6.
+
 ## [2.4.0] - 2024-09-02
 ### Enhancement
 - Module is now compatible with Magento version 2.4.7-p2.
