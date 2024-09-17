@@ -22,9 +22,13 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Vault\Model\Method\Vault as VaultMethod;
 use Magento\Vault\Model\PaymentTokenManagement;
 
-class Method extends \Magento\PaymentServicesPaypal\Plugin\Vault\Method
-{
+// Condition checked here to fix compatibility issue with Magento versions < 2.4.7
+if (class_exists('\Magento\PaymentServicesPaypal\Plugin\Vault\Method')) {
+  class Method extends \Magento\PaymentServicesPaypal\Plugin\Vault\Method
+  {
 
+    protected $tokenManagement;
+    
     /**
      * Hide stored cards payment option on admin checkout page when the customer is new or doesn't have any stored cards
      *
@@ -44,4 +48,13 @@ class Method extends \Magento\PaymentServicesPaypal\Plugin\Vault\Method
         return $result;
     }
 
+  }
+}else {
+    class Method
+    {
+        public function afterIsAvailable(VaultMethod $subject, $result, CartInterface $quote = null): bool
+        {
+            return $result;
+        }
+    }
 }
