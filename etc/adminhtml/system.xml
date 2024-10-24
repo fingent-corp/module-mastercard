@@ -50,6 +50,11 @@
                         <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\AuthenticationType</source_model>
                         <config_path>payment/tns_hosted/authentication_type</config_path>
                     </field>
+                    <field id="form_type" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Form Type</label>
+                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Hosted\FormType</source_model>
+                        <config_path>payment/tns_hosted/form_type</config_path>
+                    </field>
                     <field id="api_username" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>API Username</label>
                         <config_path>payment/tns_hosted/api_username</config_path>

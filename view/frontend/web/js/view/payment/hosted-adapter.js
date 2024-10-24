@@ -42,8 +42,12 @@ define([
                 }
             });
         },
-        showPayment: function () {
-            Checkout.showEmbeddedPage('#embed-target');
+        showPayment: function (form_type) {
+            if(form_type == 1){
+                Checkout.showPaymentPage();
+            }else{
+                Checkout.showEmbeddedPage('#embed-target');
+            } 
         }
     };
 });

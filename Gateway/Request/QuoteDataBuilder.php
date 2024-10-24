@@ -24,6 +24,8 @@ use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 
 class QuoteDataBuilder implements BuilderInterface
 {
+
+    const ORDER_DESCRIPTION = 'Ordered Goods';
     /**
      * @var ConfigFactory
      */
@@ -63,7 +65,8 @@ class QuoteDataBuilder implements BuilderInterface
             'order' => [
                 'amount' => sprintf('%.2F', $total),
                 'currency' => $order->getCurrencyCode(),
-                'notificationUrl' => $config->getWebhookNotificationUrl($storeId)
+                'notificationUrl' => $config->getWebhookNotificationUrl($storeId),
+                'description'=> static::ORDER_DESCRIPTION
             ]
         ];
     }
