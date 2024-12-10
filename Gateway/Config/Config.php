@@ -313,4 +313,16 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     {
         return $this->storeManager->getStore($storeId)->getWebsiteId();
     }
+
+    /**
+     * @param int|string|null $storeId
+     *
+     * @return int
+     *
+     * @throws NoSuchEntityException
+     */
+    public function getFormType($storeId = null)
+    {
+        return $this->getValue('form_type', $storeId);
+    }
 }

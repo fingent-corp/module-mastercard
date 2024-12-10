@@ -132,7 +132,7 @@ define(
                             session[1]
                         );
 
-                        paymentAdapter.showPayment();
+                        paymentAdapter.showPayment(config.form_type);
                         fullScreenLoader.stopLoader();
 
                     } else {

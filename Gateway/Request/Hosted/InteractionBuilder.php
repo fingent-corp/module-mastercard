@@ -21,21 +21,32 @@ use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Sales\Model\Order\Payment;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
+use Magento\Framework\UrlInterface;
 
 class InteractionBuilder implements BuilderInterface
 {
+
+    const CHECKOUT_CART_URL = 'checkout/cart';
+    const CALLBACK_URL      = 'tns/hosted/callback';
     /**
      * @var ConfigFactory
      */
     protected $configFactory;
+    
+    /**
+     * @var UrlInterface
+     */
+    protected $urlInterface;
 
     /**
      * OrderDataBuilder constructor.
      * @param ConfigFactory $configFactory
+     * @param UrlInterface $urlInterface
      */
-    public function __construct(ConfigFactory $configFactory)
+    public function __construct(ConfigFactory $configFactory,UrlInterface $urlInterface)
     {
         $this->configFactory = $configFactory;
+        $this->urlInterface    = $urlInterface;
     }
 
     /**
@@ -53,19 +64,32 @@ class InteractionBuilder implements BuilderInterface
 
         $config = $this->configFactory->create();
         $config->setMethodCode($payment->getMethod());
-
-        return [
+        
+        $returnData =  [
             'interaction' => [
-                'merchant' => [
-                    'name' => $config->getValue('form_title', $storeId)
-                ],
-                'displayControl' => [
-                    'customerEmail' => 'HIDE',
-                    'billingAddress' => 'HIDE',
-                    'shipping' => 'HIDE',
-                ],
-                'operation' => 'NONE'
-            ]
+                   'merchant' => [
+                         'name' => $config->getValue('form_title', $storeId)
+                    ],
+                    'displayControl' => [
+                         'customerEmail' => 'HIDE',
+                         'billingAddress' => 'HIDE',
+                         'shipping' => 'HIDE',
+                    ],
+                    'operation' => 'NONE'
+             ]
         ];
+        
+        if ($config->getValue('form_type', $storeId) == 1) {
+            $returnData = array_replace_recursive($returnData, [
+                         'interaction' =>  [
+				'returnUrl' => $this->urlInterface->getUrl(static::CALLBACK_URL, ['_secure' => true]),
+				'cancelUrl' => $this->urlInterface->getUrl(static::CHECKOUT_CART_URL, ['_secure' => true]),
+				'timeoutUrl' => $this->urlInterface->getUrl(static::CHECKOUT_CART_URL, ['_secure' => true])
+            
+                         ]
+                      ]);
+        }
+        
+        return $returnData;
     }
 }

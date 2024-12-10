@@ -70,7 +70,7 @@ class ReleaseNotification implements MessageInterface {
     /**
      * Release notes url
      */
-    const RELEASE_NOTES_URL = 'https://mpgs.fingent.wiki/target/magento-2-mastercard-payment-gateway-services/release-notes/';
+    const RELEASE_NOTES_URL = 'https://mpgs.fingent.wiki/enterprise/magento-2-mastercard-payment-gateway-services/release-notes/';
 
     /**
      * Retrieve unique system message identity

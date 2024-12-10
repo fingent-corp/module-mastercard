@@ -1,9 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.4.1] - 2024-09-17
+## [2.4.2] - 2024-10-24
 ### Enhancement
-- The plugin is now compatible with Magento version 2.4.7 and is also backward compatible with version 2.4.6.
+- Mastercard API upgraded to version 84.
+- Introduced Checkout Form Type – Redirect to Payment Page in Hosted Checkout Integration Model.
+- Void Transaction – status updated to “Canceled”.
+### Fixed
+- Fixed the Pay button amount refresh issue in Hosted Checkout.
 
 ## [2.4.0] - 2024-09-02
 ### Enhancement

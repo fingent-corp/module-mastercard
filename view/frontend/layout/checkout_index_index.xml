@@ -53,6 +53,9 @@
                                         </item>
                                     </item>
                                 </item>
+                                <item name="shipping-update" xsi:type="array">
+                                    <item name="component" xsi:type="string">Mastercard_Mastercard/js/checkout/shipping-update</item>
+                                 </item>
                             </item>
                         </item>
                     </item>
