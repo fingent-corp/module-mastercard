@@ -283,15 +283,13 @@ class Response extends Action implements CsrfAwareActionInterface
 
             /** @var InfoInterface $payment */
             $payment = $order->getPayment();
+            $payment->setAdditionalInformation('gateway_code', $data['response']['gatewayCode']);
+            if (isset($data['transaction']['funding']['status'])) {
+                $payment->setAdditionalInformation('funding_status', $data['transaction']['funding']['status']);
+            }
+            $order->save();
             $paymentData = $this->paymentDataObjectFactory->create($payment);
 
-            $this->commandPool
-                ->get($config->getMethod())
-                ->execute([
-                    'payment' => $paymentData,
-                    'transaction_id' => $data['transaction']['id'],
-                    'order_id' => $data['order']['id']
-                ]);
         } catch (Exception $e) {
             $errorMessage = sprintf(
                 __("MasterCard Payment Gateway Services WebHook Exception: '%s'"),
