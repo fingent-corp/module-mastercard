@@ -164,8 +164,8 @@
                 <can_use_checkout>1</can_use_checkout>
                 <can_use_internal>0</can_use_internal>
 
-                <can_refund>0</can_refund>
-                <can_refund_partial_per_invoice>0</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
                 <can_void>0</can_void>
                 <can_order>1</can_order>
                 <can_authorize>0</can_authorize>
@@ -173,7 +173,7 @@
                 <can_capture_partial>0</can_capture_partial>
                 <is_gateway>1</is_gateway>
 
-                <paymentInfoKeys>gateway_code,txn_result,bankAccountHolder,bankAccountNumber</paymentInfoKeys>
+                <paymentInfoKeys>gateway_code,funding_status,txn_result,bankAccountHolder,bankAccountNumber</paymentInfoKeys>
                 <sort_order>30</sort_order>
             </mpgs_ach>
         </payment>

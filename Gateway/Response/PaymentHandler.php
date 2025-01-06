@@ -74,6 +74,9 @@ class PaymentHandler implements HandlerInterface
             if (isset($response['transaction']['authorizationCode'])) {
                 $payment->setAdditionalInformation('auth_code', $response['transaction']['authorizationCode']);
             }
+            if (isset($response['transaction']['funding']['status'])) {
+                $payment->setAdditionalInformation('funding_status', $response['transaction']['funding']['status']);
+            }
         }
 
         if (isset($response['risk'])) {

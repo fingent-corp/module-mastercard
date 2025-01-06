@@ -38,6 +38,10 @@
                         <td><?php echo $block->safeValue($info['gateway_code'] ?? null) ?></td>
                     </tr>
                     <tr>
+                        <th><?php echo __('funding_status') ?></th>
+                        <td><?php echo $block->safeValue($info['funding_status'] ?? null) ?></td>
+                    </tr>
+                    <tr>
                         <th><?php echo __('txn_result') ?></th>
                         <td><?php echo $block->safeValue($info['txn_result'] ?? null) ?></td>
                     </tr>

@@ -72,6 +72,9 @@ class AchPaymentDetails implements HandlerInterface
 
         $additionalInfo['gateway_code'] = $response['response']['gatewayCode'];
         $additionalInfo['txn_result'] = $response['result'];
+        if (isset($response['transaction']['funding']['status'])) {
+            $additionalInfo['funding_status'] = $response['transaction']['funding']['status'];
+        }
 
         $payment->setAdditionalInformation($additionalInfo);
     }
