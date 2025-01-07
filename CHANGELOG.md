@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.4] - 2024-12-24
+### Enhancement
+- Mastercard API upgraded to version 100.
+- Added a new "Funding Status" parameter for orders placed through Hosted Checkout and Hosted Session.
+### Changed
+- Reintroduced VATO payment option for ACH.
+### Fixed
+- Minor bug fixes.
+
 ## [2.4.3] - 2024-11-04
 ### Changed
 - Refund added for ACH.

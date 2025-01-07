@@ -134,6 +134,12 @@ class VerificationStrategyCommand implements CommandInterface
         $paymentInfo = $paymentDO->getPayment();
         ContextHelper::assertOrderPayment($paymentInfo);
 
+        $extensionAttributes = $paymentInfo->getExtensionAttributes();
+        $paymentToken        = $extensionAttributes->getVaultPaymentToken();
+
+        $order       = $paymentInfo->getOrder();
+        $order_token = $order->getMastercardPaymentToken() ? $order->getMastercardPaymentToken() : NULL;
+
         if ($this->isThreeDSSupported($paymentDO)) {
             $this->commandPool
                 ->get(static::PROCESS_3DS_RESULT)
@@ -143,13 +149,13 @@ class VerificationStrategyCommand implements CommandInterface
         // Vault enabled from configuration
         // 'Save for later use' checked on frontend
         if ($this->config->isVaultEnabled() &&
-            $paymentInfo->getAdditionalInformation(VaultConfigProvider::IS_ACTIVE_CODE)) {
+            $paymentInfo->getAdditionalInformation(VaultConfigProvider::IS_ACTIVE_CODE) && (!$this->getVaultToken($paymentInfo))) {
             $this->commandPool
                 ->get(static::CREATE_TOKEN)
                 ->execute($commandSubject);
         }
 
-        if ($this->config->isOrderTokenizationEnabled()) {
+        if ($this->config->isOrderTokenizationEnabled() && !$this->getVaultToken($paymentInfo) && !$order_token) {
             $this->commandPool
                 ->get(static::CREATE_ORDER_TOKEN)
                 ->execute($commandSubject);
@@ -160,5 +166,19 @@ class VerificationStrategyCommand implements CommandInterface
             ->execute($commandSubject);
 
         return null;
+    }
+    
+    /**
+    * Returns paymenttoken
+    *
+    * @param $paymentInfo
+    * @return string 
+    */
+    public function getVaultToken($paymentInfo){
+
+        $extensionAttributes = $paymentInfo->getExtensionAttributes();
+        $paymentToken        = $extensionAttributes->getVaultPaymentToken() ? $extensionAttributes->getVaultPaymentToken():NULL ;
+        return $paymentToken;
+
     }
 }
