@@ -126,6 +126,16 @@
             <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\ThreeDSecure\CheckHandler</argument>
         </arguments>
     </virtualType>
+    <!-- Check  Vault 3D-Secure enrollment -->
+    <virtualType name="TnsHpfVaultThreeDSecureEnrollmentCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsThreeDSecureVaultDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsHpfTransferFactoryEnrolment</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ThreeDSecureValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\ThreeDSecure\CheckHandler</argument>
+        </arguments>
+    </virtualType>
 
     <!-- Init Auth 3D-Secure 2 -->
     <virtualType name="TnsHpfThreeDSecure2InitiateAuthenticationCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
@@ -137,7 +147,15 @@
             <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Authentication\InitiateAuthenticationHandler</argument>
         </arguments>
     </virtualType>
-
+    <virtualType name="TnsHpfVaultThreeDSecure2InitiateAuthenticationCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsThreeDSecure2VaultDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactoryInitiateAuthentication</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\Authentication\InitiateAuthenticationValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Authentication\InitiateAuthenticationHandler</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="TnsHpfThreeDSecure2AuthenticatePayerCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
         <arguments>
             <argument name="requestBuilder" xsi:type="object">TnsThreeDSecure2AuthenticatePayerDataBuilder</argument>
@@ -147,7 +165,15 @@
             <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Authentication\AuthenticatePayerHandler</argument>
         </arguments>
     </virtualType>
-
+    <virtualType name="TnsHpfVaultThreeDSecure2AuthenticatePayerCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsThreeDSecure2VaultAuthenticatePayerDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">TnsHpfTransferFactoryInitiateAuthentication</argument>
+            <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\Authentication\AuthenticatePayerValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\Authentication\AuthenticatePayerHandler</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="TnsHpfTransferFactoryInitiateAuthentication" type="Mastercard\Mastercard\Gateway\Http\Authentication\TransferFactoryInitiateAuthentication">
         <arguments>
             <argument name="config" xsi:type="object">TnsHpfConfig</argument>
@@ -168,12 +194,32 @@
             </argument>
         </arguments>
     </virtualType>
-
+    <virtualType name="TnsThreeDSecureVaultDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">ThreeDSecureCheckOperationDataBuilder</item>
+                <item name="3ds_check" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ThreeDSecure\CheckVaultDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
     <virtualType name="TnsThreeDSecure2DataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
             <argument name="builders" xsi:type="array">
                 <item name="operation" xsi:type="string">InitiateAuthenticationOperationDataBuilder</item>
                 <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\SessionDataBuilder</item>
+                <item name="order_currency" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderCurrencyBuilder</item>
+                <item name="authentication" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationBuilder</item>
+                <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
+                <item name="transaction_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\InitAuthTransactionReferenceDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <virtualType name="TnsThreeDSecure2VaultDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">InitiateAuthenticationOperationDataBuilder</item>
+                <item name="token" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\TokenDataBuilder</item>
                 <item name="order_currency" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderCurrencyBuilder</item>
                 <item name="authentication" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationBuilder</item>
                 <item name="order_reference" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderReferenceDataBuilder</item>
@@ -187,6 +233,21 @@
             <argument name="builders" xsi:type="array">
                 <item name="operation" xsi:type="string">AuthenticatePayerOperationDataBuilder</item>
                 <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\SessionDataBuilder</item>
+                <item name="order_currency" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderCurrencyBuilder</item>
+                <item name="order_amount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderAmountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="device" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\DeviceBuilder</item>
+                <item name="authentication" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticatePayerBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+     <virtualType name="TnsThreeDSecure2VaultAuthenticatePayerDataBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">AuthenticatePayerOperationDataBuilder</item>
+                <item name="token" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\TokenDataBuilder</item>
                 <item name="order_currency" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderCurrencyBuilder</item>
                 <item name="order_amount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\OrderAmountBuilder</item>
                 <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
@@ -673,6 +734,8 @@
                 <item name="vault_order" xsi:type="string">MpgsHpfVaultOrderCommand</item>
                 <item name="vault_tokenize" xsi:type="string">MpgsHpfVaultCreateOrderTokenCommand</item>
                 <item name="vault_verify" xsi:type="string">MpgsHpfVaultVerifyCommand</item>
+                <item name="vault_initiate_authentication" xsi:type="string">TnsHpfVaultThreeDSecure2InitiateAuthenticationCommand</item>
+                <item name="vault_authenticate_payer" xsi:type="string">TnsHpfVaultThreeDSecure2AuthenticatePayerCommand</item>
             </argument>
         </arguments>
     </virtualType>
@@ -878,6 +941,7 @@
             <argument name="builders" xsi:type="array">
                 <item name="operation" xsi:type="string">PayOperationDataBuilder</item>
                 <item name="card" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="token" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
                 <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
                 <item name="authentication_transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationTransactionIdBuilder</item>
                 <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
@@ -1006,6 +1070,7 @@
             <argument name="builders" xsi:type="array">
                 <item name="operation" xsi:type="string">VerifyOperationDataBuilder</item>
                 <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="token" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
                 <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
                 <item name="authentication_transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationTransactionIdBuilder</item>
                 <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
@@ -1033,6 +1098,7 @@
             <argument name="builders" xsi:type="array">
                 <item name="operation" xsi:type="string">AuthorizeOperationDataBuilder</item>
                 <item name="session" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hpf\SessionDataBuilder</item>
+                <item name="token" xsi:type="string">Mastercard\Mastercard\Gateway\Request\TokenDataBuilder</item>
                 <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\OrderDataBuilder</item>
                 <item name="authentication_transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Authentication\AuthenticationTransactionIdBuilder</item>
                 <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\LineItemsBuilder</item>
@@ -1095,7 +1161,18 @@
             <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
         </arguments>
     </type>
-
+   <type name="Mastercard\Mastercard\Controller\ThreedsecureV2\VaultAuthentication">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+   <type name="Mastercard\Mastercard\Controller\ThreedsecureV2\VaultAuthenticatePayer">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHpfCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
     <!-- ACH Payments -->
     <virtualType name="MpgsAchFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>

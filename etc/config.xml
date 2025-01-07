@@ -34,7 +34,7 @@
                 <send_line_items>1</send_line_items>
                 <currency>USD</currency>
 
-                <api_version>84</api_version>
+                <api_version>100</api_version>
                 <api_gateway>api_na</api_gateway>
                 <api_eu>https://eu-gateway.mastercard.com/</api_eu>
                 <api_as>https://ap-gateway.mastercard.com/</api_as>
@@ -67,7 +67,7 @@
                 <can_capture>1</can_capture>
                 <can_capture_partial>1</can_capture_partial>
 
-                <paymentInfoKeys>gateway_code,txn_result,card_scheme,card_number,card_expiry_date,auth_code</paymentInfoKeys>
+                <paymentInfoKeys>gateway_code,funding_status,txn_result,card_scheme,card_number,card_expiry_date,auth_code</paymentInfoKeys>
                 <sort_order>10</sort_order>
             </tns_hosted>
             <tns_hpf>
@@ -79,7 +79,7 @@
                 <send_line_items>1</send_line_items>
                 <currency>USD</currency>
 
-                <api_version>84</api_version>
+                <api_version>100</api_version>
                 <api_gateway>api_na</api_gateway>
                 <api_eu>https://eu-gateway.mastercard.com/</api_eu>
                 <api_as>https://ap-gateway.mastercard.com/</api_as>
@@ -123,7 +123,7 @@
                 <useccv>1</useccv>
                 <vault_ccv>1</vault_ccv>
 
-                <paymentInfoKeys>gateway_code,txn_result,card_scheme,card_number,card_expiry_date,session,auth_code</paymentInfoKeys>
+                <paymentInfoKeys>gateway_code,funding_status,txn_result,card_scheme,card_number,card_expiry_date,session,auth_code</paymentInfoKeys>
                 <sort_order>20</sort_order>
             </tns_hpf>
             <tns_hpf_vault>
@@ -141,7 +141,7 @@
                 <send_line_items>1</send_line_items>
                 <currency>USD</currency>
 
-                <api_version>84</api_version>
+                <api_version>100</api_version>
                 <api_gateway>api_na</api_gateway>
                 <api_eu>https://eu-gateway.mastercard.com/</api_eu>
                 <api_as>https://ap-gateway.mastercard.com/</api_as>

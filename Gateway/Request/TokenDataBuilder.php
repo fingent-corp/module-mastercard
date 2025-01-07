@@ -39,13 +39,16 @@ class TokenDataBuilder implements BuilderInterface
         ContextHelper::assertOrderPayment($payment);
 
         $extensionAttributes = $payment->getExtensionAttributes();
-        $paymentToken = $extensionAttributes->getVaultPaymentToken();
-
-        return [
-            'sourceOfFunds' => [
-                'token' => $paymentToken->getGatewayToken(),
-                'type' => static::TYPE,
-            ],
-        ];
+        $paymentToken = $extensionAttributes->getVaultPaymentToken() ? $extensionAttributes->getVaultPaymentToken() : NULL;
+        if($paymentToken){
+            return [
+                'sourceOfFunds' => [
+                    'token' => $paymentToken->getGatewayToken(),
+                    'type' => static::TYPE,
+                ],
+            ];
+        }else {
+           return [];
+        }
     }
 }

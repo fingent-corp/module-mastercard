@@ -61,7 +61,7 @@ class InitiateAuthenticationHandler implements HandlerInterface
         );
         $payment->setAdditionalInformation(
             'auth_redirect_html',
-            $this->arrayManager->get('authentication/redirectHtml', $response)
+            $this->arrayManager->get('authentication/redirectHtml', $response) ? $this->arrayManager->get('authentication/redirectHtml', $response) : $this->arrayManager->get('authentication/redirect/html', $response)
         );
         $payment->setAdditionalInformation('result', $this->arrayManager->get('result', $response));
         $payment->setAdditionalInformation(
@@ -73,5 +73,9 @@ class InitiateAuthenticationHandler implements HandlerInterface
             $this->arrayManager->get('transaction/id', $response)
         );
         $payment->setAdditionalInformation('transaction_type', $this->arrayManager->get('transaction/type', $response));
+        $payment->setAdditionalInformation(
+            'auth_threeds_status',
+            $this->arrayManager->get('transaction/authenticationStatus', $response)
+        );
     }
 }
