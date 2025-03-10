@@ -82,18 +82,20 @@ class SessionManagerPlugin
      */
     private function isValidRequest(): bool
     {
+        $isValid = true;
+
         if (!$this->sessionStartChecker->check()) {
-            return false;
-        }
-
-        try {
-            if ($this->appState->getAreaCode() !== AppArea::AREA_FRONTEND) {
-                return false;
+            $isValid = false;
+        } else {
+            try {
+                if ($this->appState->getAreaCode() !== AppArea::AREA_FRONTEND) {
+                    $isValid = false;
+                }
+            } catch (LocalizedException $e) {
+                $isValid = false;
             }
-        } catch (LocalizedException $e) {
-            return false;
         }
 
-        return true;
+        return $isValid;
     }
 }

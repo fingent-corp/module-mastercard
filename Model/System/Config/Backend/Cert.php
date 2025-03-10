@@ -118,7 +118,7 @@ class Cert extends ConfigValue
             $this->setValue($value['value']);
 
             return $this;
-        } elseif (empty($value['tmp_name']) && !empty($value['value'])) {
+        } elseif (empty($value['tmp_name']) && empty($value['value'])) {
             $this->setValue('');
 
             return $this;

@@ -66,29 +66,35 @@ class AuthenticatePayerValidator extends AbstractValidator
         $result = $this->arrayManager->get('result', $response);
         $gatewayRecommendation = $this->arrayManager->get('response/gatewayRecommendation', $response);
         $transactionId = $this->arrayManager->get('transaction/id', $response);
-
-        if (isset($error)) {
-            return $this->createResult(false, ['Error']); // TODO map errors on correct errors for customers
-        }
-
         $version = $this->arrayManager->get('authentication/version', $response);
 
-        if ($version === 'NONE' && $transactionId && $gatewayRecommendation === 'PROCEED') {
-            return $this->createResult(true);
+        // Initialize a variable to store the validation result
+        $validationResult = null;
+        $validationMessages = [];
+
+        if (isset($error)) {
+            // Set the error message if present
+            $validationResult = false;
+            // map errors on correct errors for customers,need to implement
+            $validationMessages[] = 'Error';
+        } elseif ($version === 'NONE' && $transactionId && $gatewayRecommendation === 'PROCEED') {
+            // Handle specific case where version is 'NONE' and gateway recommendation is 'PROCEED'
+            $validationResult = true;
+        } elseif ($version !== '3DS1' && $version !== '3DS2') {
+            // Unsupported 3DS version
+            $validationResult = false;
+            $validationMessages[] = 'Unsupported version of 3DS';
+        } elseif (!in_array($result, ['SUCCESS', 'PROCEED', 'PENDING']) || $gatewayRecommendation !== 'PROCEED') {
+            // Handle declined transaction
+            $validationResult = false;
+            $validationMessages[] = 'Transaction declined';
+        } else {
+            // Default to success if no errors
+            $validationResult = true;
         }
 
-        if ($version !== '3DS1' && $version !== '3DS2') {
-            return $this->createResult(false, [
-                'Unsupported version of 3DS',
-            ]);
-        }
-
-        $statuses = ['SUCCESS', 'PROCEED', 'PENDING'];
-        if (!in_array($result, $statuses) || $gatewayRecommendation !== 'PROCEED') {
-            return $this->createResult(false, ['Transaction declined']);
-        }
-
-        return $this->createResult(true);
+        // Return the validation result with appropriate messages
+        return $this->createResult($validationResult, $validationMessages);
     }
 
     /**

@@ -24,7 +24,8 @@ use Magento\Sales\Model\Order\Payment;
 class ResultHandler implements HandlerInterface
 {
     const THREEDSECURE_RESULT = '3DSecureResult';
-
+    const THREEDSECURE = '3DSecure';
+    
     /**
      * Handles response
      *
@@ -39,12 +40,12 @@ class ResultHandler implements HandlerInterface
         /** @var Payment $payment */
         $payment = $paymentDO->getPayment();
 
-        // @todo: remove these params when done with them
+        // Remove these params when done with them , need to implement
         $payment->setAdditionalInformation(static::THREEDSECURE_RESULT, [
-            'acsEci' => $response['3DSecure']['acsEci'],
-            'authenticationToken' => $response['3DSecure']['authenticationToken'],
+            'acsEci' => $response[static::THREEDSECURE]['acsEci'],
+            'authenticationToken' => $response[static::THREEDSECURE]['authenticationToken'],
             'veResEnrolled' => $response['3DSecure']['veResEnrolled'],
-            'xid' => $response['3DSecure']['xid'],
+            'xid' => $response[static::THREEDSECURE]['xid'],
         ]);
 
         $payment->unsAdditionalInformation('PaRes');

@@ -181,8 +181,7 @@ define(
                     placeOrderAction(this.getData(), self.messageContainer)
                 ).done(function () {
                         fullScreenLoader.stopLoader();
-                        var successUrl = url.build('checkout/onepage/success'); 
-                        window.location.href = successUrl;
+                        self.getTransactiondetails();
                     })
                 .fail(function () {
                     var cartUrl = url.build('checkout/cart');
@@ -192,7 +191,24 @@ define(
 
                 return false;
             },
+            /**
+            * Get transaction details
+            */
+            getTransactiondetails: function () {
+                let requesturl   = url.build('tns/hosted/transactiondetails');
+                let quoteId      = quote.getQuoteId();
+                jQuery.ajax({
+                    url: requesturl,
+                    type: 'POST',
+                    data: {id : quoteId},
+                    dataType: 'json',
+                    success: function(data) {
+                        var successUrl = url.build('checkout/onepage/success'); 
+                        window.location.href = successUrl;
+                    }
+                });
 
+            },
             /**
              * Get payment method data
              */

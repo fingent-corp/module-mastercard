@@ -30,25 +30,26 @@ class AchValidator extends ResponseValidator
     {
         $response = SubjectReader::readResponse($validationSubject);
 
+        $result = null;
+
         if (!isset($response['result'])) {
-            return $this->createResult(false, [__("Response does not contain a body.")]);
+            $result = $this->createResult(false, [__("Response does not contain a body.")]);
+        } elseif (isset($response['error']) && $response['error']['validationType'] === 'MISSING') {
+            $result = $this->createResult(false, [$response['error']['field']]);
+        } else {
+            $allowStatus = [
+                'APPROVED_PENDING_SETTLEMENT',
+                'APPROVED'
+            ];
+
+            if (!in_array($response['response']['gatewayCode'], $allowStatus)) {
+                $result = $this->createResult(false, [
+                    __('Unexpected gateway code "%1"', $response['response']['gatewayCode'])
+                ]);
+            }
         }
 
-        if (isset($response['error']) && $response['error']['validationType'] === 'MISSING') {
-            return $this->createResult(false, [$response['error']['field']]);
-        }
-
-        $allowStatus = [
-            'APPROVED_PENDING_SETTLEMENT',
-            'APPROVED'
-        ];
-
-        if (!in_array($response['response']['gatewayCode'], $allowStatus)) {
-            return $this->createResult(false, [
-                __('Unexpected gateway code "%1"', $response['response']['gatewayCode'])
-            ]);
-        }
-
-        return parent::validate($validationSubject);
+        // If no specific result was set, proceed with parent validation
+        return $result ?: parent::validate($validationSubject);
     }
 }

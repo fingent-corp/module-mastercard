@@ -38,14 +38,14 @@ class ProcessValidator extends AbstractValidator
         }
 
         switch ($response['response']['gatewayRecommendation']) {
-            case 'PROCEED':
-                $result = $this->createResult(true);
-                break;
-
             default:
             case 'DO_NOT_PROCEED':
                 $result = $this->createResult(false, [__('Transaction declined by 3D-Secure validation.')]);
                 break;
+            case 'PROCEED':
+                $result = $this->createResult(true);
+                break;
+
         }
 
         return $result;

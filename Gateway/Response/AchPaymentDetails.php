@@ -54,9 +54,10 @@ class AchPaymentDetails implements HandlerInterface
 
         $payment->setLastTransId($response['transaction']['id']);
 
-        // @todo: multistep_ach
+        //  multistep_ach is not supported
         // Set transaction as pending because ACH does not capture it immediately
-        // Would use this in case we need to split the process between APPROVED_PENDING_SETTLEMENT (realtime) and APPROVED (webhook)
+        // use this in case , we need to split the process between
+        // APPROVED_PENDING_SETTLEMENT (realtime) and APPROVED (webhook)
         //$isPending = $response['response']['gatewayCode'] === 'APPROVED_PENDING_SETTLEMENT';
         $payment->setIsTransactionPending(false);
         $payment->setIsTransactionClosed(true);

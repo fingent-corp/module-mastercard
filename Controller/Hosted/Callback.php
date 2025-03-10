@@ -31,6 +31,8 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Quote\Model\QuoteFactory;
+use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
+use Magento\Payment\Gateway\Command\CommandPool;
 
 /**
  * Class Callback
@@ -40,7 +42,7 @@ use Magento\Quote\Model\QuoteFactory;
  */
 class Callback extends Action
 {
-
+    const CHECKOUT_CART_URL = 'checkout/cart';
     /**
      * @var Session
      */
@@ -83,17 +85,27 @@ class Callback extends Action
     private $customerSession;
 
     /**
+     * @var CommandPool
+     */
+    private $commandPool;
+
+    /**
+     * @var PaymentDataObjectFactory
+     */
+    private $paymentDataObjectFactory;
+
+    /**
      * Callback constructor.
      * @param Session $checkoutSession
      * @param QuoteManagement $quoteManagement
      * @param JsonFactory $jsonFactory
-     * @param OrderRepositoryInterface $orderRepository
      * @param Context $context
      * @param LoggerInterface $logger
      * @param OrderInterface $order
      * @param QuoteFactory $quoteFactory
      * @param OrderSender $orderSender
      * @param CustomerSession $customerSession
+     * @param CommandPool $commandPool
      */
     public function __construct(
         Session $checkoutSession,
@@ -101,11 +113,12 @@ class Callback extends Action
         Context $context,
         LoggerInterface $logger,
         QuoteManagement $quoteManagement,
-        OrderRepositoryInterface $orderRepository,
         OrderInterface $order,
         QuoteFactory $quoteFactory,
         OrderSender $orderSender,
-        CustomerSession $customerSession
+        CustomerSession $customerSession,
+        PaymentDataObjectFactory $paymentDataObjectFactory,
+        CommandPool $commandPool
         
     ) {
         parent::__construct($context);
@@ -117,12 +130,14 @@ class Callback extends Action
         $this->quoteFactory             = $quoteFactory;
         $this->orderSender              = $orderSender;
         $this->customerSession          = $customerSession;
+        $this->paymentDataObjectFactory = $paymentDataObjectFactory;
+        $this->commandPool              = $commandPool;
 
     }
 
     /**
      * Redirect Callback
-     * Creating magento order after successful payment 
+     * Creating magento order after successful payment
      *
      * @return ResultInterface|ResponseInterface
     */
@@ -131,54 +146,60 @@ class Callback extends Action
     
         $params = $this->getRequest()->getParams();
         try {
-            if($params['resultIndicator']){
+            if ($params['resultIndicator']) {
                 $quote = $this->checkoutSession->getQuote();
-                if(!$this->customerSession->isLoggedIn()) {  
-                  $quote->setCustomerEmail($quote->getBillingAddress()->getEmail()); 
-                  $quote->setCustomerFirstname($quote->getBillingAddress()->getFirstname());  
-                  $quote->setCustomerLastname($quote->getBillingAddress()->getLastname());               
+                $paymentDataObject = $this->paymentDataObjectFactory->create($quote->getPayment());
+                if (!$this->customerSession->isLoggedIn()) {
+                  $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
+                  $quote->setCustomerFirstname($quote->getBillingAddress()->getFirstname());
+                  $quote->setCustomerLastname($quote->getBillingAddress()->getLastname());
                 }
                 $quote->collectTotals()->save();
                 $orders  = $this->quoteManagement->submit($quote);
                 $orderId = $orders->getEntityId();
+                try {
+                    $command = $this->commandPool->get("hosted_order");
+                    $command->execute([
+                         'payment' => $paymentDataObject]);
+                } catch (Exception $e) {
+                    $this->logger->error((string)$e);
+                    $this->messageManager->addError(__('Unable to fetch order details.'));
+                }
         
-                $order  = $this->order->load($orderId);   
+                $order  = $this->order->load($orderId);
                 $quotes = $this->quoteFactory->create()
                                ->load($order->getQuoteId());
                 $quotes->setIsActive(0)->save();
-                if (empty($orderId) === true)
-                {
+                if (empty($orderId) === true) {
                     $this->messageManager->addError(__('Payment Failed, As no active cart ID found.'));
-                    return $this->_redirect('checkout/cart');
                 }
                 $this->checkoutSession
                     ->setLastSuccessQuoteId($order->getQuoteId())
                     ->setLastQuoteId($order->getQuoteId())
                     ->clearHelperData();
-                if(empty($order) === false)
-                {
+                if (empty($order) === false) {
                     $this->checkoutSession
                          ->setLastOrderId($order->getId())
                          ->setLastRealOrderId($order->getIncrementId())
                          ->setLastOrderStatus($order->getStatus());
-                }                                                                                                                    
+                }
                 $this->orderSender->send($order);
                 $this->checkoutSession->replaceQuote($quotes);
                 return $this->_redirect('checkout/onepage/success');
-            } else{
+            } else {
                 $quote = $this->checkoutSession->getQuote();
                 $quote->setIsActive(1)
                     ->setReservedOrderId(null)
                     ->save();
                 $this->checkoutSession->replaceQuote($quote);
                 $this->messageManager->addError(__('Payment Failed.'));
-                return $this->_redirect('checkout/cart');
+                return $this->_redirect(static::CHECKOUT_CART_URL);
             }
 
-        } catch (Exception $e) {                         
+        } catch (Exception $e) {
             $this->logger->error((string)$e);
             $this->messageManager->addError(__('Transaction has been declined.'));
-            return $this->_redirect('checkout/cart');
+            return $this->_redirect(static::CHECKOUT_CART_URL);
         }
     }
 }

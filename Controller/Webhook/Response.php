@@ -26,21 +26,17 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\Request\InvalidRequestException;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Payment\Gateway\Command\CommandPoolInterface;
-use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
-use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\Method\LoggerFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\TransactionRepositoryInterface;
-use Mastercard\Mastercard\Gateway\Config\Config;
 use Psr\Log\LoggerInterface;
 
 class Response extends Action implements CsrfAwareActionInterface
@@ -91,16 +87,6 @@ class Response extends Action implements CsrfAwareActionInterface
     protected $logger;
 
     /**
-     * @var PaymentDataObjectFactory
-     */
-    protected $paymentDataObjectFactory;
-
-    /**
-     * @var CommandPoolInterface
-     */
-    protected $commandPool;
-
-    /**
      * @var Json
      */
     protected $json;
@@ -115,8 +101,6 @@ class Response extends Action implements CsrfAwareActionInterface
      * @param FilterBuilder $filterBuilder
      * @param LoggerFactory $loggerFactory
      * @param LoggerInterface $logger
-     * @param PaymentDataObjectFactory $paymentDataObjectFactory
-     * @param CommandPoolInterface $commandPool
      * @param Json $json
      * @param Config[] $configProviders
      */
@@ -129,8 +113,6 @@ class Response extends Action implements CsrfAwareActionInterface
         FilterBuilder $filterBuilder,
         LoggerFactory $loggerFactory,
         LoggerInterface $logger,
-        PaymentDataObjectFactory $paymentDataObjectFactory,
-        CommandPoolInterface $commandPool,
         Json $json,
         array $configProviders = []
     ) {
@@ -143,9 +125,7 @@ class Response extends Action implements CsrfAwareActionInterface
         $this->loggerFactory = $loggerFactory;
         $this->logger = $logger;
         $this->configProviders = $configProviders;
-        $this->paymentDataObjectFactory = $paymentDataObjectFactory;
         $this->json = $json;
-        $this->commandPool = $commandPool;
     }
 
     /**
@@ -280,16 +260,12 @@ class Response extends Action implements CsrfAwareActionInterface
             if ($config->getWebhookSecret($storeId) !== $responseSecret) {
                 throw new LocalizedException(__("Authorization failed"));
             }
-
-            /** @var InfoInterface $payment */
             $payment = $order->getPayment();
             $payment->setAdditionalInformation('gateway_code', $data['response']['gatewayCode']);
             if (isset($data['transaction']['funding']['status'])) {
                 $payment->setAdditionalInformation('funding_status', $data['transaction']['funding']['status']);
             }
             $order->save();
-            $paymentData = $this->paymentDataObjectFactory->create($payment);
-
         } catch (Exception $e) {
             $errorMessage = sprintf(
                 __("MasterCard Payment Gateway Services WebHook Exception: '%s'"),

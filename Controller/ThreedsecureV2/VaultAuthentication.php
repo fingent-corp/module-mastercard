@@ -1,19 +1,19 @@
 <?php
 /**
- * Copyright (c) 2022-2024 Mastercard
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (c) 2022-2024 Mastercard
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 namespace Mastercard\Mastercard\Controller\ThreedsecureV2;
 
@@ -98,34 +98,40 @@ class VaultAuthentication extends Action
     public function execute()
     {
 
-	   $jsonResult = $this->jsonFactory->create();
-	   try {
-		$quote = $this->checkoutSession->getQuote();
-		$payment = $quote->getPayment();
+       $jsonResult = $this->jsonFactory->create();
+       try {
+        $quote = $this->checkoutSession->getQuote();
+        $payment = $quote->getPayment();
 
-		$public_hash = $payment->getAdditionalInformation('public_hash') ? $payment->getAdditionalInformation('public_hash') : $this->getRequest()->getParam('token');      
-		$customerid = $payment->getAdditionalInformation('customer_id') ? $payment->getAdditionalInformation('customer_id') : $quote->getCustomerId();    
-			    
-		$payment->setAdditionalInformation('public_hash', $public_hash);
-		$payment->setAdditionalInformation('customer_id',$customerid);
-		$payment->save();
+        $publichash = $payment->getAdditionalInformation('public_hash')
+            ? $payment->getAdditionalInformation('public_hash')
+            : $this->getRequest()->getParam('token');
 
-		$paymentDataObject = $this->paymentDataObjectFactory->create($payment);
+        $customerid = $payment->getAdditionalInformation('customer_id')
+            ? $payment->getAdditionalInformation('customer_id')
+            : $quote->getCustomerId();
+           
+        $payment->setAdditionalInformation('public_hash', $publichash);
+        $payment->setAdditionalInformation('customer_id', $customerid);
+        $payment->save();
+        
+        $paymentDataObject = $this->paymentDataObjectFactory->create($payment);
 
-		$quote->setReservedOrderId('')->reserveOrderId();
-		$quote->save();
+        $quote->setReservedOrderId('')->reserveOrderId();
+        $quote->save();
 
-		$this->commandPool
-		->get(self::COMMAND_NAME)
-		->execute([
-		    'payment' => $paymentDataObject
-		]);
+        $this->commandPool
+             ->get(self::COMMAND_NAME)
+             ->execute([
+                'payment' => $paymentDataObject
+            ]);
 
-		$payment->save();
+        $payment->save();
+
 
         $html                  = $payment->getAdditionalInformation('auth_redirect_html');
-        $authentication_status = $payment->getAdditionalInformation('auth_threeds_status');
-        $jsonResult->setData(['html' => $html , 'status' => $authentication_status]);
+        $authenticationstatus = $payment->getAdditionalInformation('auth_threeds_status');
+        $jsonResult->setData(['html' => $html , 'status' => $authenticationstatus]);
 
         } catch (Exception $e) {
             $this->logger->error((string)$e);

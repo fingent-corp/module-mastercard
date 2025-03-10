@@ -57,6 +57,8 @@ class Rest extends Curl
             $headers[] = 'Content-Length: ' . strlen($body);
         } elseif ($method == \Laminas\Http\Request::METHOD_GET) {
             curl_setopt($this->_getResource(), CURLOPT_HTTPGET, true);
+        } else {
+            curl_setopt($this->_getResource(), CURLOPT_HTTPGET, true);
         }
 
         if (is_array($headers)) {

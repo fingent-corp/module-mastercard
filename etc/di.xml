@@ -341,6 +341,7 @@
             <argument name="transferFactory" xsi:type="object">HpfInformationTransferFactory</argument>
             <argument name="client" xsi:type="object">MpgsHpfRestClient</argument>
             <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\PaymentOptionsInquiryValidator</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\HpfGatewayCommandHandler</argument>
         </arguments>
     </virtualType>
     <virtualType name="HostedInformationTransferFactory" type="Mastercard\Mastercard\Gateway\Http\InformationTransferFactory">
@@ -388,9 +389,9 @@
             <argument name="commands" xsi:type="array">
                 <item name="tns_hpf" xsi:type="string">MpgsHpfUpdateOrderCommand</item>
                 <item name="tns_hosted" xsi:type="string">MpgsHostedUpdateOrderCommand</item>
-                <!-- @todo: multistep_ach -->
+                <!-- Need to implement multistep_ach -->
                 <!-- Webhook based ACH updates currently not supported -->
-                <!--<item name="mpgs_ach" xsi:type="string">MpgsAchUpdateOrderCommand</item>-->
+                <!--item name - mpgs_ach - command name -MpgsAchUpdateOrderCommand-->
             </argument>
         </arguments>
     </virtualType>
@@ -452,6 +453,7 @@
                 <item name="sale" xsi:type="string">TnsHostedSaleCommand</item>
                 <item name="refund" xsi:type="string">TnsHostedRefundCommand</item>
                 <item name="void" xsi:type="string">TnsHostedVoidCommand</item>
+                <item name="hosted_order" xsi:type="string">TnsHostedOrderCommand</item>
             </argument>
         </arguments>
     </virtualType>
@@ -557,7 +559,16 @@
             </argument>
         </arguments>
     </virtualType>
-
+   <!-- Order Transaction-->
+     <virtualType name="TnsHostedOrderCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\NullDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Hosted\TransferFactoryOrder</argument>
+            <argument name="client" xsi:type="object">MpgsHostedRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\HostedTransactionHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
     <!-- Capture -->
     <virtualType name="TnsHostedCaptureStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\Hosted\CaptureStrategyCommand">
         <arguments>
@@ -607,7 +618,18 @@
             <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
         </arguments>
     </virtualType>
-
+    <type name="Mastercard\Mastercard\Controller\Hosted\Callback">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+     <type name="Mastercard\Mastercard\Controller\Hosted\Transactiondetails">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsHostedCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
     <type name="Mastercard\Mastercard\Gateway\Http\Hosted\TransferFactorySession">
         <arguments>
             <argument name="config" xsi:type="object">TnsHostedConfig</argument>
@@ -626,6 +648,8 @@
                 <item name="operation" xsi:type="string">CreateSessionOperationDataBuilder</item>
                 <item name="interaction" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hosted\InteractionBuilder</item>
                 <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\QuoteDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hosted\LineItemsBuilder</item>
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\Hosted\DiscountBuilder</item>
                 <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
                 <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
                 <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
@@ -1303,7 +1327,7 @@
             <argument name="handlers" xsi:type="array">
                 <item name="transaction_id" xsi:type="string">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</item>
                 <item name="payment_details" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AchPaymentDetails</item>
-                <!-- @todo: multistep_ach -->
+                <!-- Need to implement multistep_ach -->
                 <!-- Order is invoiced immediately, instead of using webhook -->
                 <item name="invoice" xsi:type="string">Mastercard\Mastercard\Gateway\Response\AchInvoiceHandler</item>
             </argument>

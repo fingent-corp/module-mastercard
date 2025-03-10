@@ -36,8 +36,10 @@ class SessionDataBuilder implements BuilderInterface
         $payment = $paymentDO->getPayment();
         ContextHelper::assertOrderPayment($payment);
         $extensionAttributes = $payment->getExtensionAttributes();
-        $paymentToken        = $extensionAttributes->getVaultPaymentToken() ?  $extensionAttributes->getVaultPaymentToken() : NULL;
-        if(!$paymentToken){
+        $paymentToken = $extensionAttributes->getVaultPaymentToken()
+            ? $extensionAttributes->getVaultPaymentToken()
+            : null;
+        if (!$paymentToken) {
             return [
                 'session' => [
                     'id' => $payment->getAdditionalInformation('session')
@@ -46,7 +48,7 @@ class SessionDataBuilder implements BuilderInterface
                     'type' => 'CARD'
                 ]
             ];
-        }else {
+        } else {
            return [];
         }
     }

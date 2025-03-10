@@ -32,7 +32,7 @@ class PredispatchAdminActionControllerObserver implements ObserverInterface
     /**
      * @var Session
      */
-    protected $_backendAuthSession;
+    protected $backendAuthSession;
 
     /**
      * @param FeedFactory $feedFactory
@@ -43,7 +43,7 @@ class PredispatchAdminActionControllerObserver implements ObserverInterface
         Session $backendAuthSession
     ) {
         $this->feedFactory = $feedFactory;
-        $this->_backendAuthSession = $backendAuthSession;
+        $this->backendAuthSession = $backendAuthSession;
     }
 
     /**
@@ -52,7 +52,7 @@ class PredispatchAdminActionControllerObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if ($this->_backendAuthSession->isLoggedIn()) {
+        if ($this->backendAuthSession->isLoggedIn()) {
             $feedModel = $this->feedFactory->create();
             /** @var $feedModel \Mastercard\Mastercard\Model\Feed */
             $feedModel->checkUpdate();

@@ -30,7 +30,7 @@
             'src': getIcons(getCardType()).url,
             'width': getIcons(getCardType()).width,
             'height': getIcons(getCardType()).height
-            }">
+            }" alt="icon image">
             <span data-bind="text: getMaskedCard()"></span>
             (
             <span data-bind="i18n: 'expires'"></span>:
@@ -45,9 +45,9 @@
         <!--/ko-->
 
         <fieldset class="fieldset fields ccard" data-bind="visible: useCcv">
+            <legend><!-- ko i18n: 'Card Verification Number'--><!-- /ko --></legend>
             <div class="field cvv">
                 <label class="label" data-bind="attr: {'for': getId() + '_cvv'}">
-                    <span><!-- ko i18n: 'Card Verification Number'--><!-- /ko --></span>
                 </label>
                 <div class="control _with-tooltip">
                     <input data-bind="attr: {'id': getId() + '_cvv'}" class="input-text" type="text" value="" readonly />

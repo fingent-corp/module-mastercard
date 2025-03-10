@@ -82,38 +82,30 @@ class VerificationStrategyCommand implements CommandInterface
     {
         /** @var Payment $paymentInfo */
         $paymentInfo = $paymentDO->getPayment();
-        
-        $payment_action = $this->config->getValue('payment_action');
-        
-        //Don't use 3DS for verify payment action
-        if($payment_action == static::METHOD_VERIFY){
-             return false;
-         }
 
-        // Don't use 3DS in admin
-        if ($this->state->getAreaCode() === Area::AREA_ADMINHTML) {
-            return false;
-        }
-
-        // Don't use 3DS with pre-authorized transactions
-        if ($paymentInfo->getAuthorizationTransaction()) {
-            return false;
-        }
-
+        $paymentAction = $this->config->getValue('payment_action');
         $isEnabled = $this->config->getValue('three_d_secure') === '1';
-        if (!$isEnabled) {
-            return false;
-        }
-
+        $areaCode = $this->state->getAreaCode();
         $data = $paymentInfo->getAdditionalInformation(CheckHandler::THREEDSECURE_CHECK);
 
-        if (isset($data['veResEnrolled'])) {
-            if ($data['veResEnrolled'] == "N") {
-                return false;
-            }
-            if ($data['veResEnrolled'] == "Y") {
-                return true;
-            }
+        // Check conditions for unsupported 3DS
+        $isUnsupported = (
+            $paymentAction === static::METHOD_VERIFY ||
+            $areaCode === Area::AREA_ADMINHTML
+        );
+        
+        $isTransactionAuthorized = $paymentInfo->getAuthorizationTransaction() !== null;
+        $isInvalidData = !$isEnabled || (isset($data['veResEnrolled']) && $data['veResEnrolled'] === "N");
+        
+        $isUnsupported = $isUnsupported || $isTransactionAuthorized || $isInvalidData;
+
+        if ($isUnsupported) {
+            return false;
+        }
+
+        // Final check for 3DS support
+        if (isset($data['veResEnrolled']) && $data['veResEnrolled'] === "Y") {
+            return true;
         }
 
         return true;
@@ -134,11 +126,8 @@ class VerificationStrategyCommand implements CommandInterface
         $paymentInfo = $paymentDO->getPayment();
         ContextHelper::assertOrderPayment($paymentInfo);
 
-        $extensionAttributes = $paymentInfo->getExtensionAttributes();
-        $paymentToken        = $extensionAttributes->getVaultPaymentToken();
-
         $order       = $paymentInfo->getOrder();
-        $order_token = $order->getMastercardPaymentToken() ? $order->getMastercardPaymentToken() : NULL;
+        $ordertoken = $order->getMastercardPaymentToken() ? $order->getMastercardPaymentToken() : null;
 
         if ($this->isThreeDSSupported($paymentDO)) {
             $this->commandPool
@@ -148,14 +137,17 @@ class VerificationStrategyCommand implements CommandInterface
 
         // Vault enabled from configuration
         // 'Save for later use' checked on frontend
-        if ($this->config->isVaultEnabled() &&
-            $paymentInfo->getAdditionalInformation(VaultConfigProvider::IS_ACTIVE_CODE) && (!$this->getVaultToken($paymentInfo))) {
+        if (
+            $this->config->isVaultEnabled() &&
+            $paymentInfo->getAdditionalInformation(VaultConfigProvider::IS_ACTIVE_CODE) &&
+            !$this->getVaultToken($paymentInfo)
+        ) {
             $this->commandPool
                 ->get(static::CREATE_TOKEN)
                 ->execute($commandSubject);
         }
 
-        if ($this->config->isOrderTokenizationEnabled() && !$this->getVaultToken($paymentInfo) && !$order_token) {
+        if ($this->config->isOrderTokenizationEnabled() && !$this->getVaultToken($paymentInfo) && !$ordertoken) {
             $this->commandPool
                 ->get(static::CREATE_ORDER_TOKEN)
                 ->execute($commandSubject);
@@ -172,13 +164,11 @@ class VerificationStrategyCommand implements CommandInterface
     * Returns paymenttoken
     *
     * @param $paymentInfo
-    * @return string 
+    * @return string
     */
-    public function getVaultToken($paymentInfo){
-
+    public function getVaultToken($paymentInfo)
+    {
         $extensionAttributes = $paymentInfo->getExtensionAttributes();
-        $paymentToken        = $extensionAttributes->getVaultPaymentToken() ? $extensionAttributes->getVaultPaymentToken():NULL ;
-        return $paymentToken;
-
+        return $extensionAttributes->getVaultPaymentToken() ?? null;
     }
 }

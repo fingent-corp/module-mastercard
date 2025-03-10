@@ -32,8 +32,10 @@ class QuoteReferencesBuilder implements BuilderInterface
 
         /** @var Quote $quote */
         $quote = $paymentDO->getPayment()->getQuote();
-
-        $this->refreshOrderIdReservation($quote);
+        
+        if ($quote->getReservedOrderId() == null) {
+            $this->refreshOrderIdReservation($quote);
+        }
         $orderId = $quote->getReservedOrderId();
 
         $txnId = uniqid(sprintf('%s-', $orderId));

@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.5] - 2025-03-10
+### Enhancement
+- Added PayPal (Supported in Hosted Checkout Only).
+- The plugin will capture the download count from GitHub and track active installations, including Store Name, Store URL, and Country, once the Test Mode is set as No and the API Username and API Password are saved.
+## Fixed
+- Resolved an issue where line items were not correctly displayed in the Redirected Payment Page.
+- Minor bug fixes.
+
 ## [2.4.4] - 2024-12-24
 ### Enhancement
 - Mastercard API upgraded to version 100.
@@ -34,7 +42,7 @@ All notable changes to this project will be documented in this file.
 - Implemented a notification feature to alert the admin whenever a new version is launched on GitHub/Marketplace.
 ### Changed
 - Hosted Session – The VATO option will only be supported when 3DS is disabled.
--  ACH will not support the VATO payment option as it does not allow capturing the amount.
+- ACH will not support the VATO payment option as it does not allow capturing the amount.
 
 ## [2.3.5] - 2024-02-02
 ### Enhancement

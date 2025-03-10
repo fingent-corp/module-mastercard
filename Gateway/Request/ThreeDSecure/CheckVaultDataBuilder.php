@@ -52,10 +52,7 @@ class CheckVaultDataBuilder implements BuilderInterface
      * @param PaymentTokenManagementInterface $tokenManagement
     */
 
-    public function __construct(
-       UrlInterface $urlHelper,
-       PaymentTokenManagementInterface $tokenManagement
-    )
+    public function __construct(UrlInterface $urlHelper, PaymentTokenManagementInterface $tokenManagement)
     {
         $this->urlHelper       = $urlHelper;
         $this->tokenManagement = $tokenManagement;

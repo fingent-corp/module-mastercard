@@ -76,8 +76,5 @@ class CaptureStrategyCommand implements CommandInterface
                 ->execute($commandSubject);
         }
 
-        return $this->commandPool
-            ->get(self::SALE)
-            ->execute($commandSubject);
     }
 }

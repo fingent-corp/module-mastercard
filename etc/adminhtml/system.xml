@@ -24,7 +24,16 @@
                 <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                 <field id="version_info" type="text" translate="label comment" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>Mastercard\Mastercard\Block\Adminhtml\ModuleVersion</frontend_model>
+                    <config_path>payment/tns/version_info</config_path>
                 </field>
+                <field id="supported_cardtypes" translate="label" type="text" sortOrder="255" showInDefault="0" showInWebsite="0" showInStore="0">
+                	<label>supported cardtypes</label>
+                 	<config_path>payment/tns/supported_cardtypes</config_path>
+				</field>
+                <field id="is_downloaded" translate="label" type="text" sortOrder="255" showInDefault="0" showInWebsite="0" showInStore="0">
+                	<label>Is Downloaded</label>
+                 	<config_path>payment/tns/is_downloaded</config_path>
+               	</field>
                 <group id="hosted" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Hosted Checkout</label>
                     <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
