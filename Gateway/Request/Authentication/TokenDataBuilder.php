@@ -53,9 +53,9 @@ class TokenDataBuilder implements BuilderInterface
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);
         $payment   = $paymentDO->getPayment();
-        $public_hash  = $payment->getAdditionalInformation('public_hash') ;      
-        $customerid   = $payment->getAdditionalInformation('customer_id')   ;    
-        $paymentToken = $this->tokenManagement->getByPublicHash($public_hash, $customerid);
+        $publichash   = $payment->getAdditionalInformation('public_hash');
+        $customerid   = $payment->getAdditionalInformation('customer_id');
+        $paymentToken = $this->tokenManagement->getByPublicHash($publichash, $customerid);
 
         return [
             'sourceOfFunds' => [

@@ -93,7 +93,7 @@ class Vaultform  extends Action
         $data = array_merge($data, [
                 'acsurl' => $acsUrl,
                 'pareq' => $paReq,
-           ] );
+           ]);
             
         $payment->setAdditionalInformation(CheckHandler::THREEDSECURE_CHECK, $data);
         $payment->save();

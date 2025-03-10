@@ -200,13 +200,7 @@ class TokenCreateHandler implements HandlerInterface
     private function getExpirationDate($exprMonth, $exprYear)
     {
         $expDate = new DateTime(
-            $exprYear
-            . '-'
-            . $exprMonth
-            . '-'
-            . '01'
-            . ' '
-            . '00:00:00',
+            sprintf('%s-%s-01 00:00:00', $exprYear, $exprMonth),
             new DateTimeZone('UTC')
         );
         $expDate->add(new DateInterval('P1M'));

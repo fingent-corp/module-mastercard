@@ -37,31 +37,31 @@
                     <?php $payment = $block->getPayment(); ?>
                     <?php $info = $payment->getAdditionalInformation(); ?>
                     <tr>
-                        <th><?php echo __('gateway_code') ?></th>
+                        <th id="gateway_code"><?php echo __('gateway_code') ?></th>
                         <td><?php echo $block->safeValue($info['gateway_code'] ?? null) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('funding_status') ?></th>
+                        <th id="funding_status"><?php echo __('funding_status') ?></th>
                         <td><?php echo $block->safeValue($info['funding_status'] ?? null) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('txn_result') ?></th>
+                        <th id="txn_result"><?php echo __('txn_result') ?></th>
                         <td><?php echo $block->safeValue($info['txn_result'] ?? null) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('card_scheme') ?></th>
+                        <th id="card_scheme"><?php echo __('card_scheme') ?></th>
                         <td><?php echo $block->safeValue($info['card_scheme'] ?? null) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('card_number') ?></th>
+                        <th id="card_number"><?php echo __('card_number') ?></th>
                         <td><?php echo $block->safeValue($info['card_number'] ?? null) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('card_expiry_date') ?></th>
+                        <th id="card_expiry_date"><?php echo __('card_expiry_date') ?></th>
                         <td><?php echo $block->safeValue($info['card_expiry_date'] ?? null) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('auth_code') ?></th>
+                        <th id="auth_code"><?php echo __('auth_code') ?></th>
                         <td><?php echo $block->safeValue($info['auth_code'] ?? null) ?></td>
                     </tr>
                     <tr>
@@ -92,8 +92,8 @@
 
             <?php if ($risk !== null && isset($risk['review'])): ?>
                 <br />
-                <h3><?php echo __('Decision') ?></h3>
                 <table class="data-table admin__table-secondary">
+                <caption><h3><?php echo __('Decision') ?></h3></caption>
                     <tbody>
                         <tr>
                             <td><?php echo __('Decision') ?></td>
@@ -117,8 +117,8 @@
 
             <?php if ($risk !== null): ?>
                 <br />
-                <h3><?php echo __('Rules') ?></h3>
                 <table class="data-table admin__table-secondary">
+                <caption><h3><?php echo __('Rules') ?></h3></caption>
                     <thead>
                         <tr>
                             <th><?php echo __('Rule') ?></th>

@@ -61,7 +61,9 @@ class AuthenticatePayerHandler implements HandlerInterface
         );
         $payment->setAdditionalInformation(
             'auth_redirect_html',
-            $this->arrayManager->get('authentication/redirectHtml', $response) ? $this->arrayManager->get('authentication/redirectHtml', $response) : $this->arrayManager->get('authentication/redirect/html', $response)
+            $this->arrayManager->get('authentication/redirectHtml', $response)
+            ? $this->arrayManager->get('authentication/redirectHtml', $response)
+            : $this->arrayManager->get('authentication/redirect/html', $response)
         );
         $payment->setAdditionalInformation('result', $this->arrayManager->get('result', $response));
         $payment->setAdditionalInformation(

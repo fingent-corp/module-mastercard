@@ -103,13 +103,17 @@ class Vaultcheck extends Action
             $quote->setReservedOrderId('')->reserveOrderId();
             $quote->save();
 
-            $payment = $quote->getPayment();   
-            $public_hash = $payment->getAdditionalInformation('public_hash') ? $payment->getAdditionalInformation('public_hash') : $this->getRequest()->getParam('token');      
-            $customerid = $payment->getAdditionalInformation('customer_id') ? $payment->getAdditionalInformation('customer_id') : $quote->getCustomerId(); 
+            $payment = $quote->getPayment();
+            $publichash = $payment->getAdditionalInformation('public_hash')
+                ? $payment->getAdditionalInformation('public_hash')
+                : $this->getRequest()->getParam('token');
+            $customerid = $payment->getAdditionalInformation('customer_id')
+                ? $payment->getAdditionalInformation('customer_id')
+                : $quote->getCustomerId();
 
-            $payment->setAdditionalInformation('public_hash', $public_hash);
-            $payment->setAdditionalInformation('customer_id',$customerid);
-            $payment->save();  
+            $payment->setAdditionalInformation('public_hash', $publichash);
+            $payment->setAdditionalInformation('customer_id', $customerid);
+            $payment->save();
                     
             $commandPool = $this->commandPoolFactory->create([
                 'commands' => [
@@ -127,16 +131,16 @@ class Vaultcheck extends Action
 
             $checkData = $paymentDataObject
                 ->getPayment()
-                ->getAdditionalInformation(CheckHandler::THREEDSECURE_CHECK);    
+                ->getAdditionalInformation(CheckHandler::THREEDSECURE_CHECK);
                 
             $data['result'] = $checkData['veResEnrolled'];
             
-            if($checkData['veResEnrolled'] == "Y"){
+            if ($checkData['veResEnrolled'] == "Y") {
                 $data = array_merge($data, [
                     'acsurl' => $checkData['acsUrl'],
                     'pareq'  => $checkData['paReq'],
                 ]);
-            }                              
+            }
             $jsonResult->setData($data);
         } catch (Exception $e) {
             $jsonResult

@@ -24,6 +24,7 @@ use Magento\Sales\Model\Order\Payment;
 class CheckHandler implements HandlerInterface
 {
     const THREEDSECURE_CHECK = '3DSecureEnrollment';
+    const THREEDSECURE = '3DSecure';
 
     /**
      * Handles response
@@ -41,12 +42,12 @@ class CheckHandler implements HandlerInterface
 
         $data = [
             'veResEnrolled' => $response['3DSecure']['veResEnrolled'],
-            'xid' => $response['3DSecure']['xid'],
+            'xid' => $response[static::THREEDSECURE]['xid'],
         ];
 
-        if (isset($response['3DSecure']['authenticationRedirect'])) {
-            // @todo: remove these params when done with them
-            $tdsAuth = $response['3DSecure']['authenticationRedirect']['customized'];
+        if (isset($response[static::THREEDSECURE]['authenticationRedirect'])) {
+            //remove these params when done with them , need to implement
+            $tdsAuth = $response[static::THREEDSECURE]['authenticationRedirect']['customized'];
 
             $data = array_merge($data, [
                 'acsUrl' => $tdsAuth['acsUrl'],

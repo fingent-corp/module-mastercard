@@ -36,7 +36,7 @@ class Method extends \Magento\PaymentServicesPaypal\Plugin\Vault\Method
      * @param CartInterface $quote
      * @return bool
      */
-    public function afterIsAvailable(VaultMethod $subject, bool $result, CartInterface $quote = null ): bool
+    public function afterIsAvailable(VaultMethod $subject, bool $result, CartInterface $quote = null): bool
     {
         if ($subject->getCode() === HostedFieldsConfigProvider::CC_VAULT_CODE) {
             if ($customerId = $quote->getCustomerId()) {

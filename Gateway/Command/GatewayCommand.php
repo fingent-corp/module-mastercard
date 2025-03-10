@@ -104,7 +104,7 @@ class GatewayCommand implements CommandInterface
     {
         $payment = SubjectReader::readPayment($commandSubject);
 
-        // @TODO implement exceptions catching
+        // Need to implement exceptions catching
         $transferO = $this->transferFactory->create(
             $this->requestBuilder->build($commandSubject),
             $payment

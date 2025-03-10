@@ -34,7 +34,8 @@ use Magento\Framework\Serialize\Serializer\Json;
  *
  * @package Mastercard\Mastercard\Model\System\Message
  */
-class ReleaseNotification implements MessageInterface {
+class ReleaseNotification implements MessageInterface
+{
 
     /**
      * ReleaseNotification constructor.
@@ -50,7 +51,7 @@ class ReleaseNotification implements MessageInterface {
         private ComponentRegistrarInterface $componentRegistrar,
         private ReadFactory $readFactory,
         private Json $json
-    ){}
+    ) {}
 
     /**
      * Message identity
@@ -70,7 +71,9 @@ class ReleaseNotification implements MessageInterface {
     /**
      * Release notes url
      */
-    const RELEASE_NOTES_URL = 'https://mpgs.fingent.wiki/enterprise/magento-2-mastercard-payment-gateway-services/release-notes/';
+    const RELEASE_NOTES_URL =
+    'https://mpgs.fingent.wiki/enterprise/magento-2-mastercard-payment-gateway-services/release-notes/';
+
 
     /**
      * Retrieve unique system message identity
@@ -90,7 +93,7 @@ class ReleaseNotification implements MessageInterface {
     public function isDisplayed():bool
     {
         try {
-            return $this->checkIfNewReleaseAvailable();
+            return $this->isNewReleaseAvailable();
         } catch (FileSystemException $e) {
             throw new LocalizedException(__('Something went wrong while checking the MPGS release information.'));
         } catch (ValidatorException $e) {
@@ -107,7 +110,15 @@ class ReleaseNotification implements MessageInterface {
      */
     public function getText()
     {
-        return __(sprintf('A new version (%s) of the Mastercard payment gateway plugin is now available! Please refer to the <a href="%s" target="_blank">Release Notes</a> section for information about its compatibility and features.',$this->getReleaseVersion(),self::RELEASE_NOTES_URL));
+        return __(
+            sprintf(
+                'A new version (%s) of the Mastercard payment gateway plugin is now available! Please refer to the
+                <a href="%s" target="_blank">Release Notes</a>
+                section for information about its compatibility and features.',
+                $this->getReleaseVersion(),
+                self::RELEASE_NOTES_URL
+            )
+        );
     }
 
     /**
@@ -117,7 +128,7 @@ class ReleaseNotification implements MessageInterface {
      * @throws FileSystemException
      * @throws ValidatorException
      */
-    private function checkIfNewReleaseAvailable():bool
+    private function isNewReleaseAvailable():bool
     {
         return $this->getReleaseVersion() !== $this->getPluginVersion();
     }

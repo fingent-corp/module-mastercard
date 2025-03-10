@@ -110,7 +110,7 @@ class Createsession implements ResolverInterface
     ) {
         $cartId = (int) $cartId;
 
-        try{
+        try {
 
             /** @var \Magento\Quote\Model\Quote $quote */
             $quote = $this->quoteRepository->getActive($cartId);
@@ -129,7 +129,7 @@ class Createsession implements ResolverInterface
             $this->quoteRepository->save($quote);
             $session = $quote->getPayment()->getAdditionalInformation('session');
 
-            if( ConfigProvider::METHOD_CODE == $paymentMethod->getMethod() ){
+            if (ConfigProvider::METHOD_CODE == $paymentMethod->getMethod()) {
                 $quote->getPayment()->setAdditionalInformation('session', $session['id'])->save();
                 }
             return [
@@ -153,6 +153,6 @@ class Createsession implements ResolverInterface
     ) {
         $quote = $this->cartRepository->get($args["input"]["cart_id"]);
         $paymentMethod = $this->paymentMethod->setMethod($args["input"]["payment_method"]["code"]);
-        return $this->createNewPaymentSession((string)$quote->getId(),$paymentMethod,$this->billingAddress);
+        return $this->createNewPaymentSession((string)$quote->getId(), $paymentMethod, $this->billingAddress);
     }
 }

@@ -79,16 +79,17 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
 
         // Check for merchant ID, if the token merchant ID does not match the payment extension merchant ID
         // then do not render the vault method in hand.
-        // @todo: not the best way to decide if a token payment needs to be rendered, refactor it
+        // Not the best way to decide if a token payment needs to be rendered, need to refactor it
         //
         if (!isset($jsonDetails['merchant_id']) || $this->config->getMerchantId() !== $jsonDetails['merchant_id']) {
-            return $component = $this->componentFactory->create([
+            return $this->componentFactory->create([
                 'config' => [],
                 'name' => Template::class
             ]);
+             
         }
 
-        $component = $this->componentFactory->create(
+        return $this->componentFactory->create(
             [
                 'config' => [
                     'code' => $paymentToken->getPaymentMethodCode() . '_vault',
@@ -99,7 +100,5 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
                 'name' => Template::class
             ]
         );
-
-        return $component;
     }
 }

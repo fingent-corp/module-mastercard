@@ -59,9 +59,12 @@ class InitiateAuthenticationHandler implements HandlerInterface
             'auth_version',
             $this->arrayManager->get('authentication/version', $response)
         );
+        $redirectHtml = $this->arrayManager->get('authentication/redirectHtml', $response)
+            ?: $this->arrayManager->get('authentication/redirect/html', $response);
+
         $payment->setAdditionalInformation(
             'auth_redirect_html',
-            $this->arrayManager->get('authentication/redirectHtml', $response) ? $this->arrayManager->get('authentication/redirectHtml', $response) : $this->arrayManager->get('authentication/redirect/html', $response)
+            $redirectHtml
         );
         $payment->setAdditionalInformation('result', $this->arrayManager->get('result', $response));
         $payment->setAdditionalInformation(

@@ -47,14 +47,8 @@ class SourceDataBuilder implements BuilderInterface
      */
     public function build(array $buildSubject)
     {
-        //$paymentDO = SubjectReader::readPayment($buildSubject);
 
         $source = static::TXN_SOURCE_FRONTEND;
-
-        /*$isAuth = is_object($paymentDO->getPayment()->getAuthorizationTransaction());
-        if (!$isAuth && $this->state->getAreaCode() === \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            $source = static::TXN_SOURCE_ADMIN;
-        }*/
 
         return [
             'transaction' => [

@@ -223,6 +223,19 @@ define(
                     }
                     $(fields.card[field] + '-error').hide();
                 }
+                if(response.sourceOfFunds){
+                    let currentCardType           = response.sourceOfFunds.provided.card.brand;
+                    let supported_cardtypes       = this.getConfig()['supported_cardtypes'];
+                    if(!supported_cardtypes.includes(currentCardType)) {
+                        const cardtypes_string = supported_cardtypes.join(", ");
+                        var message = "Supported card types are "+ cardtypes_string +". Please use one of these.";
+                        $(".card-type-error").text(message).show();
+                        fullScreenLoader.stopLoader();
+                        return;
+                    }else{
+                        $(".card-type-error").text(message).hide();
+                    } 
+                }
 
                 if (response.status === "fields_in_error") {
                     if (response.errors) {

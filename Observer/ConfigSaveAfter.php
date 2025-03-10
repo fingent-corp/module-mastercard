@@ -29,6 +29,7 @@ use Mastercard\Mastercard\Gateway\Config\Config;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 use Mastercard\Mastercard\Model\SelectedStore;
 use Psr\Log\LoggerInterface;
+use Mastercard\Mastercard\Helper\DownloadCount;
 
 class ConfigSaveAfter implements ObserverInterface
 {
@@ -78,6 +79,11 @@ class ConfigSaveAfter implements ObserverInterface
     protected $logger;
 
     /**
+     * @var DownloadCount
+     */
+    protected $downloadCount;
+    
+    /**
      * ConfigSaveAfter constructor.
      *
      * @param WebsiteRepositoryInterface $websiteRepository
@@ -88,6 +94,7 @@ class ConfigSaveAfter implements ObserverInterface
      * @param SelectedStore $selectedStore
      * @param ScopeConfigInterface $config
      * @param LoggerInterface $logger
+     * @param WriterInterface $configWriter
      * @param array $methods
      */
     public function __construct(
@@ -99,17 +106,20 @@ class ConfigSaveAfter implements ObserverInterface
         SelectedStore $selectedStore,
         ScopeConfigInterface $config,
         LoggerInterface $logger,
+        DownloadCount $downloadCount,
         $methods = []
     ) {
-        $this->websiteRepository = $websiteRepository;
-        $this->groupRepository = $groupRepository;
-        $this->messageManager = $messageManager;
-        $this->configFactory = $configFactory;
-        $this->commandPool = $commandPool;
-        $this->selectedStore = $selectedStore;
-        $this->config = $config;
-        $this->logger = $logger;
-        $this->methods = $methods;
+        $this->websiteRepository  = $websiteRepository;
+        $this->groupRepository    = $groupRepository;
+        $this->messageManager     = $messageManager;
+        $this->configFactory      = $configFactory;
+        $this->commandPool        = $commandPool;
+        $this->selectedStore      = $selectedStore;
+        $this->config             = $config;
+        $this->logger             = $logger;
+        $this->methods            = $methods;
+        $this->downloadCount      = $downloadCount;
+
     }
 
     /**
@@ -117,75 +127,138 @@ class ConfigSaveAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $request = $observer->getRequest();
+        $request    = $observer->getRequest();
         $configData = $observer->getData('configData');
-
+        
         try {
-            if (empty($configData['section'])) {
+            if ($this->isInvalidConfigData($configData)) {
                 return;
             }
-
-            if ($configData['section'] !== 'payment') {
-                return;
-            }
-
-            $websiteId = $request->getParam('website');
-            $storeId = $request->getParam('store');
-
-            if (empty($storeId) && !empty($websiteId)) {
-                $website = $this->websiteRepository->getById($websiteId);
-                $storeGroupId = $website->getDefaultGroupId();
-                $group = $this->groupRepository->get($storeGroupId);
-                $storeId = $group->getDefaultStoreId();
-            }
-
+            $storeId   = $this->getStoreId($request);
+            $test      = 1;
             $this->selectedStore->setStoreId($storeId);
-
             foreach ($this->methods as $method => $label) {
                 $config = $this->configFactory->create(['methodCode' => $method]);
-
+                $test = $this->istestMethod($config, $storeId, $test);
                 $isCertificate = $config->isCertificateAutherntification($storeId);
-                $merchantId = $config->getMerchantId($storeId);
-                $apiUrl = $config->getApiUrl($storeId);
-                $enabled = "1" === $this->config->getValue(
-                    sprintf('payment/%s/active', $method),
-                    ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-                    $storeId
-                );
-
+                $validMethod  = $this->isValidMethod($method, $config, $storeId);
                 if ($isCertificate) {
-                    $sslCertPath = $config->getSSLCertificatePath($storeId);
-                    $sslKeyPath = $config->getSSLKeyPath($storeId);
-                    if (!$enabled || !$merchantId || !$sslCertPath || !$sslKeyPath || !$apiUrl) {
+                    $sslPath     = $this->isValidCertificate($config, $storeId);
+                    if (!$validMethod || !$sslPath) {
                         continue;
                     }
                 } else {
                     $password = $config->getMerchantPassword($storeId);
-                    if (!$enabled || !$merchantId || !$password || !$apiUrl) {
+                    if (!$validMethod || !$password) {
                         continue;
                     }
                 }
-
-                try {
-                    $command = $this->commandPool->get(sprintf('check_gateway_%s', $method));
-                    $command->execute([]);
-                    $this->messageManager->addSuccessMessage(
-                        __('"%1" test was successful.', __($label))
-                    );
-                } catch (\Exception $e) {
-                    $this->messageManager->addWarningMessage(
-                        __(
-                            'There was a problem communicating with "%1": %2',
-                            __($label),
-                            $e->getMessage()
-                        )
-                    );
+                  $this->checkGatewayconnection($method, $label);
                 }
-            }
+                $this->downloadCount->checkAndSaveDownload($storeId, $test);
+
         } catch (\Exception $e) {
             $this->logger->critical('Error occurred while testing MasterCard configuration: ' . $e->getMessage(), [
                 'exception' => $e,
             ]);
+        }
+    }
+
+    /**
+    * Checking the configuration data
+    * @return boolean
+    */
+    private function isInvalidConfigData($configData)
+    {
+       return empty($configData['section']) || $configData['section'] !== 'payment';
+    }
+
+    /**
+    * For getting store id
+    * @return int
+    */
+    public function getStoreId($request)
+    {
+        $websiteId = $request->getParam('website');
+        $storeId   = $request->getParam('store');
+
+        if (empty($storeId) && !empty($websiteId)) {
+            $website = $this->websiteRepository->getById($websiteId);
+            $storeGroupId = $website->getDefaultGroupId();
+            $group = $this->groupRepository->get($storeGroupId);
+            $storeId = $group->getDefaultStoreId();
+        }
+        return $storeId;
+    }
+    
+    /**
+    * Checking the certificate validation
+    * @return boolean
+    */
+    private function isValidCertificate($config, $storeId)
+    {
+        $sslCertPath = $config->getSSLCertificatePath($storeId);
+        $sslKeyPath  = $config->getSSLKeyPath($storeId);
+        return !$sslKeyPath || !$sslCertPath ? false : true;
+    }
+
+    /**
+    * Checking the method validation
+    * @return boolean
+    */
+    private function isValidMethod($method, $config, $storeId)
+    {
+        $merchantId = $config->getMerchantId($storeId);
+        $apiUrl = $config->getApiUrl($storeId);
+
+        $enabled = "1" === $this->config->getValue(
+            sprintf('payment/%s/active', $method),
+            ($storeId !== null)
+            ? ScopeInterface::SCOPE_STORE
+            : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            $storeId
+            );
+        return !$enabled || !$apiUrl || !$merchantId ? false : true;
+    }
+
+
+    /**
+    * Checking gateway connection
+    * @return boolean
+    */
+    private function checkGatewayconnection($method, $label)
+    {
+        try {
+            $command = $this->commandPool->get(sprintf('check_gateway_%s', $method));
+            $command->execute([]);
+            $this->messageManager->addSuccessMessage(
+                __('"%1" test was successful.', __($label))
+            );
+        } catch (\Exception $e) {
+            $this->messageManager->addWarningMessage(
+                __(
+                    'There was a problem communicating with "%1": %2',
+                    __($label),
+                    $e->getMessage()
+                )
+            );
+        }
+        return true;
+    }
+
+    /**
+    * Checking sandbox mode on live mode enabled.
+    * @param int $storeId
+    * @param int $test
+    *
+    * @return boolean
+    */
+    public function istestMethod($config, $storeId, $test)
+    {
+        if (($config->isTestMode($storeId = null) != 1) && ($test == 1)) {
+            return $config->isTestMode($storeId = null);
+        }else {
+            return $test;
         }
     }
 }

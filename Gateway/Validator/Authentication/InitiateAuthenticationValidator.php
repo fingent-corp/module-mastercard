@@ -57,21 +57,28 @@ class InitiateAuthenticationValidator extends AbstractValidator
         $gatewayRecommendation = $this->arrayManager->get('response/gatewayRecommendation', $response);
         $error = $this->arrayManager->get('error', $response);
 
+        // Initialize variables for validation result and messages
+        $validationResult = true;
+        $validationMessages = [];
+
+        // Check for error in the response
         if (isset($error)) {
-            return $this->createResult(false, ['Error']);
+            $validationResult = false;
+            $validationMessages[] = 'Error';
+        } elseif ($version === 'NONE' && $transactionId && $gatewayRecommendation === 'PROCEED') {
+            // Check if version is NONE and transaction is valid
+            $validationResult = true;
+        } else {
+            // Check if result is valid and gateway recommendation is 'PROCEED'
+            $result = $this->arrayManager->get('result', $response);
+            $statuses = ['SUCCESS', 'PROCEED', 'PENDING'];
+            if (!in_array($result, $statuses) || !$transactionId || $gatewayRecommendation !== 'PROCEED') {
+                $validationResult = false;
+                $validationMessages[] = 'Transaction declined';
+            }
         }
 
-        if ($version === 'NONE' && $transactionId && $gatewayRecommendation === 'PROCEED') {
-            return $this->createResult(true);
-        }
-
-        $result = $this->arrayManager->get('result', $response);
-
-        $statuses = ['SUCCESS', 'PROCEED', 'PENDING'];
-        if (!in_array($result, $statuses) && !$transactionId || $gatewayRecommendation !== 'PROCEED') {
-            return $this->createResult(false, ['Transaction declined']);
-        }
-
-        return $this->createResult(true);
+        // Return the result with appropriate messages
+        return $this->createResult($validationResult, $validationMessages);
     }
 }

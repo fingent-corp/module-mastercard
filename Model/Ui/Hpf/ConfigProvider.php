@@ -27,6 +27,7 @@ class ConfigProvider implements ConfigProviderInterface
     const METHOD_CODE = 'tns_hpf';
     const CC_VAULT_CODE = 'tns_hpf_vault';
     const METHOD_VERIFY = 'order';
+    const URL_SECURE = '_secure';
 
     /**
      * @var Config
@@ -57,31 +58,36 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-    
-        $payment_action = $this->config->getValue('payment_action');
-        $threedsecure_version = ($payment_action == static::METHOD_VERIFY) ? 0 : (int)$this->config->getValue('three_d_secure');
+    	$paymentaction = $this->config->getValue('payment_action');
+        $threedsecureVersion = ($paymentaction == static::METHOD_VERIFY)
+            ? 0
+            : (int) $this->config->getValue('three_d_secure');
+        $cardtypes            = $this->config->getValue('supported_cards');
+        $supportedCards      = $cardtypes ? explode(",", $cardtypes) : null;
+
         return [
             'payment' => [
                 self::METHOD_CODE => [
                     'merchant_username' => $this->config->getMerchantId(),
                     'component_url' => $this->config->getComponentUrl(),
                     'debug' => (bool)$this->config->getValue('debug'),
-                    'three_d_secure_version' => $threedsecure_version,
+                    'three_d_secure_version' => $threedsecureVersion,
                     'ccVaultCode' => static::CC_VAULT_CODE,
+                    'supported_cardtypes' => $supportedCards,
                     'check_url' => $this->urlBuilder->getUrl(
                         'tns/threedsecure/check',
                         [
                             'method' => 'hpf',
-                            '_secure' => 1,
+                            static::URL_SECURE => 1,
                         ]
                     ),
                     'threedsecure_v2_initiate_authentication_url' => $this->urlBuilder->getUrl(
                         'tns/threedsecureV2/initiateAuthentication',
-                        ['_secure' => 1]
+                        [static::URL_SECURE => 1]
                     ),
                     'threedsecure_v2_authenticate_payer_url' => $this->urlBuilder->getUrl(
                         'tns/threedsecureV2/authenticatePayer',
-                        ['_secure' => 1]
+                        [static::URL_SECURE => 1]
                     ),
                 ],
             ],

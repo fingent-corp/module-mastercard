@@ -40,7 +40,7 @@ class AchWebookNotify implements HandlerInterface
 
     /**
      * @inheridoc
-     * @todo: multistep_ach
+     * multistep_ach not supported
      */
     public function handle(array $handlingSubject, array $response)
     {

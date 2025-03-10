@@ -36,6 +36,7 @@ class TransferFactoryOrder extends TransferFactory
     {
         $orderId = $payment->getOrder()->getOrderIncrementId();
         $storeId = $payment->getOrder()->getStoreId();
+        $this->config->setMethodCode("tns_hosted");
         return $this->getGatewayUri($storeId) . 'order/' . $orderId;
     }
 }

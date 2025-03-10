@@ -35,7 +35,7 @@ class MappedPaymentAction extends BasicPaymentAction
             [
                 'value' => MethodInterface::MAPPED_ACTION_ORDER_VERIFY,
                 'label' => __('Verify and Add Token to Order'),
-            ], 
+            ],
         ];
     }
 }

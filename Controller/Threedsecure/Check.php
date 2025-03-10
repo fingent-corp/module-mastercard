@@ -96,7 +96,7 @@ class Check extends Action
 
             $quote->save();
 
-            // @todo: Commands require specific config, so they need to be defined separately in the di.xml
+            //If Commands require specific config, so they need to be defined separately in the di.xml
             $commandPool = $this->commandPoolFactory->create([
                 'commands' => [
                     'hpf' => static::CHECK_ENROLMENT_TYPE_HPF,
