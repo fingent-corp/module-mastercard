@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.6] - 2025-04-09
+### Enhancement
+- Introduced a 'Place Order' button to redirect customers to the Gateway payment page.
+
 ## [2.4.5] - 2025-03-10
 ### Enhancement
 - Added PayPal (Supported in Hosted Checkout Only).

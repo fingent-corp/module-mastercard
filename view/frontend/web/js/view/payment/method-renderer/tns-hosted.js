@@ -38,8 +38,9 @@ define(
                 adapterLoaded: false,
                 active: false,
                 buttonTitle: null,
-                buttonTitleEnabled: $t('Pay'),
+                buttonTitleEnabled: $t('Place Order'),
                 buttonTitleDisabled: $t('Please wait...'),
+                isButtonVisible: ko.observable(false),  
                 imports: {
                     onActiveChange: 'active'
                 }
@@ -65,14 +66,20 @@ define(
             },
 
             onActiveChange: function (isActive) {
+                this.isButtonVisible(false);
+                var config = this.getConfig();
+                
                 $("#embed-target").removeAttr("style").hide();
                 if (isActive && !this.adapterLoaded()) {
                     this.loadAdapter();
-                    this.savePaymentAndCheckout();
                 }
-                if(this.isChecked() == 'tns_hosted') {
-                  $('#embed-target').show();
-                }
+                if((config.form_type != 1) && (this.isChecked() == 'tns_hosted')) {
+                   this.savePaymentAndCheckout(); 
+                   $('#embed-target').show();
+                 }
+                 if((config.form_type == 1) && (this.isChecked() == 'tns_hosted')) {
+                    this.isButtonVisible(true);                 
+                 }
             },
 
             isActive: function () {
