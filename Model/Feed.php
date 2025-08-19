@@ -27,7 +27,6 @@ use Magento\Framework\UrlInterface;
 use Magento\Framework\App\CacheInterface;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
-use Laminas\Http\Request;
 use Exception;
 
 class Feed
@@ -164,7 +163,11 @@ class Feed
             ]
         );
         $feedUrl = $this->backendConfig->getValue(self::XML_FEED_URL_PATH);
-        $curl->write(Request::METHOD_GET, $feedUrl, '1.0');
+        if (class_exists('\Zend_Http_Client')) {
+            $curl->write(\Zend_Http_Client::GET, $feedUrl, '1.0');
+        }else {
+           $curl->write(\Laminas\Http\Request::METHOD_GET, $feedUrl, '1.0');
+        }
         $data = $curl->read();
         $data = preg_split('/^\r?$/m', $data, 2);
         $data = trim($data[1]);

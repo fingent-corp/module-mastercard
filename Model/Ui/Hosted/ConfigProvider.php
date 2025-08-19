@@ -60,6 +60,7 @@ class ConfigProvider implements ConfigProviderInterface
                     'merchant_username' => $this->config->getMerchantId(),
                     'component_url' => $this->config->getComponentUrl(),
                     'form_type' => $this->config->getFormType(),
+                    'terms_conditions' => $this->config->enabledTermsAndConditions(),
                 ],
             ],
         ];

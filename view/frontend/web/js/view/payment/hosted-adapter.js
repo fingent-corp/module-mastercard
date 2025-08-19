@@ -26,7 +26,7 @@ define([
             window.tnsCancelCallback = $.proxy(onCancel, this);
             window.tnsCompletedCallback = $.proxy(onComplete, this);
 
-            var node = requirejs.load({
+            let node = requirejs.load({
                 contextName: '_',
                 onScriptLoad: $.proxy(onLoadedCallback, this)
             }, 'tns_hosted', componentUrl);

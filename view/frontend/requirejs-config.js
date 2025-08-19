@@ -1,4 +1,4 @@
-var config = {
+let config = {
     'config': {
         'mixins': {
             'Magento_Checkout/js/view/minicart': {

@@ -25,7 +25,7 @@ define([
             this._super();
             // Observe shipping method changes
             quote.shippingMethod.subscribe(function () { 
-              var selectedPaymentMethod = quote.paymentMethod();
+              let selectedPaymentMethod = quote.paymentMethod();
               if ((selectedPaymentMethod) && (selectedPaymentMethod.method == "tns_hosted")) {
                       location.reload();
                 }

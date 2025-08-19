@@ -54,7 +54,7 @@ define(
             },
 
             configure: function (callback) {
-                var elem = document.getElementById('ach-account-holder');
+                let elem = document.getElementById('ach-account-holder');
                 if (elem) {
                     this._configure(callback);
                 } else {
@@ -74,7 +74,7 @@ define(
             },
 
             formSessionUpdate: function (response) {
-                var fields, errors, message, elemId;
+                let fields, errors, message, elemId;
 
                 fields = this.getCardFields();
                 if (response.status === "fields_in_error") {
@@ -96,7 +96,7 @@ define(
             },
 
             pay: function (callback, errorCallback) {
-                var fields, isAchValid, achResult;
+                let fields, isAchValid, achResult;
 
                 fields = this.getCardFields();
                 _.values(fields.ach).forEach(function (field) {
@@ -119,7 +119,7 @@ define(
             },
 
             showValidationErrors: function (result) {
-                var achResult, errorsMessages, fields;
+                let achResult, errorsMessages, fields;
 
                 achResult = result.ach || {};
                 fields = this.getCardFields();
@@ -129,7 +129,7 @@ define(
 
                 errorsMessages = this.errorMap();
                 _.keys(fields.ach).forEach(function (fieldKey) {
-                    var fieldData, message, elemId;
+                    let fieldData, message, elemId;
 
                     fieldData = achResult[fieldKey] || false;
                     if (!fieldData || fieldData.isValid) {

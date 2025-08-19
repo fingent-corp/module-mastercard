@@ -38,6 +38,30 @@ class ReleaseNotification implements MessageInterface
 {
 
     /**
+    * @var Session
+    */
+    protected $session;
+    
+    /**
+    * @var Curl
+    */
+    protected $curl;
+    
+    /**
+    * @var ComponentRegistrarInterface
+    */
+    protected $componentRegistrar;
+    
+    /**
+    * @var ReadFactory
+    */
+    protected $readFactory;
+    /**
+    * @var Json
+    */
+    protected $json;
+
+    /**
      * ReleaseNotification constructor.
      *
      * @param Session $session
@@ -46,12 +70,18 @@ class ReleaseNotification implements MessageInterface
      * @param ReadFactory $readFactory
      */
     public function __construct(
-        private Session $session,
-        private Curl $curl,
-        private ComponentRegistrarInterface $componentRegistrar,
-        private ReadFactory $readFactory,
-        private Json $json
-    ) {}
+        Session $session,
+        Curl $curl,
+        ComponentRegistrarInterface $componentRegistrar,
+        ReadFactory $readFactory,
+        Json $json
+    ) {
+        $this->session = $session;
+        $this->curl = $curl;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->readFactory = $readFactory;
+        $this->json = $json;
+    }
 
     /**
      * Message identity
@@ -112,7 +142,7 @@ class ReleaseNotification implements MessageInterface
     {
         return __(
             sprintf(
-                'A new version (%s) of the Mastercard payment gateway plugin is now available! Please refer to the
+                'A new version (%s) of the Mastercard Gateway plugin is now available! Please refer to the
                 <a href="%s" target="_blank">Release Notes</a>
                 section for information about its compatibility and features.',
                 $this->getReleaseVersion(),
@@ -140,7 +170,7 @@ class ReleaseNotification implements MessageInterface
      * @throws FileSystemException
      * @throws ValidatorException
      */
-    private function getReleaseVersion():mixed
+    private function getReleaseVersion()
     {
         if ($this->session->getTagName() !== null) {
             return $this->session->getTagName();

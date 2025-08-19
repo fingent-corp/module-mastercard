@@ -23,6 +23,26 @@
                 <value id="na-gateway_mastercard_com" type="host">na-gateway.mastercard.com</value>
                 <value id="gateway_mastercard_com" type="host">*.gateway.mastercard.com</value>
                 <value id="gateway_spring_citi_com" type="host">*.gateway.spring.citi.com</value>
+                <value id="mpgs_axisbank_com" type="host">*.mpgs.axisbank.com</value>
+                <value id="americanexpress_com" type="host">*.americanexpress.com</value>
+                <value id="gatewaymastercard_com" type="host">*-gateway.mastercard.com</value>
+                <value id="accertify_net" type="host">*.accertify.net</value>
+                <value id="paymentsvcs_com" type="host">*paymentsvcs.com</value>
+                 <value id="amxvpos_com" type="host">*.amxvpos.com</value>
+                <value id="accelya_com" type="host">*.accelya.com</value>
+                <value id="commbank_com_au" type="host">*.commbank.com.au</value>
+                <value id="americanexpress_co_in" type="host">*.americanexpress.co.in</value>
+                <value id="areeba_com" type="host">*.areeba.com</value>
+                <value id="bbvaglobalgateway_com" type="host">*.bbvaglobalgateway.com</value>
+                <value id="arcpay_travel" type="host">*.arcpay.travel</value>
+                <value id="merchantlink_com" type="host">*.merchantlink.com</value>
+                <value id="paymentgateway_nomba_com" type="host">*paymentgateway.nomba.com</value>
+                <value id="nab_com_au" type="host">*.nab.com.au</value>
+                 <value id="unicredit_ro" type="host">*.unicredit.ro</value>
+                <value id="paymentgateway_epay_halykbank_kz" type="host">*paymentgateway.epay.halykbank.kz</value>
+                <value id="commerce_nbg_gr" type="host">*commerce.nbg.gr</value>
+                <value id="prahsys_com" type="host">*.prahsys.com</value>
+
             </values>
         </policy>
         <policy id="frame-src">
@@ -31,6 +51,25 @@
                 <value id="ap-gateway_mastercard_com" type="host">ap-gateway.mastercard.com</value>
                 <value id="na-gateway_mastercard_com" type="host">na-gateway.mastercard.com</value>
                 <value id="gateway_mastercard_com" type="host">*.gateway.mastercard.com</value>
+                <value id="mpgs_axisbank_com" type="host">*.mpgs.axisbank.com</value>
+                <value id="americanexpress_com" type="host">*.americanexpress.com</value>
+                <value id="gatewaymastercard_com" type="host">*-gateway.mastercard.com</value>
+                <value id="accertify_net" type="host">*.accertify.net</value>
+                <value id="paymentsvcs_com" type="host">*paymentsvcs.com</value>
+                 <value id="amxvpos_com" type="host">*.amxvpos.com</value>
+                <value id="accelya_com" type="host">*.accelya.com</value>
+                <value id="commbank_com_au" type="host">*.commbank.com.au</value>
+                <value id="americanexpress_co_in" type="host">*.americanexpress.co.in</value>
+                <value id="areeba_com" type="host">*.areeba.com</value>
+                <value id="bbvaglobalgateway_com" type="host">*.bbvaglobalgateway.com</value>
+                <value id="arcpay_travel" type="host">*.arcpay.travel</value>
+                <value id="merchantlink_com" type="host">*.merchantlink.com</value>
+                <value id="paymentgateway_nomba_com" type="host">*paymentgateway.nomba.com</value>
+                <value id="nab_com_au" type="host">*.nab.com.au</value>
+                 <value id="unicredit_ro" type="host">*.unicredit.ro</value>
+                <value id="paymentgateway_epay_halykbank_kz" type="host">*paymentgateway.epay.halykbank.kz</value>
+                <value id="commerce_nbg_gr" type="host">*commerce.nbg.gr</value>
+                <value id="prahsys_com" type="host">*.prahsys.com</value>
             </values>
         </policy>
         <policy id="form-action">
@@ -39,6 +78,25 @@
                 <value id="ap-gateway_mastercard_com" type="host">ap-gateway.mastercard.com</value>
                 <value id="na-gateway_mastercard_com" type="host">na-gateway.mastercard.com</value>
                 <value id="gateway_mastercard_com" type="host">*.gateway.mastercard.com</value>
+                <value id="mpgs_axisbank_com" type="host">*.mpgs.axisbank.com</value>
+                <value id="americanexpress_com" type="host">*.americanexpress.com</value>
+                <value id="gatewaymastercard_com" type="host">*-gateway.mastercard.com</value>
+                <value id="accertify_net" type="host">*.accertify.net</value>
+                <value id="paymentsvcs_com" type="host">*paymentsvcs.com</value>
+                 <value id="amxvpos_com" type="host">*.amxvpos.com</value>
+                <value id="accelya_com" type="host">*.accelya.com</value>
+                <value id="commbank_com_au" type="host">*.commbank.com.au</value>
+                <value id="americanexpress_co_in" type="host">*.americanexpress.co.in</value>
+                <value id="areeba_com" type="host">*.areeba.com</value>
+                <value id="bbvaglobalgateway_com" type="host">*.bbvaglobalgateway.com</value>
+                <value id="arcpay_travel" type="host">*.arcpay.travel</value>
+                <value id="merchantlink_com" type="host">*.merchantlink.com</value>
+                <value id="paymentgateway_nomba_com" type="host">*paymentgateway.nomba.com</value>
+                <value id="nab_com_au" type="host">*.nab.com.au</value>
+                 <value id="unicredit_ro" type="host">*.unicredit.ro</value>
+                <value id="paymentgateway_epay_halykbank_kz" type="host">*paymentgateway.epay.halykbank.kz</value>
+                <value id="commerce_nbg_gr" type="host">*commerce.nbg.gr</value>
+                <value id="prahsys_com" type="host">*.prahsys.com</value>
             </values>
         </policy>
     </policies>

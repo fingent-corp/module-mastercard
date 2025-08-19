@@ -22,6 +22,7 @@ use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Sales\Model\Order\Payment;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class InteractionBuilder implements BuilderInterface
 {
@@ -42,14 +43,24 @@ class InteractionBuilder implements BuilderInterface
     protected $urlInterface;
 
     /**
-    * OrderDataBuilder constructor.
-    * @param ConfigFactory $configFactory
-    * @param UrlInterface $urlInterface
-    */
-    public function __construct(ConfigFactory $configFactory, UrlInterface $urlInterface)
-    {
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+
+    /**
+     * InteractionBuilder constructor.
+     * @param ConfigFactory $configFactory
+     * @param UrlInterface $urlInterface
+     * @param StoreManagerInterface $storeManager
+     */
+    public function __construct(
+        ConfigFactory $configFactory,
+        UrlInterface $urlInterface,
+        StoreManagerInterface $storeManager
+    ) {
         $this->configFactory = $configFactory;
-        $this->urlInterface    = $urlInterface;
+        $this->urlInterface  = $urlInterface;
+        $this->storeManager  = $storeManager;
     }
 
     /**
@@ -59,6 +70,8 @@ class InteractionBuilder implements BuilderInterface
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);
         $order = $paymentDO->getOrder();
+
+        $storeName   = $this->storeManager->getStore()->getName();
 
         $storeId = $order->getStoreId();
 
@@ -81,7 +94,7 @@ class InteractionBuilder implements BuilderInterface
         $returnData =  [
             'interaction' => [
                    'merchant' => [
-                         'name' => $config->getValue('form_title', $storeId)
+                         'name' => $storeName
                     ],
                     'displayControl' => [
                          'customerEmail' => 'HIDE',
@@ -90,6 +103,37 @@ class InteractionBuilder implements BuilderInterface
                     ],
                     'operation' => $operation             ]
         ];
+
+        if (($config->getValue('form_type', $storeId) == 1)&&($config->getValue('enable_merchant_info', $storeId))) {
+
+            $merchantInfo=[
+                'name' => $config->getValue('merchant_name', $storeId),
+                'address' =>[
+                            'line1'    => $config->getValue('address_line1', $storeId),
+                            'line2'    => $config->getValue('address_line2', $storeId),
+                            'line3'    => $config->getValue('postcode', $storeId),
+                            'line4'    => $config->getValue('country', $storeId),
+                         ]
+            ];
+
+            if ($config->getValue('email', $storeId)) {
+               $merchantInfo['email'] = $config->getValue('email', $storeId);
+            }
+
+            if ($config->getValue('phone', $storeId)) {
+               $merchantInfo['phone'] = $config->getValue('phone', $storeId);
+            }
+
+            if ($config->getValue('logo_file', $storeId)) {
+
+                $merchantInfo['logo'] = $this->getMediaUrl($config->getValue('logo_file', $storeId));
+
+            }
+
+            $returnData = array_replace_recursive($returnData, [
+                         'interaction' =>['merchant' => $merchantInfo]]);
+
+        }
         
         if ($config->getValue('form_type', $storeId) == 1) {
             $returnData = array_replace_recursive($returnData, [
@@ -104,4 +148,19 @@ class InteractionBuilder implements BuilderInterface
         
         return $returnData;
     }
+
+    /**
+     * Get full media URL for a given file path.
+     *
+     * @param string $filePath
+     * @return string
+     */
+    private function getMediaUrl($filePath)
+    {
+        $mediaUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
+        $filePath = 'mastercard/logs/' . ltrim($filePath, '/');
+
+        return $mediaUrl . $filePath;
+    }
+
 }

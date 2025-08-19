@@ -1,6 +1,6 @@
-tns_hpf,MasterCard Payment Gateway Services Hosted Session
-tns_hosted,MasterCard Payment Gateway Services Hosted Checkout
-mpgs_ach,MasterCard Automated Clearing House (ACH)
+tns_hpf,Mastercard Gateway Hosted Session
+tns_hosted,Mastercard Gateway Hosted Checkout
+mpgs_ach,Mastercard Gateway ACH
 session,Payment Session ID
 Could not find order,Could not find order
 Could not find transaction,Could not find transaction
@@ -9,8 +9,8 @@ Authorization not provided,Authorization not provided
 Invalid data received (Transaction ID),Invalid data received (Transaction ID)
 Invalid data received (Order ID),Invalid data received (Order ID)
 Authorization failed,Authorization failed
-MasterCard Payment Gateway Services WebHook Exception: '%s',MasterCard Payment Gateway Services WebHook Exception: '%s'
-MasterCard Payment Gateway Services WebHook Success,MasterCard Payment Gateway Services WebHook Success
+MasterCard Gateway WebHook Exception: '%s',Mastercard Gateway WebHook Exception: '%s'
+MasterCard Gateway WebHook Success,Mastercard Gateway WebHook Success
 Wrong response type,Wrong response type
 Card details not provided by tokenization,Card details not provided by tokenization
 Order updated by Webhook,Order updated by Webhook
@@ -93,7 +93,7 @@ Sort Order,Sort Order
 Hosted Checkout,Hosted Checkout
 Credit or Debit Card,Credit or Debit Card
 Credit Card Types,Credit Card Types
-MasterCard Payment Gateway Services,MasterCard Payment Gateway Services
+MasterCard Gateway,Mastercard Gateway
 Missing ACH bank account number,Missing ACH bank account number
 Missing parameter Bank Account Holder,Missing parameter Bank Account Holder
 Missing parameter Routing Number,Missing parameter Routing Number
