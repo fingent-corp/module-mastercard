@@ -16,8 +16,8 @@
 /*global define*/
 define(['jquery'], function ($) {
     return function (activateAdapterCallback) {
-        var isFormRenderedPromise = $.Deferred();
-        var isAdapterLoadedPromise = $.Deferred();
+        let isFormRenderedPromise = $.Deferred();
+        let isAdapterLoadedPromise = $.Deferred();
 
         $.when(
             isFormRenderedPromise,

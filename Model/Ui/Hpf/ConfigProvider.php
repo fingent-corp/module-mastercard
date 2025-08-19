@@ -58,7 +58,7 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-    	$paymentaction = $this->config->getValue('payment_action');
+        $paymentaction = $this->config->getValue('payment_action');
         $threedsecureVersion = ($paymentaction == static::METHOD_VERIFY)
             ? 0
             : (int) $this->config->getValue('three_d_secure');

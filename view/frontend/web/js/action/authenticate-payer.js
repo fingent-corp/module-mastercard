@@ -50,7 +50,7 @@ define(
              * @returns {*}
              */
             execute: function (payload, messageContainer) {
-                var promise, config;
+                let promise, config;
 
                 promise = $.Deferred();
                 config = this.getConfig();

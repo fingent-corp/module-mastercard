@@ -1,7 +1,5 @@
-# Mastercard Gateway Module for Magento 2 
-
-<p align="center" style="margin-top: 25px;">
-<a href="https://www.fingent.com/"><img alt="Fingent logo" height="50px" src="https://www.fingent.com/wp-content/uploads/Fingent-Logo-01.png"/></a>&nbsp;&nbsp;<img alt="MC logo" height="50px" src="https://mpgs.fingent.wiki/wp-content/uploads/2025/04/mastercard-logo.png"/>
+<p align="center">
+<a href="https://www.fingent.com/"><img alt="Fingent logo" height="50px" src="https://www.fingent.com/wp-content/uploads/Fingent-Logo-01.png"/></a>&nbsp;&nbsp;<img alt="MC logo" height="50px" src="https://www.mastercard.co.in/content/dam/public/mastercardcom/in/en/logos/mc-logo-52.svg"/>
 </p>
 
 ## Overview
@@ -18,7 +16,7 @@ The Mastercard Gateway Magento extension works with these Magento platforms:
 - Community/Open-Source Edition
 - Enterprise/Commerce/Cloud Edition
 
-For the Magento version, the latest version of the extension has been tested and is compatible only with Magento version 2.4.7.
+For the Magento version, the latest version of the extension has been tested and is compatible with Magento versions 2.4.3 to 2.4.7.
 
 ## Mastercard Payment Module Features
 
@@ -32,8 +30,8 @@ The Mastercard Payment Module is packed with tools to make payment processing ea
    With Google Pay, customers can quickly and easily pay on the hosted checkout page. To enable this option, ensure your Merchant Identification (MID) is configured for Google Pay. This makes payments smooth and hassle-free, allowing customers to complete transactions with just a few taps.
 - **PayPal (Supported in Hosted Checkout Only)**<br/>
    With PayPal, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your Merchant Identification (MID) is set up for PayPal transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
-- **ACH**<br/>
-   ACH payments let customers pay directly from their bank accounts through electronic transfers, making bank-to-bank payments easy and fast.
+- **Automated Clearing House (ACH)**<br/>
+   Automated Clearing House (ACH) payments let customers pay directly from their bank accounts through electronic transfers, making bank-to-bank payments easy and fast.
 
 <b>2. Checkout and Payment Integration </b>- These features focus on methods of collecting payment details from customers:
 

@@ -58,7 +58,7 @@ define(
              */
             initialize: function () {
                 this._super();
-                var config = this.getConfig();
+                let config = this.getConfig();
                 Layout([
                     {
                         parent: this.name,
@@ -107,7 +107,7 @@ define(
             },
 
             isActive: function () {
-                var active = this.getCode() === this.isChecked();
+                let active = this.getCode() === this.isChecked();
                 this.active(active);
                 return active;
             },

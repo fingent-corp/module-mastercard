@@ -39,13 +39,13 @@ define(
                 return this;
             },
             load: function () {
-                throw "Not implemented";
+                throw new Error("Not implemented"); 
             },
             configure: function () {
-                throw "Not implemented";
+                throw new Error("Not implemented"); 
             },
             pay: function () {
-                throw "Not implemented";
+                throw new Error("Not implemented"); 
             }
         });
     }

@@ -170,13 +170,13 @@ define(
             },
 
             isActive: function () {
-                var active = this.getCode() === this.isChecked();
+                let active = this.getCode() === this.isChecked();
                 this.active(active);
                 return active;
             },
 
             loadAdapter: function () {
-                var config = this.getConfig();
+                let config = this.getConfig();
                 require(
                     [config.component_url],
                     this.setIsAdapterLoaded.bind(this),
@@ -216,59 +216,69 @@ define(
             },
 
             formSessionUpdate: function (response) {
-                var fields = this.getCardFields();
-                for (var field in fields.card) {
-                    if (!fields.card.hasOwnProperty(field)) {
-                        continue;
-                    }
-                    $(fields.card[field] + '-error').hide();
-                }
+                let fields = this.getCardFields();
+                                                let self   = this;
+
+                self.hideAllCardFieldErrors(fields);
                 if(response.sourceOfFunds){
-                    let currentCardType           = response.sourceOfFunds.provided.card.brand;
-                    let supported_cardtypes       = this.getConfig()['supported_cardtypes'];
-                    if(!supported_cardtypes.includes(currentCardType)) {
-                        const cardtypes_string = supported_cardtypes.join(", ");
-                        var message = "Supported card types are "+ cardtypes_string +". Please use one of these.";
-                        $(".card-type-error").text(message).show();
-                        fullScreenLoader.stopLoader();
-                        return;
-                    }else{
-                        $(".card-type-error").text(message).hide();
-                    } 
+                    self.showUnsupportedCardError(response);
+                   
                 }
-
-                if (response.status === "fields_in_error") {
-                    if (response.errors) {
-                        var errors = this.errorMap();
-                        for (var err in response.errors) {
-                            if (!response.errors.hasOwnProperty(err)) {
-                                continue;
-                            }
-                            var message = errors[err],
-                                elem_id = fields.card[err] + '-error';
-
-                            $(elem_id).text(message).show();
-                        }
-                        fullScreenLoader.stopLoader();
-                    }
+                if (response.status === "fields_in_error"  && response.errors) {
+                    self.showFieldErrors(response.errors, fields);
+                    fullScreenLoader.stopLoader();
+                    return;
                 }
                 if (response.status === "ok") {
-                    this.sessionId = response.session.id;
-                    var action
-                    if (this.is3DsEnabled() || this.is3Ds2Enabled()) {
-                        action = setPaymentInformationAction(this.messageContainer, this.getData());
-
-                        $.when(action).done($.proxy(function () {
-                            this.delegate(this.is3Ds2Enabled() ? 'threeDSecureV2Start' : 'threeDSecureOpen', this);
-                        }, this)).fail(
-                            $.proxy(this.threeDSecureCheckFailed, this)
-                        );
-                    } else {
-                        this.isPlaceOrderActionAllowed(true);
-                        this.placeOrder();
-                    }
+                    self.handleValidSession(response);                         
+                   
                 }
             },
+hideAllCardFieldErrors: function (fields) {
+    for (let field in fields.card) {
+        if (fields.card.hasOwnProperty(field)) {
+            $(fields.card[field] + '-error').hide();
+        }
+    }
+},
+ handleValidSession: function (response) {
+     this.sessionId = response.session.id;
+    let action
+    if (this.is3DsEnabled() || this.is3Ds2Enabled()) {
+        action = setPaymentInformationAction(this.messageContainer, this.getData());
+
+        $.when(action).done($.proxy(function () {
+            this.delegate(this.is3Ds2Enabled() ? 'threeDSecureV2Start' : 'threeDSecureOpen', this);
+        }, this)).fail(
+            $.proxy(this.threeDSecureCheckFailed, this)
+        );
+    } else {
+        this.isPlaceOrderActionAllowed(true);
+        this.placeOrder();
+    }
+},
+showUnsupportedCardError: function (response) {
+    let currentCardType           = response.sourceOfFunds.provided.card.brand;
+    let supported_cardtypes       = this.getConfig()['supported_cardtypes'];
+    if(!supported_cardtypes.includes(currentCardType)) {
+        const cardtypes_string = supported_cardtypes.join(", ");
+        let message = "Supported card types are "+ cardtypes_string +". Please use one of these.";
+        $(".card-type-error").text(message).show();
+        fullScreenLoader.stopLoader();
+    }else{
+        $(".card-type-error").hide();
+    } 
+},
+showFieldErrors: function (errorsObj, fields) {
+    let errors = this.errorMap();
+    for (let err in errorsObj) {
+        if (errorsObj.hasOwnProperty(err)) {
+            let message = errors[err];
+            let elemId = fields.card[err] + '-error';
+            $(elemId).text(message).show();
+        }
+    }
+},
 
             savePayment: function () {
                 PaymentSession.updateSessionFromForm('card', undefined, this.getId());
@@ -284,7 +294,7 @@ define(
             },
 
             getData: function () {
-                var data = {
+                let data = {
                     'method': this.item.method,
                     'additional_data': {
                         'session': this.sessionId
@@ -330,7 +340,7 @@ define(
             },
 
             createChildrenComponents: function (items) {
-                var config = this.getConfig();
+                let config = this.getConfig();
                 return items.map($.proxy(function (item) {
                     return {
                         parent: this.name,

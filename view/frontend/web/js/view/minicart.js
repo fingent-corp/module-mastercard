@@ -33,8 +33,7 @@ define([
              * @override
              */
             initialize: function () {
-                var self = this;
-                var sections = ['cart'];
+                let sections = ['cart'];
                 customerData.invalidate(sections);
                 customerData.reload(sections, true);
                 return this._super();

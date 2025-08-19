@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.7] - 2025-08-19
+### Enhancement
+- Added Backward compatibility with Magento’s previous platform versions 2.4.3, 2.4.4, 2.4.5 and 2.4.6.
+- Introduced a new ‘Merchant Information’ section in the plugin settings, allowing admins to update the merchant details to be displayed on the Redirected Payment Page easily.
+- Minor changes in the plugin configuration.
+- Applied Terms and Conditions validation at checkout in line with Magento configuration.
+
 ## [2.4.6] - 2025-04-09
 ### Enhancement
 - Introduced a 'Place Order' button to redirect customers to the Gateway payment page.

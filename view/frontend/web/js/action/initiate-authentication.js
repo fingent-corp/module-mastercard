@@ -29,7 +29,7 @@ define(
                 return window.checkoutConfig.payment['tns_hpf'];
             },
             execute: function (messageContainer) {
-                var config;
+                let config;
 
                 config = this.getConfig();
                 return $.post(config.threedsecure_v2_initiate_authentication_url, {})

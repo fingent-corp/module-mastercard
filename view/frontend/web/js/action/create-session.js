@@ -26,7 +26,7 @@ define(
         'use strict';
 
         return function (paymentData, messageContainer) {
-            var serviceUrl,
+            let serviceUrl,
                 payload;
 
             if (customer.isLoggedIn()) {

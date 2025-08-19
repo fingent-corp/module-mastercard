@@ -26,10 +26,12 @@ define(
         'Magento_Checkout/js/action/set-payment-information',
         'Mastercard_Mastercard/js/action/create-session',
         'Magento_Checkout/js/action/place-order',
+        'Magento_CheckoutAgreements/js/model/agreements-assigner',
+        'Magento_CheckoutAgreements/js/model/agreement-validator',
         'mage/url',
         'mage/translate'
     ],
-    function (Component, $, ko, quote, fullScreenLoader, alert, paymentAdapter, setPaymentInformationAction, createSessionAction,placeOrderAction,url,$t) {
+    function (Component, $, ko, quote, fullScreenLoader, alert, paymentAdapter, setPaymentInformationAction, createSessionAction,placeOrderAction,agreementsAssigner,agreementsValidator,url,$t) {
         'use strict';
 
         return Component.extend({
@@ -55,6 +57,16 @@ define(
                 this.buttonTitle(this.buttonTitleDisabled);
                 this.isPlaceOrderActionAllowed.subscribe($.proxy(this.buttonTitleHandler, this));
                 this.adapterLoaded.subscribe($.proxy(this.buttonTitleHandler, this));
+                let self = this;
+                let agreementsInputPath = '.payment-method._active div.checkout-agreements input';
+                $(document).on('change', agreementsInputPath, function () {
+                 if (!$(this).prop('checked')) {
+                    $('#embed-target').hide(); 
+                    self.buttonTitle(self.buttonTitleEnabled);
+                    self.isButtonVisible(true);
+                 } 
+            });
+            
 
                 return this;
             },
@@ -64,32 +76,57 @@ define(
                     this.buttonTitle(this.buttonTitleEnabled);
                 }
             },
-
             onActiveChange: function (isActive) {
-                this.isButtonVisible(false);
-                var config = this.getConfig();
-                
-                $("#embed-target").removeAttr("style").hide();
+                let config = this.getConfig();
+                $('#embed-target').hide();
                 if (isActive && !this.adapterLoaded()) {
                     this.loadAdapter();
                 }
-                if((config.form_type != 1) && (this.isChecked() == 'tns_hosted')) {
-                   this.savePaymentAndCheckout(); 
-                   $('#embed-target').show();
-                 }
-                 if((config.form_type == 1) && (this.isChecked() == 'tns_hosted')) {
+                if((config.form_type != 1) && (this.isChecked() == 'tns_hosted') && (config.terms_conditions != 1)){
+                    $("#embed-target").removeAttr("style").hide();
+                    this.isButtonVisible(false);
+                    this.savePaymentAndCheckout(); 
+                    $('#embed-target').show();
+                }else if((config.form_type != 1) && (this.isChecked() == 'tns_hosted') && (config.terms_conditions == 1)){
+                    
+                    this.isButtonVisible(true);
+                    this.handleWithTermsConditions(config);
+                }else if((config.form_type == 1) && (this.isChecked() == 'tns_hosted')) {
                     this.isButtonVisible(true);                 
-                 }
+                } 
+                  
             },
+           handleWithTermsConditions: function (config) {
+            this.isButtonVisible(true);
+            const requestUrl = url.build('tns/hosted/paypaltransaction');
+            const quoteId = quote.getQuoteId();
 
+            jQuery.ajax({
+                url: requestUrl,
+                type: 'POST',
+                data: { id: quoteId },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result === "Y") {
+                        const agreementsInputPath = '.payment-method._active div.checkout-agreements input';
+                        $(agreementsInputPath).prop('checked', true);
+
+                        if (config.form_type !== 1 && self.isChecked() === 'tns_hosted') {
+                            self.savePaymentAndCheckout();
+                            $('#embed-target').show();
+                        }
+                    }
+                }
+            });
+           },
             isActive: function () {
-                var active = this.getCode() === this.isChecked();
+                let active = this.getCode() === this.isChecked();
                 this.active(active);
                 return active;
             },
 
             loadAdapter: function (sessionId) {
-                var config = this.getConfig();
+                let config = this.getConfig();
                 paymentAdapter.loadApi(
                     config.component_url,
                     $.proxy(this.paymentAdapterLoaded, this),
@@ -103,22 +140,32 @@ define(
                 this.adapterLoaded(true);
             },
 
-            savePaymentAndCheckout: function () {
+            savePaymentAndCheckout: function () {  
+              let config = this.getConfig();            
+              if (window.checkoutConfig && window.checkoutConfig.checkoutAgreements &&
+                window.checkoutConfig.checkoutAgreements.isEnabled 
+              ) {             
+                   if (!agreementsValidator.validate()) { 
+                     return false; 
+                   }
+                }
                 this.isPlaceOrderActionAllowed(false);
                 this.buttonTitle(this.buttonTitleDisabled);
-
-                var action = setPaymentInformationAction(this.messageContainer, this.getData());
-
+                let action = setPaymentInformationAction(this.messageContainer, this.getData());
                 $.when(action).fail($.proxy(function () {
                     fullScreenLoader.stopLoader();
                     this.isPlaceOrderActionAllowed(true);
                 }, this)).done(
                     this.createPaymentSession.bind(this)
                 );
-            },
-
+                if((config.form_type == 0) && (config.terms_conditions == 1)){              
+                   $("#embed-target").removeAttr("style").hide();
+                   $('#embed-target').show(); 
+                   this.isButtonVisible(false);
+                }
+             },
             createPaymentSession: function () {
-                var action = createSessionAction(
+                let action = createSessionAction(
                     this.getData(),
                     this.messageContainer
                 );
@@ -131,7 +178,7 @@ define(
                     if (this.active() && this.adapterLoaded()) {
                         fullScreenLoader.startLoader();
 
-                        var config = this.getConfig();
+                        let config = this.getConfig();
 
                         paymentAdapter.configureApi(
                             config.merchant_username,
@@ -181,7 +228,7 @@ define(
                 fullScreenLoader.stopLoader();
             },
             placeOrder: function () {
-                var self = this;
+                let self = this;
                 fullScreenLoader.startLoader();
 
                 $.when(
@@ -191,7 +238,7 @@ define(
                         self.getTransactiondetails();
                     })
                 .fail(function () {
-                    var cartUrl = url.build('checkout/cart');
+                    let cartUrl = url.build('checkout/cart');
                     window.location.href = cartUrl;
                     fullScreenLoader.stopLoader();
                 });
@@ -210,7 +257,7 @@ define(
                     data: {id : quoteId},
                     dataType: 'json',
                     success: function(data) {
-                        var successUrl = url.build('checkout/onepage/success'); 
+                        let successUrl = url.build('checkout/onepage/success'); 
                         window.location.href = successUrl;
                     }
                 });
@@ -220,7 +267,7 @@ define(
              * Get payment method data
              */
             getData: function() {
-                var data = this._super();
+                let data = this._super();
                 data['additional_data'] = this.resultIndicator;
                 return data;
             }

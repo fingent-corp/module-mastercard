@@ -268,7 +268,7 @@ class Response extends Action implements CsrfAwareActionInterface
             $order->save();
         } catch (Exception $e) {
             $errorMessage = sprintf(
-                __("MasterCard Payment Gateway Services WebHook Exception: '%s'"),
+                __("MasterCard Gateway WebHook Exception: '%s'"),
                 $e->getMessage()
             );
             $this->logWebHookRequest($errorMessage, 'critical');
@@ -285,7 +285,7 @@ class Response extends Action implements CsrfAwareActionInterface
         ];
         $logger->debug($log);
 
-        $logMessage = __("MasterCard Payment Gateway Services WebHook Success");
+        $logMessage = __("MasterCard Gateway WebHook Success");
         $this->logWebHookRequest($logMessage, 'info');
 
         $page->setStatusHeader(200);

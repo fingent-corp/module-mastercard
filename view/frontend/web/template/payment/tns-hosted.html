@@ -40,9 +40,7 @@
            <div class="primary">
                 <button class="action primary checkout"
                         type="submit"
-                        data-bind="click: savePaymentAndCheckout, attr: {title: $t('Place Order')}, css: {disabled: isCheckoutDisabled()},visible: isButtonVisible()"
-"
-                        >
+                        data-bind="click: savePaymentAndCheckout, attr: {title: $t('Place Order')},visible: isButtonVisible(), css: {disabled: isCheckoutDisabled()}" >
                     <span data-bind="text: buttonTitle()"></span>
                 </button>
             </div>

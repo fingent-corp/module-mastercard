@@ -25,6 +25,7 @@ use Magento\Payment\Helper\Data;
 use Magento\Payment\Helper\Data as PaymentDataHelper;
 use Magento\Store\Model\StoreManagerInterface;
 use Mastercard\Mastercard\Model\CertFactory;
+use Magento\Store\Model\ScopeInterface;
 
 class Config extends \Magento\Payment\Gateway\Config\Config
 {
@@ -69,6 +70,11 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     protected $methodCode;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * @var string
      */
     protected $pathPattern;
@@ -92,11 +98,12 @@ class Config extends \Magento\Payment\Gateway\Config\Config
         $pathPattern = self::DEFAULT_PATH_PATTERN
     ) {
         parent::__construct($scopeConfig, $methodCode, $pathPattern);
-        $this->urlBuilder = $urlBuilder;
+        $this->urlBuilder   = $urlBuilder;
         $this->storeManager = $storeManager;
-        $this->certFactory = $certFactory;
-        $this->methodCode = $methodCode;
-        $this->pathPattern = $pathPattern;
+        $this->certFactory  = $certFactory;
+        $this->methodCode   = $methodCode;
+        $this->pathPattern  = $pathPattern;
+        $this->scopeConfig  = $scopeConfig;
         $this->paymentDataHelper = $paymentDataHelper;
     }
 
@@ -164,22 +171,18 @@ class Config extends \Magento\Payment\Gateway\Config\Config
      */
     public function getFrontendAreaUrl($storeId = null)
     {
-        if ($this->getValue('api_gateway', $storeId) === self::API_OTHER) {
             $url = $this->getValue('api_gateway_other', $storeId);
             if (empty($url)) {
                 return '';
+            }
+            if (!str_starts_with($url, 'https://')) {
+              $url = 'https://' . ltrim($url, '/');
             }
             if (substr($url, -1) !== '/') {
                 $url .= '/';
             }
 
             return $url;
-        }
-
-        return $this->getValue(
-            $this->getValue('api_gateway', $storeId),
-            $storeId
-        );
     }
 
     /**
@@ -190,23 +193,19 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     public function getApiAreaUrl($storeId = null)
     {
         $pkiPostfix = $this->isCertificateAutherntification($storeId) ? '_pki' : '';
-
-        if ($this->getValue('api_gateway', $storeId) === self::API_OTHER) {
             $url = $this->getValue('api_gateway_other' . $pkiPostfix, $storeId);
             if (empty($url)) {
                 return '';
+            }
+            if (!str_starts_with($url, 'https://')) {
+              $url = 'https://' . ltrim($url, '/');
             }
             if (substr($url, -1) !== '/') {
                 $url .= '/';
             }
 
             return $url;
-        }
-
-        return $this->getValue(
-            $this->getValue('api_gateway', $storeId) . $pkiPostfix,
-            $storeId
-        );
+        
     }
 
     /**
@@ -324,5 +323,22 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     public function getFormType($storeId = null)
     {
         return $this->getValue('form_type', $storeId);
+    }
+
+    /**
+     * @param int|string|null $storeId
+     *
+     * @return int
+     *
+     * @throws NoSuchEntityException
+     */
+    public function enabledTermsAndConditions($storeId = null)
+    {
+   
+        return $this->scopeConfig->getValue(
+            'checkout/options/enable_agreements',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 }

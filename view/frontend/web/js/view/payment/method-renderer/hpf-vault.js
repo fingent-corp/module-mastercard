@@ -27,7 +27,7 @@ define([
 ], function ($, VaultComponent, $t, alert,setPaymentInformationAction,url,modal, fullScreenLoader) {
     'use strict';
 
-     var options = {
+     let options = {
         type: 'slide',
         title: $.mage.__('Process Secure Payment'),
         buttons: [],
@@ -124,39 +124,11 @@ define([
                     }.bind(this),
                     formSessionUpdate: function (response) {
                         if (response.status === "fields_in_error") {
-                            if (response.errors) {
-                                var errors = this.errorMap(),
-                                    message = "";
-                                for (var err in response.errors) {
-                                    if (!response.errors.hasOwnProperty(err)) {
-                                        continue;
-                                    }
-                                    message += '<p>' + errors[err] + '</p>';
-                                }
-                                alert({
-                                    content: message,
-                                    closed: $.proxy(function () {
-                                        this.isPlaceOrderActionAllowed(true);
-                                    }, this)
-                                });
-                                this.isPlaceOrderActionAllowed(true);
-                            }
+                            this.handleFieldErrors(response.errors);
+                            
                         }
                         if (response.status === "ok") {
-                            this.session(response.session);
-                                var token = this.getToken();
-                                var action
-                               if (this.is3DsEnabled() ) {
-                                   action = setPaymentInformationAction(this.messageContainer, this.getData());
-                                   fullScreenLoader.startLoader();
-                                   this.ThreedsVaultCheck(token);                                 
-                               } else if(this.is3Ds2Enabled()){
-                                    fullScreenLoader.startLoader();
-                                    this.Threeds2VaultCheck(token);
-                                } else{ 
-                                        this.isPlaceOrderActionAllowed(true);
-                                        this.placeOrder();
-                                }  
+                          this.handleValidSession(response.session);
                         }
                     }.bind(this)
                 },
@@ -168,6 +140,41 @@ define([
                 }
             }, this.getId());
         },
+        handleFieldErrors: function (errors) {
+            if (response.errors) {
+                let errors = this.errorMap(),
+                    message = "";
+                for (let err in response.errors) {
+                    if (!response.errors.hasOwnProperty(err)) {
+                        continue;
+                    }
+                    message += '<p>' + errors[err] + '</p>';
+                }
+                alert({
+                    content: message,
+                    closed: $.proxy(function () {
+                        this.isPlaceOrderActionAllowed(true);
+                    }, this)
+                });
+                this.isPlaceOrderActionAllowed(true);
+            }
+        },
+        handleValidSession: function (session) {
+            this.session(session);
+            const token = this.getToken();
+            if (this.is3DsEnabled()) {
+                setPaymentInformationAction(this.messageContainer, this.getData());
+                fullScreenLoader.startLoader();
+                this.ThreedsVaultCheck(token);
+            } else if (this.is3Ds2Enabled()) {
+                fullScreenLoader.startLoader();
+                this.Threeds2VaultCheck(token);
+            } else {
+                this.isPlaceOrderActionAllowed(true);
+                this.placeOrder();
+            }
+    },
+
         loadAdapter: function () {
             if (this.isConfigured()) {
                 return;
@@ -176,7 +183,7 @@ define([
             require([this.component_url], this.paymentAdapterLoaded.bind(this));
         },
         ThreedsVaultCheck: function (token) {
-            var vaultcheckurl = url.build('tns/threedsecure/vaultcheck');
+            let vaultcheckurl = url.build('tns/threedsecure/vaultcheck');
             jQuery.ajax({
                 url: vaultcheckurl,
                 type: 'POST',
@@ -184,7 +191,7 @@ define([
                 dataType: 'json',
                 success: function(data) {
                 if(data.result == "Y"){
-                 var urlWithParams = url.build('tns/threedsecure/vaultform') + '?acsUrl=' + encodeURIComponent(data.acsurl) + '&paReq=' + encodeURIComponent(data.pareq);
+                 let urlWithParams = url.build('tns/threedsecure/vaultform') + '?acsUrl=' + encodeURIComponent(data.acsurl) + '&paReq=' + encodeURIComponent(data.pareq);
                  this.modal        = $("div[data-role='tns-threedsecure-modal']");
                  this.modal.css({
                     height: '100vh'                
@@ -212,7 +219,7 @@ define([
           });
         },
         Threeds2VaultCheck: function (token) {
-            var threedsurl = url.build('tns/threedsecurev2/vaultauthentication');
+            let threedsurl = url.build('tns/threedsecurev2/vaultauthentication');
             jQuery.ajax({
             url: threedsurl,
             type: 'POST',
@@ -275,7 +282,7 @@ define([
 
         },
         isActive: function () {
-            var active = this.getId() === this.isChecked();
+            let active = this.getId() === this.isChecked();
             this.active(active);
             return active;
         },
@@ -303,9 +310,9 @@ define([
                 return this.getConfig()['three_d_secure_version'] === 2;
             },
         getData: function () {
-            var data = this._super();
+            let data = this._super();
 
-            var session = this.session();
+            let session = this.session();
             data['additional_data']['session'] = session['id'];
 
             return data;

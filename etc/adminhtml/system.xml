@@ -18,7 +18,7 @@
     <system>
         <section id="payment">
             <group id="tns" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Mastercard Payment Gateway Services</label>
+                <label>Mastercard Gateway</label>
                 <comment><![CDATA[Accept credit/debit cards in your Magento store.]]></comment>
                 <fieldset_css>complex</fieldset_css>
                 <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
@@ -45,11 +45,7 @@
                         <label>Title</label>
                         <config_path>payment/tns_hosted/title</config_path>
                     </field>
-                    <field id="form_title" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Payment Modal Title</label>
-                        <config_path>payment/tns_hosted/form_title</config_path>
-                    </field>
-                    <field id="payment_action" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="payment_action" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment Action</label>
                         <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\PaymentAction</source_model>
                         <config_path>payment/tns_hosted/payment_action</config_path>
@@ -59,7 +55,7 @@
                         <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\AuthenticationType</source_model>
                         <config_path>payment/tns_hosted/authentication_type</config_path>
                     </field>
-                    <field id="form_type" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="form_type" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Form Type</label>
                         <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Hosted\FormType</source_model>
                         <config_path>payment/tns_hosted/form_type</config_path>
@@ -92,24 +88,21 @@
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
-                    <field id="api_gateway" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                  <!--  <field id="api_gateway" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Gateway</label>
                         <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Gateway</source_model>
                         <config_path>payment/tns_hosted/api_gateway</config_path>
-                    </field>
+                    </field> -->
                     <field id="api_gateway_other" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Custom Gateway URL</label>
+                        <label>Gateway URL</label>
                         <config_path>payment/tns_hosted/api_gateway_other</config_path>
-                        <depends>
-                            <field id="api_gateway">api_other</field>
-                        </depends>
+                        <comment> Enter the Gateway URL shared by your payment service provider. Enter the URL with https prefix. For example https://na.gateway.mastercard.com/</comment>
                     </field>
                     <field id="api_gateway_other_pki" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Custom PKI Gateway URL</label>
                         <config_path>payment/tns_hosted/api_gateway_other_pki</config_path>
                         <comment>Please contact your payment service provider to receive Custom PKI Gateway URL for Certificate Authentication.</comment>
                         <depends>
-                            <field id="api_gateway">api_other</field>
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
@@ -119,7 +112,7 @@
                         <comment>Be sure to enable the WebHook support in your MasterCard Merchant Administration</comment>
                         <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     </field>
-                    <field id="webhook_url" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="webhook_url" translate="label comment" type="text" sortOrder="140" showInDefault="0" showInWebsite="0" showInStore="0">
                         <label>WebHook URL</label>
                         <config_path>payment/tns_hosted/webhook_url</config_path>
                         <comment>If left blank, will be chosen automatically</comment>
@@ -164,7 +157,115 @@
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/tns_hosted/sort_order</config_path>
                     </field>
-                    <group id="advanced" translate="label" type="text" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <!-- Enable/Disable Merchant Information -->
+                        <field id="enable_merchant_info" translate="label" type="select" sortOrder="225" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Enable Merchant Information</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tns_hosted/enable_merchant_info</config_path>
+                            <comment>Enable or disable the display of merchant information on the redirected payment page.</comment>
+                             <depends>
+                              <field id="form_type" value="1" />
+                             </depends>
+                        </field>
+                         <field id="name" translate="label" type="text" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Merchant Name</label>
+                            <validate>validate-alpha-with-spaces</validate>
+                            <frontend_class>validate-length maximum-length-40</frontend_class>
+                            <config_path>payment/tns_hosted/merchant_name</config_path>
+                            <comment>Name of your business (up to 40 characters) to be shown to the payer during the payment interaction.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+
+                        <!-- Address Line 1 -->
+                        <field id="address_line1" translate="label" type="text" sortOrder="235" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Address Line 1</label>
+                            <frontend_class>validate-length maximum-length-100</frontend_class>
+                            <config_path>payment/tns_hosted/address_line1</config_path>
+                            <comment>The first line of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+
+                        <!-- Address Line 2 -->
+                        <field id="address_line2" translate="label" type="text" sortOrder="240" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Address Line 2</label>
+                            <frontend_class>validate-length maximum-length-100</frontend_class>
+                            <config_path>payment/tns_hosted/address_line2</config_path>
+                            <comment>The second line of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+
+                        <!-- Postcode/ZIP -->
+                        <field id="postcode" translate="label" type="text" sortOrder="245" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Postcode/ZIP</label>
+                            <frontend_class>validate-length maximum-length-100</frontend_class>
+                            <config_path>payment/tns_hosted/postcode</config_path>
+                            <comment>The postal or ZIP code of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                 <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+
+                        <!-- Country/State -->
+                        <field id="country" translate="label" type="text" sortOrder="250" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Country/State</label>
+                            <frontend_class>validate-length maximum-length-100</frontend_class>
+                            <config_path>payment/tns_hosted/country</config_path>
+                            <comment>The country or state of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field> 
+
+                        <!-- Email -->
+                        <field id="email" translate="label" type="text" sortOrder="255" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Email</label>
+                            <validate>validate-email</validate>
+                            <config_path>payment/tns_hosted/email</config_path>
+                            <comment>The email address of your business to be shown to the payer during the payment interaction. (e.g. an email address for customer service).</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+
+                        <!-- Phone -->
+                        <field id="phone" translate="label" type="text" sortOrder="260" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Phone</label>
+                            <frontend_class>validate-length maximum-length-20</frontend_class>
+                            <config_path>payment/tns_hosted/phone</config_path>
+                            <comment>The phone number of your business (up to 20 characters) to be shown to the payer during the payment interaction.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+
+                        <!-- Upload Business Logo -->
+                        <field id="logo_file" translate="label" type="image" sortOrder="265" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Upload Business Logo</label>
+                            <backend_model>Magento\Config\Model\Config\Backend\Image\Pdf</backend_model>
+                            <upload_dir config="system/filesystem/media" scope_info="1">mastercard/logs</upload_dir>
+                            <base_url type="media" scope_info="1">mastercard/logs</base_url>
+                            <config_path>payment/tns_hosted/logo_file</config_path>
+                            <comment>The URL of your business logo (JPEG or PNG) to be shown to the payer during the payment interaction.
+                            The logo should be 140x140 pixels, and the URL must be secure (e.g., https://). Size exceeding 140 pixels will be auto resized.</comment>
+                            <depends>
+                                <field id="enable_merchant_info" value="1" />
+                                <field id="form_type" value="1" />
+                            </depends>
+                        </field>
+                    <group id="advanced" translate="label" type="text" sortOrder="270" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Advanced Configuration</label>
                         <field id="version_info" type="text" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                             <frontend_model>HostedApiVersionInfoModel</frontend_model>
@@ -238,24 +339,21 @@
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
-                    <field id="api_gateway" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                  <!-- <field id="api_gateway" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Gateway</label>
                         <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Gateway</source_model>
                         <config_path>payment/tns_hpf/api_gateway</config_path>
-                    </field>
+                    </field> -->
                     <field id="api_gateway_other" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Custom Gateway URL</label>
+                        <label>Gateway URL</label>
                         <config_path>payment/tns_hpf/api_gateway_other</config_path>
-                        <depends>
-                            <field id="api_gateway">api_other</field>
-                        </depends>
+                        <comment> Enter the Gateway URL shared by your payment service provider. Enter the URL with https prefix. For example https://na.gateway.mastercard.com/</comment>
                     </field>
                     <field id="api_gateway_other_pki" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Custom PKI Gateway URL</label>
                         <config_path>payment/tns_hpf/api_gateway_other_pki</config_path>
                         <comment>Please contact your payment service provider to receive Custom PKI Gateway URL for Certificate Authentication.</comment>
                         <depends>
-                            <field id="api_gateway">api_other</field>
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
@@ -265,7 +363,7 @@
                         <comment>Be sure to enable the WebHook support in your MasterCard Merchant Administration</comment>
                         <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     </field>
-                    <field id="webhook_url" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="webhook_url" translate="label comment" type="text" sortOrder="140" showInDefault="0" showInWebsite="0" showInStore="0">
                         <label>WebHook URL</label>
                         <config_path>payment/tns_hpf/webhook_url</config_path>
                         <comment>If left blank, will be chosen automatically</comment>
@@ -312,6 +410,9 @@
                         <label>Require CCV for tokenized card transactions</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/tns_hpf/vault_ccv</config_path>
+                        <depends>
+                            <field id="vault_active" >1</field>
+                        </depends>
                     </field>
                     <field id="allowspecific" translate="label" type="allowspecific" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment from Applicable Countries</label>
@@ -361,8 +462,8 @@
                     </group>
                 </group>
                 <group id="ach" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Automated Clearing House (ACH)</label>
-                    <comment>Automated Clearing House (ACH) only supports USD</comment>
+                    <label>ACH</label>
+                    <comment>ACH only supports USD</comment>
                     <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -418,24 +519,21 @@
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
-                    <field id="api_gateway" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                   <!-- <field id="api_gateway" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Gateway</label>
                         <source_model>Mastercard\MasterCard\Model\Adminhtml\Source\Gateway</source_model>
                         <config_path>payment/mpgs_ach/api_gateway</config_path>
-                    </field>
+                    </field> -->
                     <field id="api_gateway_other" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Custom Gateway URL</label>
+                        <label>Gateway URL</label>
                         <config_path>payment/mpgs_ach/api_gateway_other</config_path>
-                        <depends>
-                            <field id="api_gateway">api_other</field>
-                        </depends>
+                        <comment> Enter the Gateway URL shared by your payment service provider. Enter the URL with https prefix. For example https://na.gateway.mastercard.com/</comment>
                     </field>
                     <field id="api_gateway_other_pki" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Custom PKI Gateway URL</label>
                         <config_path>payment/mpgs_ach/api_gateway_other_pki</config_path>
                         <comment>Please contact your payment service provider to receive Custom PKI Gateway URL for Certificate Authentication.</comment>
                         <depends>
-                            <field id="api_gateway">api_other</field>
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
@@ -445,7 +543,7 @@
                         <comment>Be sure to enable the WebHook support in your MasterCard Merchant Administration</comment>
                         <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     </field>
-                    <field id="webhook_url" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="webhook_url" translate="label comment" type="text" sortOrder="140" showInDefault="0" showInWebsite="0" showInStore="0">
                         <label>WebHook URL</label>
                         <config_path>payment/mpgs_ach/webhook_url</config_path>
                         <comment>If left blank, will be chosen automatically</comment>

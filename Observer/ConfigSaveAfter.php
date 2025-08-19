@@ -30,6 +30,9 @@ use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 use Mastercard\Mastercard\Model\SelectedStore;
 use Psr\Log\LoggerInterface;
 use Mastercard\Mastercard\Helper\DownloadCount;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Cache\TypeListInterface;
 
 class ConfigSaveAfter implements ObserverInterface
 {
@@ -84,6 +87,21 @@ class ConfigSaveAfter implements ObserverInterface
     protected $downloadCount;
     
     /**
+    * @var configWriter
+    */
+    protected $configWriter;
+    
+    /**
+    * @var StoreManagerInterface
+    */
+    protected $storeManager;
+    
+    /**
+    * @var TypeListInterface
+    */
+    protected $cacheTypeList;
+
+    /**
      * ConfigSaveAfter constructor.
      *
      * @param WebsiteRepositoryInterface $websiteRepository
@@ -95,6 +113,7 @@ class ConfigSaveAfter implements ObserverInterface
      * @param ScopeConfigInterface $config
      * @param LoggerInterface $logger
      * @param WriterInterface $configWriter
+     * @param TypeListInterface $cacheTypeList
      * @param array $methods
      */
     public function __construct(
@@ -107,6 +126,9 @@ class ConfigSaveAfter implements ObserverInterface
         ScopeConfigInterface $config,
         LoggerInterface $logger,
         DownloadCount $downloadCount,
+        WriterInterface $configWriter,
+        StoreManagerInterface $storeManager,
+        TypeListInterface $cacheTypeList,
         $methods = []
     ) {
         $this->websiteRepository  = $websiteRepository;
@@ -119,6 +141,11 @@ class ConfigSaveAfter implements ObserverInterface
         $this->logger             = $logger;
         $this->methods            = $methods;
         $this->downloadCount      = $downloadCount;
+        $this->configWriter       = $configWriter;
+        $this->storeManager       = $storeManager;
+        $this->cacheTypeList      = $cacheTypeList;
+
+
 
     }
 
@@ -134,14 +161,19 @@ class ConfigSaveAfter implements ObserverInterface
             if ($this->isInvalidConfigData($configData)) {
                 return;
             }
+       
             $storeId   = $this->getStoreId($request);
             $test      = 1;
+            $urlchange = 0;
             $this->selectedStore->setStoreId($storeId);
             foreach ($this->methods as $method => $label) {
                 $config = $this->configFactory->create(['methodCode' => $method]);
                 $test = $this->istestMethod($config, $storeId, $test);
+                $gatewayUrl =  $config->getFrontendAreaUrl($storeId);
+                $vaildurl   = $this->isValidateUrl($method,$configData );
+                $urlchange  = $urlchange + $vaildurl ;
                 $isCertificate = $config->isCertificateAutherntification($storeId);
-                $validMethod  = $this->isValidMethod($method, $config, $storeId);
+                $validMethod   = $this->isValidMethod($method, $config, $storeId);
                 if ($isCertificate) {
                     $sslPath     = $this->isValidCertificate($config, $storeId);
                     if (!$validMethod || !$sslPath) {
@@ -154,6 +186,9 @@ class ConfigSaveAfter implements ObserverInterface
                     }
                 }
                   $this->checkGatewayconnection($method, $label);
+                }
+                if($urlchange > 0) {
+                  $this->clearCache();
                 }
                 $this->downloadCount->checkAndSaveDownload($storeId, $test);
 
@@ -261,4 +296,53 @@ class ConfigSaveAfter implements ObserverInterface
             return $test;
         }
     }
+
+    /**
+    * For validating url
+    * @return int
+    */
+    public function isValidateUrl($method, $configData )
+    {
+    
+       $path  = 'payment/'.$method.'/api_gateway_other';
+       $count = 0;
+       if (!empty($configData['store'])) {
+         $scope = ScopeInterface::SCOPE_STORES;
+         $scopeId = $this->storeManager->getStore($configData['store'])->getId();
+        } elseif (!empty($configData['website'])) {
+         $scope = ScopeInterface::SCOPE_WEBSITES;
+         $scopeId = $this->storeManager->getWebsite($configData['website'])->getId();
+        } else {
+         $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+         $scopeId = 0;
+        }
+
+        $gatewayUrl =  $this->config->getValue($path, $scope, $scopeId);
+        $fixedUrl = $gatewayUrl;
+        if (!str_starts_with($fixedUrl, 'https://')) {
+            $fixedUrl = 'https://' . ltrim($fixedUrl, '/');
+        }
+        // If doesn't end with slash, append it
+        if (substr($fixedUrl, -1) !== '/') {
+            $fixedUrl .= '/';
+        }
+        // Save back only if changed
+        if ($fixedUrl !== $gatewayUrl) {   
+            $this->configWriter->save( $path, $fixedUrl, $scope, $scopeId);
+            $count = $count + 1;
+        }
+        return $count;
+    }
+    
+    /**
+    * For clearing cache on url change
+    * @return boolean
+    */
+    public function clearCache()
+    {
+        // Clear just the config cache type
+        $this->cacheTypeList->cleanType('config');
+        return true;
+    }
+    
 }
