@@ -90,13 +90,13 @@ define(
                 }else if((config.form_type != 1) && (this.isChecked() == 'tns_hosted') && (config.terms_conditions == 1)){
                     
                     this.isButtonVisible(true);
-                    this.handleWithTermsConditions(config);
+                    this.handleWithTermsConditions(config, this);
                 }else if((config.form_type == 1) && (this.isChecked() == 'tns_hosted')) {
                     this.isButtonVisible(true);                 
                 } 
                   
             },
-           handleWithTermsConditions: function (config) {
+           handleWithTermsConditions: function (config, context) {
             this.isButtonVisible(true);
             const requestUrl = url.build('tns/hosted/paypaltransaction');
             const quoteId = quote.getQuoteId();
@@ -111,8 +111,8 @@ define(
                         const agreementsInputPath = '.payment-method._active div.checkout-agreements input';
                         $(agreementsInputPath).prop('checked', true);
 
-                        if (config.form_type !== 1 && self.isChecked() === 'tns_hosted') {
-                            self.savePaymentAndCheckout();
+                        if (config.form_type !== 1 && context.isChecked() === 'tns_hosted') {
+                            context.savePaymentAndCheckout();
                             $('#embed-target').show();
                         }
                     }

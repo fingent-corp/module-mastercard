@@ -16,7 +16,9 @@ The Mastercard Gateway Magento extension works with these Magento platforms:
 - Community/Open-Source Edition
 - Enterprise/Commerce/Cloud Edition
 
-For the Magento version, the latest version of the extension has been tested and is compatible with Magento versions 2.4.3 to 2.4.7.
+Plugin version 3.0.0 is developed and tested for compatibility with Magento version 2.4.7 and 2.4.8.
+
+Note : Plugin version 2.4.7 has been tested for compatibility only with Magento versions 2.4.3 to 2.4.7.
 
 ## Mastercard Payment Module Features
 

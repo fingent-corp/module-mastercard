@@ -163,11 +163,7 @@ class Feed
             ]
         );
         $feedUrl = $this->backendConfig->getValue(self::XML_FEED_URL_PATH);
-        if (class_exists('\Zend_Http_Client')) {
-            $curl->write(\Zend_Http_Client::GET, $feedUrl, '1.0');
-        }else {
-           $curl->write(\Laminas\Http\Request::METHOD_GET, $feedUrl, '1.0');
-        }
+        $curl->write(\Laminas\Http\Request::METHOD_GET, $feedUrl, '1.0');
         $data = $curl->read();
         $data = preg_split('/^\r?$/m', $data, 2);
         $data = trim($data[1]);

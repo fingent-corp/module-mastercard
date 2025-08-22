@@ -88,11 +88,6 @@
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
-                  <!--  <field id="api_gateway" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Gateway</label>
-                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Gateway</source_model>
-                        <config_path>payment/tns_hosted/api_gateway</config_path>
-                    </field> -->
                     <field id="api_gateway_other" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Gateway URL</label>
                         <config_path>payment/tns_hosted/api_gateway_other</config_path>
@@ -339,11 +334,6 @@
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
-                  <!-- <field id="api_gateway" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Gateway</label>
-                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Gateway</source_model>
-                        <config_path>payment/tns_hpf/api_gateway</config_path>
-                    </field> -->
                     <field id="api_gateway_other" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Gateway URL</label>
                         <config_path>payment/tns_hpf/api_gateway_other</config_path>
@@ -519,11 +509,6 @@
                             <field id="authentication_type">certificate</field>
                         </depends>
                     </field>
-                   <!-- <field id="api_gateway" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Gateway</label>
-                        <source_model>Mastercard\MasterCard\Model\Adminhtml\Source\Gateway</source_model>
-                        <config_path>payment/mpgs_ach/api_gateway</config_path>
-                    </field> -->
                     <field id="api_gateway_other" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Gateway URL</label>
                         <config_path>payment/mpgs_ach/api_gateway_other</config_path>

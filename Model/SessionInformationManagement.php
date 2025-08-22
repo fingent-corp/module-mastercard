@@ -83,7 +83,7 @@ class SessionInformationManagement implements SessionInformationManagementInterf
     public function createNewPaymentSession(
         $cartId,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         $cartId = (int) $cartId;
 
@@ -117,7 +117,7 @@ class SessionInformationManagement implements SessionInformationManagementInterf
         $cartId,
         $email,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         $quote = $this->cartRepository->get($cartId);
 

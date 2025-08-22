@@ -87,7 +87,7 @@ class Createsession implements ResolverInterface
         GuestCartRepositoryInterface $cartRepository,
         CommandPoolInterface $commandPool,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->paymentDataObjectFactory = $paymentDataObjectFactory;
@@ -106,7 +106,7 @@ class Createsession implements ResolverInterface
     public function createNewPaymentSession(
         $cartId,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         $cartId = (int) $cartId;
 
@@ -148,8 +148,8 @@ class Createsession implements ResolverInterface
         Field $field,
         $context,
         ResolveInfo $info,
-        array $value = null,
-        array $args = null
+        ?array $value = null,
+        ?array $args = null
     ) {
         $quote = $this->cartRepository->get($args["input"]["cart_id"]);
         $paymentMethod = $this->paymentMethod->setMethod($args["input"]["payment_method"]["code"]);

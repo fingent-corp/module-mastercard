@@ -3,9 +3,9 @@
   "description": "Official Magento2 Plugin to integrate with MasterCard Payments by Fingent",
   "type": "magento2-module",
   "license": "Apache-2.0",
-  "version": "2.4.7",
+  "version": "3.0.0",
   "require": {
-        "php": "^8.1"
+        "php": "^8.2"
     },
   "authors": [
     {

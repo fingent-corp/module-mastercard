@@ -38,7 +38,7 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     const TEST_PREFIX = 'TEST';
     const AUTHENTICATION_TYPE_PASSWORD = 'password';
     const AUTHENTICATION_TYPE_CERTIFICATE = 'certificate';
-
+    const HTTPS_PREFIX = 'https://';
     /**
      * @var UrlInterface
      */
@@ -175,8 +175,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
             if (empty($url)) {
                 return '';
             }
-            if (!str_starts_with($url, 'https://')) {
-              $url = 'https://' . ltrim($url, '/');
+            if (!str_starts_with($url, self::HTTPS_PREFIX)) {
+              $url = self::HTTPS_PREFIX . ltrim($url, '/');
             }
             if (substr($url, -1) !== '/') {
                 $url .= '/';
@@ -197,8 +197,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
             if (empty($url)) {
                 return '';
             }
-            if (!str_starts_with($url, 'https://')) {
-              $url = 'https://' . ltrim($url, '/');
+            if (!str_starts_with($url, self::HTTPS_PREFIX)) {
+              $url = self::HTTPS_PREFIX . ltrim($url, '/');
             }
             if (substr($url, -1) !== '/') {
                 $url .= '/';

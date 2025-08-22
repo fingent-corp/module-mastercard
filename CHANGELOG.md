@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-08-22
+### Enhancement
+- Enhanced Compatibility: Now compatible with Magento version 2.4.7 and 2.4.8.
+- Session details are now cleared automatically after successful order placement in Hosted Checkout Redirected Payment method.
+
 ## [2.4.7] - 2025-08-19
 ### Enhancement
 - Added Backward compatibility with Magento’s previous platform versions 2.4.3, 2.4.4, 2.4.5 and 2.4.6.

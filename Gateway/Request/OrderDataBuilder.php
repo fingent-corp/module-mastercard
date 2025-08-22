@@ -47,9 +47,6 @@ class OrderDataBuilder implements BuilderInterface
     public function build(array $buildSubject)
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);
-        $order = $paymentDO->getOrder();
-
-        $storeId = $order->getStoreId();
 
         /** @var Payment $payment */
         $payment = $paymentDO->getPayment();
@@ -57,14 +54,15 @@ class OrderDataBuilder implements BuilderInterface
         $config = $this->configFactory->create();
         $config->setMethodCode($payment->getMethod());
 
-        $total = $order->getGrandTotalAmount();
-
+        $order   = $payment->getOrder();
+        $storeId = $order->getStoreId();
+        $total   = $order->getBaseGrandTotal();
         $orderId = $paymentDO->getOrder()->getOrderIncrementId();
 
         return [
             'order' => [
                 'amount' => sprintf('%.2F', $total),
-                'currency' => $order->getCurrencyCode(),
+                'currency' => $order->getOrderCurrencyCode(),
                 'notificationUrl' => $config->getWebhookNotificationUrl($storeId),
                 'reference' => $orderId,
             ]
