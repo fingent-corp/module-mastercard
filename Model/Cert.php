@@ -67,8 +67,8 @@ class Cert extends AbstractModel
         Registry $registry,
         Filesystem $filesystem,
         EncryptorInterface $encryptor,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->varDirectory = $filesystem->getDirectoryWrite(DirectoryList::VAR_DIR);

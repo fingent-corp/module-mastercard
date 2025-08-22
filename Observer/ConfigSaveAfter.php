@@ -36,6 +36,8 @@ use Magento\Framework\App\Cache\TypeListInterface;
 
 class ConfigSaveAfter implements ObserverInterface
 {
+    const HTTPS_PREFIX = 'https://';
+
     /**
      * @var WebsiteRepositoryInterface
      */
@@ -145,8 +147,6 @@ class ConfigSaveAfter implements ObserverInterface
         $this->storeManager       = $storeManager;
         $this->cacheTypeList      = $cacheTypeList;
 
-
-
     }
 
     /**
@@ -169,8 +169,7 @@ class ConfigSaveAfter implements ObserverInterface
             foreach ($this->methods as $method => $label) {
                 $config = $this->configFactory->create(['methodCode' => $method]);
                 $test = $this->istestMethod($config, $storeId, $test);
-                $gatewayUrl =  $config->getFrontendAreaUrl($storeId);
-                $vaildurl   = $this->isValidateUrl($method,$configData );
+                $vaildurl   = $this->isValidateUrl($method, $configData);
                 $urlchange  = $urlchange + $vaildurl ;
                 $isCertificate = $config->isCertificateAutherntification($storeId);
                 $validMethod   = $this->isValidMethod($method, $config, $storeId);
@@ -187,7 +186,7 @@ class ConfigSaveAfter implements ObserverInterface
                 }
                   $this->checkGatewayconnection($method, $label);
                 }
-                if($urlchange > 0) {
+                if ($urlchange > 0) {
                   $this->clearCache();
                 }
                 $this->downloadCount->checkAndSaveDownload($storeId, $test);
@@ -301,7 +300,7 @@ class ConfigSaveAfter implements ObserverInterface
     * For validating url
     * @return int
     */
-    public function isValidateUrl($method, $configData )
+    public function isValidateUrl($method, $configData)
     {
     
        $path  = 'payment/'.$method.'/api_gateway_other';
@@ -319,16 +318,16 @@ class ConfigSaveAfter implements ObserverInterface
 
         $gatewayUrl =  $this->config->getValue($path, $scope, $scopeId);
         $fixedUrl = $gatewayUrl;
-        if (!str_starts_with($fixedUrl, 'https://')) {
-            $fixedUrl = 'https://' . ltrim($fixedUrl, '/');
+        if (!str_starts_with($fixedUrl, self::HTTPS_PREFIX)) {
+            $fixedUrl = self::HTTPS_PREFIX . ltrim($fixedUrl, '/');
         }
         // If doesn't end with slash, append it
         if (substr($fixedUrl, -1) !== '/') {
             $fixedUrl .= '/';
         }
         // Save back only if changed
-        if ($fixedUrl !== $gatewayUrl) {   
-            $this->configWriter->save( $path, $fixedUrl, $scope, $scopeId);
+        if ($fixedUrl !== $gatewayUrl) {
+            $this->configWriter->save($path, $fixedUrl, $scope, $scopeId);
             $count = $count + 1;
         }
         return $count;

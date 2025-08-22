@@ -25,7 +25,7 @@
     <div class="order-payment-additional" data-mage-init='{"Mastercard_Mastercard/js/order/view/info/details": {}}'>
         <div class="primary">
             <button data-role="tns-full-payment-details-button" type="button" class="button action secondary">
-                <span><?php echo __('Show Payment Details') ?></span>
+                <span><?= $block->escapeHtml(__('Show Payment Details')) ?></span>
             </button>
         </div>
         <div data-role="tns-full-payment-details-content" style="display: none">
@@ -34,38 +34,39 @@
                     <?php $payment = $block->getPayment() ?>
                     <?php $info = $payment->getAdditionalInformation() ?>
                     <tr>
-                        <th><?php echo __('gateway_code') ?></th>
-                        <td><?php echo $block->safeValue($info['gateway_code'] ?? null) ?></td>
+                        <th><?= $block->escapeHtml(__('gateway_code')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['gateway_code'] ?? null)) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('funding_status') ?></th>
-                        <td><?php echo $block->safeValue($info['funding_status'] ?? null) ?></td>
+                        <th><?= $block->escapeHtml(__('funding_status')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['funding_status'] ?? null)) ?></td>
                     </tr>
                     <tr>
-                        <th><?php echo __('txn_result') ?></th>
-                        <td><?php echo $block->safeValue($info['txn_result'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th><?php echo __('accountType') ?></th>
-                        <td><?php echo $block->safeValue($info['accountType'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th><?php echo __('bankAccountHolder') ?></th>
-                        <td><?php echo $block->safeValue($info['bankAccountHolder'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th><?php echo __('bankAccountNumber') ?></th>
-                        <td><?php echo $block->safeValue($info['bankAccountNumber'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th><?php echo __('routingNumber') ?></th>
-                        <td><?php echo $block->safeValue($info['routingNumber'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th><?php echo __('secCode') ?></th>
-                        <td><?php echo $block->safeValue($info['secCode'] ?? null) ?></td>
-                    </tr>
+                        <th><?= $block->escapeHtml(__('txn_result')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['txn_result'] ?? null)) ?></td>
 
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('accountType')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['accountType'] ?? null)) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('bankAccountHolder')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['bankAccountHolder'] ?? null)) ?></td>
+
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('bankAccountNumber')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['bankAccountNumber'] ?? null)) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('routingNumber')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['routingNumber'] ?? null)) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('secCode')) ?></th>
+                        <td><?= $block->escapeHtml($block->safeValue($info['secCode'] ?? null)) ?></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

@@ -71,8 +71,8 @@ class Cert extends ConfigValue
         CertFactory $certFactory,
         EncryptorInterface $encryptor,
         Filesystem $filesystem,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct(
