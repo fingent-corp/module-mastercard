@@ -1,6 +1,6 @@
 <p align="center">
-[<a href="https://www.fingent.com/"><img alt="Fingent logo" height="50px" src="https://www.fingent.com/wp-content/uploads/Fingent-Logo-01.png"/></a>&nbsp;&nbsp;<img alt="MC logo" height="50px" src="https://www.mastercard.co.in/content/dam/public/mastercardcom/in/en/logos/mc-logo-52.svg"/>
-</p>](https://www.mastercard.co.in/content/dam/public/mastercardcom/in/en/logos/mc-logo-52.svg)
+<a href="https://www.fingent.com/"><img alt="Fingent logo" height="50px" src="https://www.fingent.com/wp-content/uploads/Fingent-Logo-01.png"/></a>&nbsp;&nbsp;<img alt="MC logo" height="50px" src="https://mpgs.fingent.wiki/wp-content/uploads/2025/04/mastercard-logo.png"/>
+</p>
 
 ## Overview
 <a href="https://www.mastercard.co.in/en-in.html">Mastercard Inc.</a> is the <a href="https://www.investopedia.com/terms/m/mastercard-card.asp">world’s second-largest payment processing corporation </a>, providing a variety of payment solutions and services. We connect people, businesses, and organizations across over 210 countries and territories, creating opportunities for more people in more places, now and for the future. This module lets you add multiple payment options to your checkout, enabling secure credit, debit and account payments on your Magento-powered website.
