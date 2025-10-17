@@ -159,7 +159,7 @@
                             <config_path>payment/tns_hosted/enable_merchant_info</config_path>
                             <comment>Enable or disable the display of merchant information on the redirected payment page.</comment>
                              <depends>
-                              <field id="form_type" value="1" />
+                              <field id="form_type">1</field>
                              </depends>
                         </field>
                          <field id="name" translate="label" type="text" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -169,8 +169,8 @@
                             <config_path>payment/tns_hosted/merchant_name</config_path>
                             <comment>Name of your business (up to 40 characters) to be shown to the payer during the payment interaction.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field>
 
@@ -181,8 +181,8 @@
                             <config_path>payment/tns_hosted/address_line1</config_path>
                             <comment>The first line of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field>
 
@@ -193,8 +193,8 @@
                             <config_path>payment/tns_hosted/address_line2</config_path>
                             <comment>The second line of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field>
 
@@ -205,8 +205,8 @@
                             <config_path>payment/tns_hosted/postcode</config_path>
                             <comment>The postal or ZIP code of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                 <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                 <field id="form_type">1</field>
                             </depends>
                         </field>
 
@@ -217,8 +217,8 @@
                             <config_path>payment/tns_hosted/country</config_path>
                             <comment>The country or state of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field> 
 
@@ -229,8 +229,8 @@
                             <config_path>payment/tns_hosted/email</config_path>
                             <comment>The email address of your business to be shown to the payer during the payment interaction. (e.g. an email address for customer service).</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field>
 
@@ -241,8 +241,8 @@
                             <config_path>payment/tns_hosted/phone</config_path>
                             <comment>The phone number of your business (up to 20 characters) to be shown to the payer during the payment interaction.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field>
 
@@ -256,8 +256,8 @@
                             <comment>The URL of your business logo (JPEG or PNG) to be shown to the payer during the payment interaction.
                             The logo should be 140x140 pixels, and the URL must be secure (e.g., https://). Size exceeding 140 pixels will be auto resized.</comment>
                             <depends>
-                                <field id="enable_merchant_info" value="1" />
-                                <field id="form_type" value="1" />
+                                <field id="enable_merchant_info">1</field>
+                                <field id="form_type">1</field>
                             </depends>
                         </field>
                     <group id="advanced" translate="label" type="text" sortOrder="270" showInDefault="1" showInWebsite="1" showInStore="1">
