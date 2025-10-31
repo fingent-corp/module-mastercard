@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.1] - 2025-10-31
+### Enhancement
+- Integrated KNET as a supported payment method within the hosted checkout flow. Please ensure that the MID has KNET enabled for this payment option to appear on the checkout page.
+
 ## [3.0.0] - 2025-08-22
 ### Enhancement
 - Enhanced Compatibility: Now compatible with Magento version 2.4.7 and 2.4.8.

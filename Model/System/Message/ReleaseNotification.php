@@ -102,7 +102,7 @@ class ReleaseNotification implements MessageInterface
      * Release notes url
      */
     const RELEASE_NOTES_URL =
-    'https://mpgs.fingent.wiki/enterprise/magento-2-mastercard-payment-gateway-services/release-notes/';
+    'https://mpgs.fingent.wiki/enterprise/magento-2-mastercard-gateway/release-notes/';
 
 
     /**
@@ -160,7 +160,7 @@ class ReleaseNotification implements MessageInterface
      */
     private function isNewReleaseAvailable():bool
     {
-        return $this->getReleaseVersion() !== $this->getPluginVersion();
+        return $this->getReleaseVersion() > $this->getPluginVersion();
     }
 
     /**

@@ -39,6 +39,7 @@ define(
                 template: 'Mastercard_Mastercard/payment/tns-hosted',
                 adapterLoaded: false,
                 active: false,
+                isSessionCreated : false,
                 buttonTitle: null,
                 buttonTitleEnabled: $t('Place Order'),
                 buttonTitleDisabled: $t('Please wait...'),
@@ -142,9 +143,8 @@ define(
 
             savePaymentAndCheckout: function () {  
               let config = this.getConfig();            
-              if (window.checkoutConfig && window.checkoutConfig.checkoutAgreements &&
-                window.checkoutConfig.checkoutAgreements.isEnabled 
-              ) {             
+              if (window.checkoutConfig?.checkoutAgreements?.isEnabled)
+               {             
                    if (!agreementsValidator.validate()) { 
                      return false; 
                    }
@@ -165,6 +165,12 @@ define(
                 }
              },
             createPaymentSession: function () {
+
+                if (this.isSessionCreated) {
+                    return;
+                }
+                this.isSessionCreated = true;
+
                 let action = createSessionAction(
                     this.getData(),
                     this.messageContainer

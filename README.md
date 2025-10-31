@@ -16,7 +16,7 @@ The Mastercard Gateway Magento extension works with these Magento platforms:
 - Community/Open-Source Edition
 - Enterprise/Commerce/Cloud Edition
 
-Plugin version 3.0.0 is developed and tested for compatibility with Magento version 2.4.7 and 2.4.8.
+Plugin versions 3.0.0 and 3.0.1 are developed and tested for compatibility with Magento version 2.4.7 and 2.4.8.
 
 Note : Plugin version 2.4.7 has been tested for compatibility only with Magento versions 2.4.3 to 2.4.7.
 
@@ -32,6 +32,8 @@ The Mastercard Payment Module is packed with tools to make payment processing ea
    With Google Pay, customers can quickly and easily pay on the hosted checkout page. To enable this option, ensure your Merchant Identification (MID) is configured for Google Pay. This makes payments smooth and hassle-free, allowing customers to complete transactions with just a few taps.
 - **PayPal (Supported in Hosted Checkout Only)**<br/>
    With PayPal, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your Merchant Identification (MID) is set up for PayPal transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
+   **KNET (Supported in Hosted Checkout Only)**<br/>
+   With KNET, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your MID is set up for KNET transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
 - **Automated Clearing House (ACH)**<br/>
    Automated Clearing House (ACH) payments let customers pay directly from their bank accounts through electronic transfers, making bank-to-bank payments easy and fast.
 
