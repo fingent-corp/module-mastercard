@@ -89,14 +89,18 @@ class LineItemsBuilder implements BuilderInterface
         $shippingAddress = $payment->getQuote()->getShippingAddress();
         $shippingAmount  = $shippingAddress->getShippingAmount();
         $taxAmount       = $shippingAddress->getTaxAmount();
-        
-            return [
-                'order' => [
+        $orderData = [
                     'item' => $this->getOrderItems($order->getItems()),
-                    'shippingAndHandlingAmount' => $shippingAmount,
-                    'taxAmount' => $taxAmount
-                ]
-            ];
+                    'shippingAndHandlingAmount' => $shippingAmount
+                    ];
+
+        if ($taxAmount) {
+          $orderData['taxAmount'] = $taxAmount;
+        }
+
+        return [
+           'order' => $orderData
+         ];
         }
 
         return [];
