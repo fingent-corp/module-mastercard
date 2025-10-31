@@ -32,7 +32,7 @@ The Mastercard Payment Module is packed with tools to make payment processing ea
    With Google Pay, customers can quickly and easily pay on the hosted checkout page. To enable this option, ensure your Merchant Identification (MID) is configured for Google Pay. This makes payments smooth and hassle-free, allowing customers to complete transactions with just a few taps.
 - **PayPal (Supported in Hosted Checkout Only)**<br/>
    With PayPal, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your Merchant Identification (MID) is set up for PayPal transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
-   **KNET (Supported in Hosted Checkout Only)**<br/>
+  - **KNET (Supported in Hosted Checkout Only)**<br/>
    With KNET, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your MID is set up for KNET transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
 - **Automated Clearing House (ACH)**<br/>
    Automated Clearing House (ACH) payments let customers pay directly from their bank accounts through electronic transfers, making bank-to-bank payments easy and fast.
