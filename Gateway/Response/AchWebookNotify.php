@@ -30,6 +30,7 @@ class AchWebookNotify implements HandlerInterface
 
     /**
      * AchWebookNotify constructor.
+     *
      * @param WebhookNotificationOperation $notificationOperation
      */
     public function __construct(
@@ -39,6 +40,10 @@ class AchWebookNotify implements HandlerInterface
     }
 
     /**
+     * Ach webhook notification handler
+     *
+     * @param array $handlingSubject
+     * @param array $response
      * @inheridoc
      * multistep_ach not supported
      */

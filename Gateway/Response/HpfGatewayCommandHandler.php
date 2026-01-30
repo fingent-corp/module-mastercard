@@ -23,48 +23,42 @@ use Magento\Sales\Model\Order\Payment;
 use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 
-/**
- * Class HpfGatewayCommandHandler
- * @package Mastercard\Mastercard\Gateway\Response
- */
 class HpfGatewayCommandHandler implements HandlerInterface
 {
 
     /**
-    * @var configWriter
-    */
+     * @var configWriter
+     */
     protected $configWriter;
 
     /**
-    * HpfGatewayCommandHandler constructor.
-    *
-    * @param WriterInterface $configWriter
-    */
+     * HpfGatewayCommandHandler constructor.
+     *
+     * @param WriterInterface $configWriter
+     */
     public function __construct(WriterInterface $configWriter)
     {
         $this->configWriter = $configWriter;
     }
 
-
     /**
-    * Handles response
-    *
-    * @param array $handlingSubject
-    * @param array $response
-    * @return void
-    */
+     * Handles response
+     *
+     * @param array $handlingSubject
+     * @param array $response
+     * @return void
+     */
     public function handle(array $handlingSubject, array $response)
     {
  
-     if (isset($response['paymentTypes']['card']['cardTypes'])) {
-        $cards =  $response['paymentTypes']['card']['cardTypes'];
-        $cardTypes = array_column($cards, 'cardType');
-        $cardTypesString = $cardTypes ? implode(',', $cardTypes) : null;
-        $this->configWriter->save(
-            'payment/tns_hpf/supported_cards',
-            $cardTypesString
-        );
-      }
-
+        if (isset($response['paymentTypes']['card']['cardTypes'])) {
+            $cards =  $response['paymentTypes']['card']['cardTypes'];
+            $cardTypes = array_column($cards, 'cardType');
+            $cardTypesString = $cardTypes ? implode(',', $cardTypes) : null;
+            $this->configWriter->save(
+                'payment/tns_hpf/supported_cards',
+                $cardTypesString
+            );
+        }
     }
 }

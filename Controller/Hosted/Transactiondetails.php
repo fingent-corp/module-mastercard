@@ -32,52 +32,51 @@ use Magento\Quote\Model\QuoteIdMaskFactory;
 /**
  * Class Transactiondetails
  * Controller for getting transaction details
- * @package Mastercard\Mastercard\Controller\Hosted
  */
 class Transactiondetails extends Action
 {
 
     /**
-    * @var JsonFactory
-    */
+     * @var JsonFactory
+     */
     private $jsonFactory;
 
     /**
-    * @var LoggerInterface
-    */
+     * @var LoggerInterface
+     */
     private $logger;
 
-
     /**
-    * @var QuoteFactory
-    */
+     * @var QuoteFactory
+     */
     private $quoteFactory;
     
     /**
-    * @var QuoteIdMaskFactory
-    */
+     * @var QuoteIdMaskFactory
+     */
     private $quoteIdMaskFactory;
     
     /**
-    * @var CommandPool
-    */
+     * @var CommandPool
+     */
     private $commandPool;
     
     /**
-    * @var PaymentDataObjectFactory
-    */
+     * @var PaymentDataObjectFactory
+     */
     private $paymentDataObjectFactory;
 
     /**
-    * Callback constructor.
-    * @param JsonFactory $jsonFactory
-    * @param Context $context
-    * @param LoggerInterface $logger
-    * @param QuoteIdMaskFactory $quoteFactory
-    * @param QuoteFactory $quoteFactory
-    * @param PaymentDataObjectFactory $paymentDataObjectFactory
-    * @param CommandPool $commandPool
-    */
+     * Callback constructor.
+     *
+     * @param JsonFactory $jsonFactory
+     * @param Context $context
+     * @param LoggerInterface $logger
+     * @param QuoteFactory $quoteFactory
+     * @param QuoteIdMaskFactory $quoteIdMaskFactory
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
+     * @param CommandPool $commandPool
+     */
     public function __construct(
         JsonFactory $jsonFactory,
         Context $context,
@@ -86,8 +85,6 @@ class Transactiondetails extends Action
         QuoteIdMaskFactory $quoteIdMaskFactory,
         PaymentDataObjectFactory $paymentDataObjectFactory,
         CommandPool $commandPool
-
-        
     ) {
         parent::__construct($context);
         $this->jsonFactory              = $jsonFactory;
@@ -99,11 +96,12 @@ class Transactiondetails extends Action
     }
 
     /**
-    * Getting order transaction details
-    * saveing  order transaction details after successful payment
-    *
-    * @return ResultInterface|ResponseInterface
-    */
+     * Getting order transaction details
+     *
+     * Saveing  order transaction details after successful payment
+     *
+     * @return ResultInterface|ResponseInterface
+     */
     public function execute()
     {
 

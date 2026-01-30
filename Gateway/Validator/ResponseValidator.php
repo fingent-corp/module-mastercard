@@ -23,24 +23,23 @@ use Magento\Payment\Gateway\Validator\ResultInterface;
 
 class ResponseValidator extends AbstractValidator
 {
-    const APPROVED = 'APPROVED';
-    const INSUFFICIENT_FUNDS = 'INSUFFICIENT_FUNDS';
-    const DEFERRED_TRANSACTION_RECEIVED = 'DEFERRED_TRANSACTION_RECEIVED';
-    const REFERRED = 'REFERRED';
-    const AUTHENTICATION_FAILED = 'AUTHENTICATION_FAILED';
-    const INVALID_CSC = 'INVALID_CSC';
-    const SUBMITTED = 'SUBMITTED';
-    const NOT_ENROLLED_3D_SECURE = 'NOT_ENROLLED_3D_SECURE';
-    const PENDING = 'PENDING';
-    const EXCEEDED_RETRY_LIMIT = 'EXCEEDED_RETRY_LIMIT';
-    const DUPLICATE_BATCH = 'DUPLICATE_BATCH';
-    const APPROVED_PENDING_SETTLEMENT = 'APPROVED_PENDING_SETTLEMENT';
-    const PARTIALLY_APPROVED = 'PARTIALLY_APPROVED';
-    const UNKNOWN = 'UNKNOWN';
-    const SUCCESS = 'SUCCESS';
-    const FAILURE = 'FAILURE';
+    public const APPROVED = 'APPROVED';
+    public const INSUFFICIENT_FUNDS = 'INSUFFICIENT_FUNDS';
+    public const DEFERRED_TRANSACTION_RECEIVED = 'DEFERRED_TRANSACTION_RECEIVED';
+    public const REFERRED = 'REFERRED';
+    public const AUTHENTICATION_FAILED = 'AUTHENTICATION_FAILED';
+    public const INVALID_CSC = 'INVALID_CSC';
+    public const SUBMITTED = 'SUBMITTED';
+    public const NOT_ENROLLED_3D_SECURE = 'NOT_ENROLLED_3D_SECURE';
+    public const PENDING = 'PENDING';
+    public const EXCEEDED_RETRY_LIMIT = 'EXCEEDED_RETRY_LIMIT';
+    public const DUPLICATE_BATCH = 'DUPLICATE_BATCH';
+    public const APPROVED_PENDING_SETTLEMENT = 'APPROVED_PENDING_SETTLEMENT';
+    public const PARTIALLY_APPROVED = 'PARTIALLY_APPROVED';
+    public const UNKNOWN = 'UNKNOWN';
+    public const SUCCESS = 'SUCCESS';
+    public const FAILURE = 'FAILURE';
 
-    
     /**
      * @var array
      */

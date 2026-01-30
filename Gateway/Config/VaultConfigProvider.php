@@ -26,6 +26,7 @@ class VaultConfigProvider
 
     /**
      * VaultConfigProvider constructor.
+     *
      * @param array $config
      */
     public function __construct($config = [])
@@ -34,6 +35,8 @@ class VaultConfigProvider
     }
 
     /**
+     * For getting configuration values.
+     *
      * @param string $methodCode
      * @return \Mastercard\Mastercard\Gateway\Config\Config
      */

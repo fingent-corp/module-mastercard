@@ -31,27 +31,27 @@ class Rest implements ClientInterface
     /**
      * HTTP protocol versions
      */
-    const HTTP_1 = '1.1';
-    const HTTP_0 = '1.0';
+    public const HTTP_1 = '1.1';
+    public const HTTP_0 = '1.0';
 
     /**
      * HTTP request methods
      */
-    const GET = 'GET';
-    const POST = 'POST';
-    const PUT = 'PUT';
-    const HEAD = 'HEAD';
-    const DELETE = 'DELETE';
-    const TRACE = 'TRACE';
-    const OPTIONS = 'OPTIONS';
-    const CONNECT = 'CONNECT';
-    const MERGE = 'MERGE';
-    const PATCH = 'PATCH';
+    public const GET = 'GET';
+    public const POST = 'POST';
+    public const PUT = 'PUT';
+    public const HEAD = 'HEAD';
+    public const DELETE = 'DELETE';
+    public const TRACE = 'TRACE';
+    public const OPTIONS = 'OPTIONS';
+    public const CONNECT = 'CONNECT';
+    public const MERGE = 'MERGE';
+    public const PATCH = 'PATCH';
 
     /**
      * @const int Request timeout
      */
-    const REQUEST_TIMEOUT = 360;
+    public const REQUEST_TIMEOUT = 360;
 
     /**
      * @var ConverterInterface
@@ -84,6 +84,8 @@ class Rest implements ClientInterface
     private $http;
 
     /**
+     * Rest constructor
+     *
      * @param Logger $logger
      * @param ConverterInterface $converter
      * @param ResponseFactory $responseFactory
@@ -108,6 +110,9 @@ class Rest implements ClientInterface
     }
 
     /**
+     * Place request
+     *
+     * @param TransferInterface $transferObject
      * @inheritdoc
      */
     public function placeRequest(TransferInterface $transferObject)
@@ -149,7 +154,9 @@ class Rest implements ClientInterface
     }
 
     /**
-     * @inheritdoc
+     * Reads data from the adapter and returns the response body.
+     *
+     * @return mixed The body of the response returned by the adapter.
      */
     public function read()
     {

@@ -28,6 +28,8 @@ class DataAssignAbstract extends AbstractDataAssignObserver
     protected $additionalInformationList = [];
 
     /**
+     * For assigning data to payment
+     *
      * @param Observer $observer
      * @return void
      */

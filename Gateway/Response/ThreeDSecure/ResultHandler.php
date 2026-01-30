@@ -23,8 +23,8 @@ use Magento\Sales\Model\Order\Payment;
 
 class ResultHandler implements HandlerInterface
 {
-    const THREEDSECURE_RESULT = '3DSecureResult';
-    const THREEDSECURE = '3DSecure';
+    public const THREEDSECURE_RESULT = '3DSecureResult';
+    public const THREEDSECURE = '3DSecure';
     
     /**
      * Handles response

@@ -28,7 +28,7 @@ use Exception;
 
 class ModuleVersion extends Heading
 {
-    const CACHE_KEY = 'MPGS_MODULE_VERSION';
+    public const CACHE_KEY = 'MPGS_MODULE_VERSION';
 
     /**
      * @var ReadFactory
@@ -52,6 +52,7 @@ class ModuleVersion extends Heading
 
     /**
      * ModuleVersion constructor.
+     *
      * @param Context $context
      * @param ComponentRegistrarInterface $componentRegistrar
      * @param ReadFactory $readFactory
@@ -73,6 +74,8 @@ class ModuleVersion extends Heading
     }
 
     /**
+     * Get module version
+     *
      * @param string $moduleName
      * @return string
      */
@@ -107,6 +110,8 @@ class ModuleVersion extends Heading
     }
 
     /**
+     * For rendering the section
+     *
      * @param AbstractElement $element
      * @return string
      */

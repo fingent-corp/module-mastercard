@@ -21,10 +21,11 @@ define([
     'use strict';
 
     return {
-        loadApi: function (componentUrl, onLoadedCallback, onError, onCancel, onComplete) {
+        loadApi: function (componentUrl, onLoadedCallback, onError, onCancel, onComplete, onTimeout) {
             window.tnsErrorCallback = $.proxy(onError, this);
             window.tnsCancelCallback = $.proxy(onCancel, this);
             window.tnsCompletedCallback = $.proxy(onComplete, this);
+            window.tnsTimeoutCallback = $.proxy(onTimeout, this);
 
             let node = requirejs.load({
                 contextName: '_',
@@ -34,6 +35,7 @@ define([
             node.setAttribute('data-error', 'window.tnsErrorCallback');
             node.setAttribute('data-cancel', 'window.tnsCancelCallback');
             node.setAttribute('data-complete', 'window.tnsCompletedCallback');
+            node.setAttribute('data-timeout', 'window.tnsTimeoutCallback');
         },
         configureApi: function (merchant, sessionId, sessionVersion) {
             Checkout.configure({

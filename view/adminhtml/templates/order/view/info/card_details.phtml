@@ -24,6 +24,7 @@
 <?php
     $risk = null;
 ?>
+<?php if (!$block->isPaybylink()): ?>
 <div class="admin__page-section-item-content">
     <div class="order-payment-additional" data-mage-init='{"Mastercard_Mastercard/js/order/view/info/details": {}}'>
         <div class="primary">
@@ -140,3 +141,4 @@
         </div>
     </div>
 </div>
+<?php endif; ?>

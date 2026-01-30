@@ -24,9 +24,9 @@ use Mastercard\Mastercard\Model\Config\Source\Integration;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    const METHOD_CODE = 'mpgs_ach';
-    const SESSION_COMPONENT_URI = '%sform/version/%s/merchant/%s/session.js';
-    const CHECKOUT_COMPONENT_URI = '%scheckout/version/%s/checkout.js';
+    public const METHOD_CODE = 'mpgs_ach';
+    public const SESSION_COMPONENT_URI = '%sform/version/%s/merchant/%s/session.js';
+    public const CHECKOUT_COMPONENT_URI = '%scheckout/version/%s/checkout.js';
 
     /**
      * @var Config

@@ -176,6 +176,33 @@
                 <paymentInfoKeys>gateway_code,funding_status,txn_result,bankAccountHolder,bankAccountNumber</paymentInfoKeys>
                 <sort_order>30</sort_order>
             </mpgs_ach>
+            <pay_by_link>
+                <active>0</active>
+                <title>Hosted Checkout</title>
+                <order_status>pending</order_status>
+                <send_line_items>1</send_line_items>
+                <currency>USD</currency>
+                <debug>0</debug>
+                <test>0</test>
+                <api_version>100</api_version>
+                <authentication_type>password</authentication_type>
+                <api_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <allowspecific>0</allowspecific>
+                <can_use_internal>1</can_use_internal>
+                <can_use_checkout>0</can_use_checkout>
+                <email_template>payment_pay_by_link_email_template</email_template>
+                <revoke_template>payment_pay_by_link_revoke_template</revoke_template>
+                <model>TnsLinkFacade</model>
+                <can_refund>1</can_refund>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_void>1</can_void>
+                <can_order>0</can_order>
+                <can_authorize>0</can_authorize>
+                <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
+                <paymentInfoKeys>gateway_code,funding_status,txn_result,card_scheme,card_number,card_expiry_date,auth_code</paymentInfoKeys>
+                <sort_order>10</sort_order>
+            </pay_by_link>
         </payment>
     </default>
 </config>

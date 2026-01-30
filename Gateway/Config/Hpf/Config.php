@@ -27,7 +27,7 @@ use Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider;
 
 class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements ConfigInterface
 {
-    const COMPONENT_URI = '%sform/version/%s/merchant/%s/session.js';
+    public const COMPONENT_URI = '%sform/version/%s/merchant/%s/session.js';
 
     /**
      * @var string
@@ -35,6 +35,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     protected $method = 'tns_hpf';
 
     /**
+     * Checking if the vaukt is enabled or not
+     *
      * @return bool
      * @throws LocalizedException
      * @throws NoSuchEntityException
@@ -47,6 +49,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
+     * Checking tokenization is enabled or not
+     *
      * @return bool
      *
      * @throws NoSuchEntityException
@@ -63,6 +67,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
+     * For getting the vault payment
+     *
      * @return MethodInterface
      * @throws LocalizedException
      */
@@ -72,6 +78,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
+     * For getting component url
+     *
      * @return string
      */
     public function getComponentUrl()
@@ -85,7 +93,9 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
-     * @param null $storeId
+     * Getting vault config values
+     *
+     * @param int $storeId
      * @return array
      */
     public function getVaultConfig($storeId = null)
@@ -97,6 +107,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
+     * For getting vault components
+     *
      * @return string
      */
     public function getVaultComponent()

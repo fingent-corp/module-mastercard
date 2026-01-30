@@ -41,6 +41,8 @@ class LineItemsBuilder implements BuilderInterface
     }
 
     /**
+     * Get order items
+     *
      * @param OrderItemInterface[]|null $items
      * @return array
      */
@@ -67,7 +69,9 @@ class LineItemsBuilder implements BuilderInterface
     }
 
     /**
-     * @inheritDoc
+     * Line items builder
+     *
+     * @param array $buildSubject
      * @throws LocalizedException
      */
     public function build(array $buildSubject)

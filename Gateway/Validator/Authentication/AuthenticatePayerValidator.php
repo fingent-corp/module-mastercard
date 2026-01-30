@@ -98,6 +98,8 @@ class AuthenticatePayerValidator extends AbstractValidator
     }
 
     /**
+     * Checking for server busy response
+     *
      * @param array $response
      *
      * @return bool
@@ -113,6 +115,8 @@ class AuthenticatePayerValidator extends AbstractValidator
     }
 
     /**
+     * For throwing server busy error
+     *
      * @param array $response
      *
      * @return void

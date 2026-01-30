@@ -20,7 +20,7 @@ namespace Mastercard\Mastercard\Api;
 interface SessionInformationManagementInterface
 {
     /**
-     * createNewPaymentSession
+     * Create New Payment Session
      *
      * @param string $cartId
      * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
@@ -35,6 +35,8 @@ interface SessionInformationManagementInterface
     );
 
     /**
+     * Create new payment session for guest
+     *
      * @param string $cartId
      * @param string $email
      * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod

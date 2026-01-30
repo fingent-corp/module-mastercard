@@ -19,23 +19,21 @@ namespace Mastercard\Mastercard\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Checkout\Model\Session as CheckoutSession;
 
-/**
-* Class ClearCheckoutData
-* @package Mastercard\Mastercard\Block
-*/
 class ClearCheckoutData extends Template
 {
 
     /**
-    * @var CheckoutSession
-    */
+     * @var CheckoutSession
+     */
     protected $checkoutSession;
 
     /**
-    * ClearCheckoutData constructor.
-    * @param Context $context
-    * @param CheckoutSession $checkoutSession
-    */
+     * ClearCheckoutData constructor.
+     *
+     * @param Context $context
+     * @param CheckoutSession $checkoutSession
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         CheckoutSession $checkoutSession,
@@ -46,13 +44,13 @@ class ClearCheckoutData extends Template
     }
 
     /**
-    * for getting payment method
-    * @return string
-    */
+     * For getting payment method
+     *
+     * @return string
+     */
     public function getPaymentMethodCode()
     {
         $order = $this->checkoutSession->getLastRealOrder();
         return $order ? $order->getPayment()->getMethod() : null;
     }
 }
-

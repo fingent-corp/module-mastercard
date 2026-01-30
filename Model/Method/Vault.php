@@ -118,11 +118,22 @@ class Vault extends VaultPaymentMethod
         $this->jsonSerializer = $jsonSerializer;
     }
 
+   /**
+    * Check order creation is possible or not
+    *
+    * @return boolean
+    */
     public function canOrder()
     {
         return true;
     }
 
+    /**
+     * Neccessary information added to order payment object.
+     *
+     * @param InfoInterface $payment
+     * @param float $amount
+     */
     public function order(InfoInterface $payment, $amount)
     {
         if (!$payment instanceof OrderPaymentInterface) {

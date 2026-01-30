@@ -45,7 +45,7 @@ class ChainCommand implements CommandInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function execute(array $commandSubject)
     {

@@ -39,7 +39,7 @@ class Cert extends AbstractModel
     /**
      * Certificate base path
      */
-    const BASEPATH_CERT = 'cert/mastercard/';
+    public const BASEPATH_CERT = 'cert/mastercard/';
 
     /**
      * @var WriteInterface
@@ -94,6 +94,8 @@ class Cert extends AbstractModel
     }
 
     /**
+     * Load bypath and website
+     *
      * @param string $path
      * @param string|int $websiteId
      * @param boolean $strictLoad

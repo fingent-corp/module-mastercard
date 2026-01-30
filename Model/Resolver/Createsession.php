@@ -35,7 +35,7 @@ use Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider;
 class Createsession implements ResolverInterface
 {
 
-    const CREATE_HOSTED_SESSION = 'create_session';
+    public const CREATE_HOSTED_SESSION = 'create_session';
 
     /**
      * @var CartRepositoryInterface
@@ -74,11 +74,14 @@ class Createsession implements ResolverInterface
 
     /**
      * SessionInformationManagement constructor.
+     *
      * @param CartRepositoryInterface $quoteRepository
      * @param PaymentDataObjectFactory $paymentDataObjectFactory
      * @param BillingAddressManagementInterface $billingAddressManagement
      * @param GuestCartRepositoryInterface $cartRepository
      * @param CommandPoolInterface $commandPool
+     * @param PaymentInterface $paymentMethod
+     * @param AddressInterface $billingAddress
      */
     public function __construct(
         CartRepositoryInterface $quoteRepository,
@@ -100,6 +103,8 @@ class Createsession implements ResolverInterface
 
     /**
      * Create session
+     *
+     * @param int $cartId
      * @param PaymentInterface $paymentMethod
      * @param AddressInterface $billingAddress
      */
@@ -111,7 +116,6 @@ class Createsession implements ResolverInterface
         $cartId = (int) $cartId;
 
         try {
-
             /** @var \Magento\Quote\Model\Quote $quote */
             $quote = $this->quoteRepository->getActive($cartId);
 
@@ -131,18 +135,24 @@ class Createsession implements ResolverInterface
 
             if (ConfigProvider::METHOD_CODE == $paymentMethod->getMethod()) {
                 $quote->getPayment()->setAdditionalInformation('session', $session['id'])->save();
-                }
+            }
             return [
                 'id' => (string) $session['id'],
                 'version' => (string) $session['version']
             ];
-        }catch (NoSuchEntityException $e) {
+        } catch (NoSuchEntityException $e) {
             throw new GraphQlNoSuchEntityException(__($e->getMessage()), $e);
         }
     }
 
     /**
-     * @inheritdoc
+     * Resolver for creating payment session
+     *
+     * @param Field $field
+     * @param array $context
+     * @param ResolveInfo $info
+     * @param array $value
+     * @param array $args
      */
     public function resolve(
         Field $field,

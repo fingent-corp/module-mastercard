@@ -23,13 +23,14 @@ use Magento\Payment\Gateway\Validator\ResultInterface;
 class AchValidator extends ResponseValidator
 {
     /**
+     * Ach Validator
+     *
      * @param array $validationSubject
      * @return ResultInterface
      */
     public function validate(array $validationSubject): ResultInterface
     {
         $response = SubjectReader::readResponse($validationSubject);
-
         $result = null;
 
         if (!isset($response['result'])) {
@@ -48,7 +49,7 @@ class AchValidator extends ResponseValidator
                 ]);
             }
         }
-
+        
         // If no specific result was set, proceed with parent validation
         return $result ?: parent::validate($validationSubject);
     }

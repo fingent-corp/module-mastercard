@@ -29,9 +29,9 @@ use Magento\Payment\Gateway\Helper\SubjectReader;
 
 class SaleStrategyCommand implements CommandInterface
 {
-    const PRE_AUTH_CAPTURE = 'pre_auth_capture';
-    const SALE = 'sale';
-    const CREATE_ORDER_TOKEN = 'tokenize';
+    public const PRE_AUTH_CAPTURE = 'pre_auth_capture';
+    public const SALE = 'sale';
+    public const CREATE_ORDER_TOKEN = 'tokenize';
 
     /**
      * @var CommandPoolInterface

@@ -23,6 +23,8 @@ use Mastercard\Mastercard\Api\Data\TransactionInterface;
 class AfterGetTransactionTypesPlugin
 {
     /**
+     * Adds custom transaction type "Verify" to the list of transaction types.
+     *
      * @param Transaction $subject
      * @param array $result
      *

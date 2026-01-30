@@ -39,6 +39,7 @@ class Details extends Template
 
     /**
      * AchDetails constructor.
+     *
      * @param Template\Context $context
      * @param array $data
      */
@@ -49,6 +50,8 @@ class Details extends Template
     }
 
     /**
+     * Get order
+     *
      * @return \Magento\Sales\Model\Order
      */
     public function getOrder()
@@ -62,6 +65,8 @@ class Details extends Template
     }
 
     /**
+     * Get payment
+     *
      * @return \Magento\Sales\Api\Data\OrderPaymentInterface
      */
     public function getPayment()
@@ -70,6 +75,8 @@ class Details extends Template
     }
 
     /**
+     * Getting safe values
+     *
      * @param array|string $data
      * @param string|null $field
      * @return array|string
@@ -86,6 +93,8 @@ class Details extends Template
     }
 
     /**
+     * For getting risk data
+     *
      * @return array|string|null
      */
     public function getRiskData()
@@ -95,6 +104,8 @@ class Details extends Template
     }
 
     /**
+     * Generates and returns the HTML output for the payment method block.
+     *
      * @return string
      */
     public function toHtml()
@@ -103,5 +114,18 @@ class Details extends Template
             return '';
         }
         return parent::toHtml();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPaybylink()
+    { 
+        $method =  $this->getOrder()->getPayment()->getMethod();
+        $status = $this->getOrder()->getStatus();
+        if ($method == "pay_by_link" && ( $status == "pending" || $status == "canceled")) {
+            return true;
+        }
+        return false;
     }
 }

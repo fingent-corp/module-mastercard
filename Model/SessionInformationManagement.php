@@ -28,7 +28,7 @@ use Mastercard\Mastercard\Api\SessionInformationManagementInterface;
 
 class SessionInformationManagement implements SessionInformationManagementInterface
 {
-    const CREATE_HOSTED_SESSION = 'create_session';
+    private const CREATE_HOSTED_SESSION = 'create_session';
 
     /**
      * @var CommandPoolInterface

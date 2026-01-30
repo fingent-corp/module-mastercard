@@ -131,6 +131,8 @@ class GatewayCommand implements CommandInterface
     }
 
     /**
+     * For processing errors
+     *
      * @param ResultInterface $result
      * @throws CommandException
      */

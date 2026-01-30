@@ -26,10 +26,6 @@ use Magento\Vault\Api\PaymentTokenRepositoryInterface;
 use Magento\Vault\Model\PaymentTokenManagement;
 use Magento\Vault\Api\PaymentTokenManagementInterface;
 
-/**
- * Class CheckVaultDataBuilder
- * @package Mastercard\Mastercard\Gateway\Request\ThreeDSecure
- */
 class CheckVaultDataBuilder implements BuilderInterface
 {
     public const PAGE_GENERATION_MODE = 'CUSTOMIZED';
@@ -38,25 +34,24 @@ class CheckVaultDataBuilder implements BuilderInterface
 
     /**
      * @var UrlInterface
-    */
+     */
     protected $urlHelper;
 
     /**
      * @var PaymentTokenManagementInterface
-    */
+     */
     protected $tokenManagement;
 
     /**
      * checkdatabuilder constructor.
+     *
      * @param UrlInterface $urlHelper
      * @param PaymentTokenManagementInterface $tokenManagement
-    */
-
+     */
     public function __construct(UrlInterface $urlHelper, PaymentTokenManagementInterface $tokenManagement)
     {
         $this->urlHelper       = $urlHelper;
         $this->tokenManagement = $tokenManagement;
-
     }
 
     /**
@@ -76,7 +71,6 @@ class CheckVaultDataBuilder implements BuilderInterface
         $customerId   = $payment->getAdditionalInformation('customer_id');
         $paymentToken = $this->tokenManagement->getByPublicHash($publicHash, $customerId);
         $tokenValue   = $paymentToken->getGatewayToken();
-     
         $data = [
             '3DSecure' => [
                 'authenticationRedirect' => [
@@ -89,14 +83,11 @@ class CheckVaultDataBuilder implements BuilderInterface
                 'currency' => $order->getCurrencyCode(),
             ],
         ];
-
         $data = array_merge($data, [
                 'sourceOfFunds' => [
                     'token' => $tokenValue
                 ]
             ]);
-    
-
         return $data;
     }
 }

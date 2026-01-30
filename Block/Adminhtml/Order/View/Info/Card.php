@@ -25,5 +25,7 @@ class Card extends Details
     protected $applicableMethods = [
         \Mastercard\Mastercard\Model\Ui\Hpf\ConfigProvider::METHOD_CODE,
         \Mastercard\Mastercard\Model\Ui\Hosted\ConfigProvider::METHOD_CODE,
+        \Mastercard\Mastercard\Model\Ui\Paybylink\ConfigProvider::METHOD_CODE,
+
     ];
 }

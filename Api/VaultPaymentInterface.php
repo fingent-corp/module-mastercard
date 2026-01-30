@@ -19,5 +19,5 @@ namespace Mastercard\Mastercard\Api;
 
 interface VaultPaymentInterface
 {
-    const VAULT_ORDER = 'vault_order';
+    public const VAULT_ORDER = 'vault_order';
 }

@@ -63,6 +63,7 @@ class UninstallDirectMethod implements DataPatchInterface
 
     /**
      * @inheritDoc
+     *
      * @throws Exception
      */
     public function apply()
@@ -78,8 +79,9 @@ class UninstallDirectMethod implements DataPatchInterface
     }
 
     /**
-     * @param string $path
+     * Removing config path
      *
+     * @param string $path
      * @throws Exception
      */
     private function removeConfigByPath($path)
@@ -93,7 +95,7 @@ class UninstallDirectMethod implements DataPatchInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAliases()
     {
@@ -101,7 +103,7 @@ class UninstallDirectMethod implements DataPatchInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public static function getDependencies()
     {

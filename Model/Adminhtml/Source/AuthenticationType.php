@@ -23,7 +23,7 @@ use Mastercard\Mastercard\Gateway\Config\Config;
 class AuthenticationType implements OptionSourceInterface
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function toOptionArray()
     {

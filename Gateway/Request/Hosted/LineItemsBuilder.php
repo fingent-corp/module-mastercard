@@ -24,31 +24,29 @@ use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order\Item;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 
-/**
-* class LineItemsBuilder
-*
-* @package Mastercard\Mastercard\Gateway\Request\Hosted
-*/
 class LineItemsBuilder implements BuilderInterface
 {
     /**
-    * @var ConfigFactory
-    */
+     * @var ConfigFactory
+     */
     protected $configFactory;
 
     /**
-    * LineItemsBuilder constructor.
-    * @param ConfigFactory $configFactory
-    */
+     * LineItemsBuilder constructor.
+     *
+     * @param ConfigFactory $configFactory
+     */
     public function __construct(ConfigFactory $configFactory)
     {
         $this->configFactory = $configFactory;
     }
 
     /**
-    * @param OrderItemInterface[]|null $items
-    * @return array
-    */
+     * Get order items
+     *
+     * @param OrderItemInterface[]|null $items
+     * @return array
+     */
     protected function getOrderItems($items)
     {
         $result = [];
@@ -102,7 +100,6 @@ class LineItemsBuilder implements BuilderInterface
            'order' => $orderData
          ];
         }
-
         return [];
     }
 }

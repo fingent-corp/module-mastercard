@@ -48,6 +48,8 @@ class TransferFactory implements TransferFactoryInterface
     protected $request = [];
 
     /**
+     * Transferfactory constructor
+     *
      * @param Config $config
      * @param TransferBuilder $transferBuilder
      */
@@ -60,8 +62,9 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
-     * @param int|null $storeId
+     * Get Merchant username
      *
+     * @param int|null $storeId
      * @return string
      */
     protected function getMerchantUsername($storeId = null)
@@ -70,8 +73,9 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
-     * @param null $storeId
+     * Get api version
      *
+     * @param int|null $storeId
      * @return string
      */
     protected function apiVersionUri($storeId = null)
@@ -80,8 +84,9 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
-     * @param null $storeId
+     * Get merchant id
      *
+     * @param int|null $storeId
      * @return string
      */
     protected function merchantUri($storeId = null)
@@ -93,7 +98,6 @@ class TransferFactory implements TransferFactoryInterface
      * Generate a new transactionId
      *
      * @param PaymentDataObjectInterface $payment
-     *
      * @return string
      */
     protected function createTxnId(PaymentDataObjectInterface $payment)
@@ -102,8 +106,9 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
-     * @param int|null $storeId
+     * Get gateway url
      *
+     * @param int|null $storeId
      * @return mixed
      */
     protected function getGatewayUri($storeId = null)
@@ -112,8 +117,9 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
-     * @param PaymentDataObjectInterface $payment
+     * Get requet url
      *
+     * @param PaymentDataObjectInterface $payment
      * @return string
      */
     protected function getUri(PaymentDataObjectInterface $payment)
@@ -126,6 +132,8 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
+     * Get method headers
+     *
      * @return string[]
      */
     protected function getMethodHeaders(): array
@@ -136,9 +144,10 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
+     * Create and initialize a payment transaction request.
+     *
      * @param array $request
      * @param PaymentDataObjectInterface $payment
-     *
      * @return TransferInterface
      * @throws LocalizedException
      * @throws NoSuchEntityException

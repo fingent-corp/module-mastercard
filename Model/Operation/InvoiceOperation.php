@@ -25,6 +25,8 @@ use Magento\Sales\Model\Order\Payment;
 class InvoiceOperation
 {
     /**
+     * Generates and registers an invoice for the given payment.
+     *
      * @param OrderPaymentInterface $payment
      * @return OrderPaymentInterface
      * @throws LocalizedException

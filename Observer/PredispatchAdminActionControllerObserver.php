@@ -47,6 +47,8 @@ class PredispatchAdminActionControllerObserver implements ObserverInterface
     }
 
     /**
+     * Executes observer logic to check and process the feed when an admin is logged in.
+     *
      * @param Observer $observer
      * @return void
      */

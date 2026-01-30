@@ -19,13 +19,27 @@ namespace Mastercard\Mastercard\Model;
 
 class SelectedStore
 {
+
+    /**
+     * @var StoreManagerInterface
+     */
     protected $storeId;
 
+    /**
+     * Setting store id
+     *
+     * @param int $storeId
+     */
     public function setStoreId($storeId)
     {
         $this->storeId = $storeId;
     }
 
+    /**
+     * Get store id
+     *
+     * @return int
+     */
     public function getStoreId()
     {
         return $this->storeId;

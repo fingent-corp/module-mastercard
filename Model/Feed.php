@@ -31,9 +31,9 @@ use Exception;
 
 class Feed
 {
-    const XML_FEED_URL_PATH = 'mpgs/adminnotification/feed_url';
-    const XML_FREQUENCY_PATH = 'mpgs/adminnotification/frequency';
-    const CACHE_KEY = 'mpgs_admin_notifications_lastcheck';
+    public const XML_FEED_URL_PATH = 'mpgs/adminnotification/feed_url';
+    public const XML_FREQUENCY_PATH = 'mpgs/adminnotification/frequency';
+    public const CACHE_KEY = 'mpgs_admin_notifications_lastcheck';
 
     /**
      * @var ConfigInterface
@@ -107,6 +107,8 @@ class Feed
     }
 
     /**
+     * Check feed update
+     *
      * @return $this
      */
     public function checkUpdate()

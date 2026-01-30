@@ -25,9 +25,9 @@ use Mastercard\Mastercard\Gateway\Response\ThreeDSecure\CheckHandler;
 
 class ResultsDataBuilder implements BuilderInterface
 {
-    const ENROLLED = 'ENROLLED';
-    const NOT_ENROLLED = 'NOT_ENROLLED';
-    const ENROLLMENT_STATUS_UNDETERMINED = 'ENROLLMENT_STATUS_UNDETERMINED';
+    public const ENROLLED = 'ENROLLED';
+    public const NOT_ENROLLED = 'NOT_ENROLLED';
+    public const ENROLLMENT_STATUS_UNDETERMINED = 'ENROLLMENT_STATUS_UNDETERMINED';
 
     /**
      * @var ConfigInterface
@@ -36,6 +36,7 @@ class ResultsDataBuilder implements BuilderInterface
 
     /**
      * ResultsDataBuilder constructor.
+     *
      * @param ConfigInterface $config
      */
     public function __construct(ConfigInterface $config)
@@ -44,6 +45,8 @@ class ResultsDataBuilder implements BuilderInterface
     }
 
     /**
+     * Get entrollment status
+     *
      * @param PaymentDataObjectInterface $paymentDO
      * @return string
      */

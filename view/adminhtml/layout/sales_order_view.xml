@@ -19,6 +19,7 @@
         <referenceContainer name="payment_additional_info">
             <block class="Mastercard\Mastercard\Block\Adminhtml\Order\View\Info\Card" name="tns_info_details" template="Mastercard_Mastercard::order/view/info/card_details.phtml" />
             <block class="Mastercard\Mastercard\Block\Adminhtml\Order\View\Info\Ach" name="mpgs_ach_details" template="Mastercard_Mastercard::order/view/info/ach_details.phtml" />
+            <block class="Mastercard\Mastercard\Block\Adminhtml\Order\View\Createlink" name="paybylink.button" template="Mastercard_Mastercard::order/view/create_link.phtml"/>
         </referenceContainer>
     </body>
 </page>

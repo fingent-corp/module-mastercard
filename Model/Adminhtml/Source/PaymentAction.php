@@ -23,7 +23,7 @@ use Magento\Payment\Model\MethodInterface;
 class PaymentAction implements OptionSourceInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function toOptionArray()
     {

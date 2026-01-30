@@ -20,9 +20,25 @@ namespace Mastercard\Mastercard\Gateway\Request;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Quote\Model\Quote;
+use Mastercard\Mastercard\Helper\DownloadCount;
 
 class QuoteReferencesBuilder implements BuilderInterface
 {
+
+    /**
+     * @var DownloadCount
+     */
+    protected $downloadCount;
+
+    /**
+     * @param DownloadCount $downloadCount
+     */
+    public function __construct(
+         DownloadCount $downloadCount
+    ) {
+        $this->downloadCount      = $downloadCount;
+    }
+
     /**
      * @inheritDoc
      */
@@ -31,14 +47,14 @@ class QuoteReferencesBuilder implements BuilderInterface
         $paymentDO = SubjectReader::readPayment($buildSubject);
 
         /** @var Quote $quote */
-        $quote = $paymentDO->getPayment()->getQuote();
-        
+        $quote   = $paymentDO->getPayment()->getQuote();
+        $storeId = $quote->getStoreId();
         if ($quote->getReservedOrderId() == null) {
             $this->refreshOrderIdReservation($quote);
         }
-        $orderId = $quote->getReservedOrderId();
-
-        $txnId = uniqid(sprintf('%s-', $orderId));
+        $orderprefix =  $this->downloadCount->getOrderPrefix($storeId);
+        $orderId     = $orderprefix ? $orderprefix.$quote->getReservedOrderId(): $quote->getReservedOrderId();
+        $txnId       = uniqid(sprintf('%s-', $orderId));
 
         return [
             'order' => [

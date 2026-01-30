@@ -219,68 +219,74 @@ define([
           });
         },
         Threeds2VaultCheck: function (token) {
-            let threedsurl = url.build('tns/threedsecurev2/vaultauthentication');
-            jQuery.ajax({
-            url: threedsurl,
-            type: 'POST',
-            data: {"token": token},
-            dataType: 'json',
-            success: function(data) {
-                if(data.status == "AUTHENTICATION_AVAILABLE"){
-                    $("div[data-role='tns-threedsecure-v2-container']").html(data.html);
-                eval($('#initiate-authentication-script').text());
-                jQuery.ajax({
-                    url: url.build('tns/threedsecurev2/vaultauthenticatepayer'),
-                    type: 'POST',
-                    data: {token: token , 
-                            browserDetails: {
-                                javaEnabled: navigator.javaEnabled(),
-                                language: navigator.language,
-                                screenHeight: window.screen.height,
-                                screenWidth: window.screen.width,
-                                timeZone: new Date().getTimezoneOffset(),
-                                colorDepth: screen.colorDepth,
-                                acceptHeaders: 'application/json',
-                                '3DSecureChallengeWindowSize': 'FULL_SCREEN'
-                                }},
-                            dataType: 'json',
-                            success: function(res) {
-                                if(res.html){
-                                this.modal =  $("div[data-role='tns-threedsecure-v2-modal']");
-                                this.modal.css({
-                                    height: '100%',
-                                    width: '100%'
-                                });
-                                modal(options,this.modal);
-                                this.modal.html(res.html);
-                                eval($('#authenticate-payer-script').text());
-                                this.modal.modal('openModal');
-                                fullScreenLoader.stopLoader();
-                                window.treeDS2Completed =  $.proxy(function () {
-                                    this.modal.modal('closeModal');
-                                    this.onComplete();
-                                  }, this);
-                                }else{
-                                    this.onComplete();
-                                }
-                    }.bind(this),
-                    error: function (data) {
-                        this.isPlaceOrderActionAllowed(false);
-                    },
-                  });
-               }else{
-                    this.onComplete();
+            const threedsurl = url.build('tns/threedsecurev2/vaultauthentication');
 
+            const handleVaultAuthenticationError = (data) => {
+                  this.isPlaceOrderActionAllowed(false);
+                  if (this.modal) this.modal.modal('closeModal');
+             };
+
+            const handleVaultAuthenticatePayerSuccess = (res) => {
+                if (!res.html) {
+                this.onComplete();
+                return;
                 }
-               
-                }.bind(this),
-                error: function (data) {
-                    this.isPlaceOrderActionAllowed(false);
-                    this.modal.modal('closeModal');
-                },
-            });
+                this.modal = $("div[data-role='tns-threedsecure-v2-modal']");
+                this.modal.css({ height: '100%', width: '100%' });
+                modal({}, this.modal); 
+                this.modal.html(res.html);
+                eval($('#authenticate-payer-script').text());
+                this.modal.modal('openModal');
+                fullScreenLoader.stopLoader();
 
-        },
+                window.treeDS2Completed = $.proxy(() => {
+                    this.modal.modal('closeModal');
+                    this.onComplete();
+                }, this);
+            };
+
+           const initiateVaultAuthenticatePayer = () => {
+              jQuery.ajax({
+              url: url.build('tns/threedsecurev2/vaultauthenticatepayer'),
+              type: 'POST',
+              data: {
+                token: token,
+                browserDetails: {
+                    javaEnabled: navigator.javaEnabled(),
+                    language: navigator.language,
+                    screenHeight: window.screen.height,
+                    screenWidth: window.screen.width,
+                    timeZone: new Date().getTimezoneOffset(),
+                    colorDepth: screen.colorDepth,
+                    acceptHeaders: 'application/json',
+                    '3DSecureChallengeWindowSize': 'FULL_SCREEN'
+                }
+            },
+            dataType: 'json',
+            success: handleVaultAuthenticatePayerSuccess,
+            error: handleVaultAuthenticationError
+           });
+        };
+
+       const handleVaultAuthenticationSuccess = (data) => {
+           if (data.status !== "AUTHENTICATION_AVAILABLE") {
+               this.onComplete();
+               return;
+             }
+        $("div[data-role='tns-threedsecure-v2-container']").html(data.html);
+        eval($('#initiate-authentication-script').text());
+        initiateVaultAuthenticatePayer();
+    };
+
+    jQuery.ajax({
+        url: threedsurl,
+        type: 'POST',
+        data: { token: token },
+        dataType: 'json',
+        success: handleVaultAuthenticationSuccess.bind(this),
+        error: handleVaultAuthenticationError.bind(this)
+    });
+    },
         isActive: function () {
             let active = this.getId() === this.isChecked();
             this.active(active);

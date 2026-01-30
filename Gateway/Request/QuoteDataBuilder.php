@@ -25,7 +25,7 @@ use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 class QuoteDataBuilder implements BuilderInterface
 {
 
-    const ORDER_DESCRIPTION = 'Ordered Goods';
+    public const ORDER_DESCRIPTION = 'Ordered Goods';
     /**
      * @var ConfigFactory
      */
