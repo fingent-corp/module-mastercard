@@ -29,6 +29,8 @@ class TransferFactoryProcess extends TransferFactory
     protected $httpMethod = Rest::POST;
 
     /**
+     * Request Url
+     *
      * @param PaymentDataObjectInterface $payment
      * @return string
      */

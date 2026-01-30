@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://www.fingent.com/"><img alt="Fingent logo" height="50px" src="https://www.fingent.com/wp-content/uploads/Fingent-Logo-01.png"/></a>&nbsp;&nbsp;<img alt="MC logo" height="50px" src="https://mpgs.fingent.wiki/wp-content/uploads/2025/04/mastercard-logo.png"/>
+<a href="https://www.fingent.com/"><img alt="Fingent logo" height="50px" src="https://www.fingent.com/wp-content/uploads/Fingent-Logo-01.png"/></a>&nbsp;&nbsp;<img alt="MC logo" height="50px" src="https://www.mastercard.co.in/content/dam/public/mastercardcom/in/en/logos/mc-logo-52.svg"/>
 </p>
 
 ## Overview
@@ -16,7 +16,7 @@ The Mastercard Gateway Magento extension works with these Magento platforms:
 - Community/Open-Source Edition
 - Enterprise/Commerce/Cloud Edition
 
-Plugin versions 3.0.0 and 3.0.1 are developed and tested for compatibility with Magento version 2.4.7 and 2.4.8.
+Plugin versions 3.0.0 , 3.0.1 and 3.0.2 are developed and tested for compatibility with Magento version 2.4.7 and 2.4.8.
 
 Note : Plugin version 2.4.7 has been tested for compatibility only with Magento versions 2.4.3 to 2.4.7.
 
@@ -34,6 +34,8 @@ The Mastercard Payment Module is packed with tools to make payment processing ea
    With PayPal, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your Merchant Identification (MID) is set up for PayPal transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
 - **KNET (Supported in Hosted Checkout Only)**<br/>
    With KNET, customers can make payments quickly and effortlessly through the hosted checkout page. To use this option, ensure that your MID is set up for KNET transactions. Once enabled, this feature provides a seamless and hassle-free payment experience, allowing customers to complete their purchases with just a few simple taps.
+
+   Note: KNET payment feature relies on real-time data integration with an external partner service. While we have optimized the application for stability, occasional service interruptions from the provider may temporarily impact availability.
 - **Automated Clearing House (ACH)**<br/>
    Automated Clearing House (ACH) payments let customers pay directly from their bank accounts through electronic transfers, making bank-to-bank payments easy and fast.
 
@@ -41,6 +43,8 @@ The Mastercard Payment Module is packed with tools to make payment processing ea
 
 - **Hosted Checkout**<br/>
    This feature lets your customers enter their payment details on a readymade secure checkout page provided directly by Mastercard. It keeps sensitive information safe while giving your customers a smooth and hassle-free payment experience.
+- **Hosted Checkout - Pay by Link**<br/>
+   This feature empowers merchants to generate secure payment URLs to share via email. It redirects customers to a trusted Mastercard checkout page, allowing you to accept payments instantly without needing a website or technical integration.
 - **Hosted Payment Session**<br/>
    This feature lets you customize the layout and design of your payment page to match your brand, while still meeting strict PCI security standards. It makes managing security easier without compromising the user experience.
   

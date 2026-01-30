@@ -83,6 +83,8 @@ class TokenCreateHandler implements HandlerInterface
     }
 
     /**
+     * For getting configuration.
+     *
      * @return ConfigInterface
      */
     protected function getConfig()
@@ -91,6 +93,8 @@ class TokenCreateHandler implements HandlerInterface
     }
 
     /**
+     * For getting token value.
+     *
      * @param array $response
      * @return string
      */
@@ -104,6 +108,7 @@ class TokenCreateHandler implements HandlerInterface
 
     /**
      * Convert payment token details to JSON
+     *
      * @param array $details
      * @return string
      */
@@ -138,6 +143,7 @@ class TokenCreateHandler implements HandlerInterface
 
     /**
      * Get payment extension attributes
+     *
      * @param InfoInterface $payment
      * @return OrderPaymentExtensionInterface
      */
@@ -152,6 +158,8 @@ class TokenCreateHandler implements HandlerInterface
     }
 
     /**
+     * Get payment token.
+     *
      * @param array $response
      * @return PaymentTokenInterface
      * @throws Exception
@@ -192,6 +200,8 @@ class TokenCreateHandler implements HandlerInterface
     }
 
     /**
+     * Get expiry date
+     *
      * @param string $exprMonth
      * @param string $exprYear
      * @return string
@@ -209,6 +219,8 @@ class TokenCreateHandler implements HandlerInterface
 
     // @codingStandardsIgnoreStart
     /**
+     * Get cc types
+     *
      * @param string $brand
      * @return string
      */

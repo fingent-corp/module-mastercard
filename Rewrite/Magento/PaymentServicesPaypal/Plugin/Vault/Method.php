@@ -22,9 +22,12 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Vault\Model\Method\Vault as VaultMethod;
 use Magento\Vault\Model\PaymentTokenManagement;
 
-  class Method extends \Magento\PaymentServicesPaypal\Plugin\Vault\Method
-  {
+class Method extends \Magento\PaymentServicesPaypal\Plugin\Vault\Method
+{
 
+    /**
+     * @var PaymentTokenManagement
+     */
     protected $tokenManagement;
     
     /**
@@ -45,6 +48,4 @@ use Magento\Vault\Model\PaymentTokenManagement;
         }
         return $result;
     }
-
-   }
-
+}

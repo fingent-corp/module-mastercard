@@ -31,4 +31,10 @@
     <event name="sales_order_payment_void">
         <observer name="mpgs_sales_order_void" instance="Mastercard\Mastercard\Observer\SalesOrderPaymentVoidObserver"/>
     </event>
+    <event name="sales_order_place_before">
+        <observer name="change_order_increment_id" instance="Mastercard\Mastercard\Observer\OrderPrefixObserver" />
+	</event>
+    <event name="order_cancel_after">
+        <observer name="mpgs_revoke_on_cancel" instance="Mastercard\Mastercard\Observer\RevokeOnOrderCancel"/>
+    </event>
 </config>

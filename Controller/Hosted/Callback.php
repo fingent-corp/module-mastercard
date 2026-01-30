@@ -38,11 +38,10 @@ use Magento\Payment\Gateway\Command\CommandPool;
  * Class Callback
  * call back controller for creating Magento order
  * Used for off site redirect payment
- * @package Mastercard\Mastercard\Controller\Hosted
  */
 class Callback extends Action
 {
-    const CHECKOUT_CART_URL = 'checkout/cart';
+    public const CHECKOUT_CART_URL = 'checkout/cart';
     /**
      * @var Session
      */
@@ -58,11 +57,10 @@ class Callback extends Action
      */
     private $logger;
 
-      /**
+    /**
      * @var OrderSender
      */
     private $orderSender;
-    
     
     /**
      * @var QuoteFactory
@@ -74,12 +72,12 @@ class Callback extends Action
      */
     private $order;
     
-     /**
+    /**
      * @var QuoteManagement
      */
     private $quoteManagement;
     
-     /**
+    /**
      * @var CustomerSession
      */
     private $customerSession;
@@ -96,15 +94,17 @@ class Callback extends Action
 
     /**
      * Callback constructor.
+     *
      * @param Session $checkoutSession
-     * @param QuoteManagement $quoteManagement
      * @param JsonFactory $jsonFactory
      * @param Context $context
      * @param LoggerInterface $logger
+     * @param QuoteManagement $quoteManagement
      * @param OrderInterface $order
      * @param QuoteFactory $quoteFactory
      * @param OrderSender $orderSender
      * @param CustomerSession $customerSession
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
      * @param CommandPool $commandPool
      */
     public function __construct(
@@ -119,7 +119,6 @@ class Callback extends Action
         CustomerSession $customerSession,
         PaymentDataObjectFactory $paymentDataObjectFactory,
         CommandPool $commandPool
-        
     ) {
         parent::__construct($context);
         $this->checkoutSession          = $checkoutSession;
@@ -132,15 +131,15 @@ class Callback extends Action
         $this->customerSession          = $customerSession;
         $this->paymentDataObjectFactory = $paymentDataObjectFactory;
         $this->commandPool              = $commandPool;
-
     }
 
     /**
      * Redirect Callback
+     *
      * Creating magento order after successful payment
      *
      * @return ResultInterface|ResponseInterface
-    */
+     */
     public function execute()
     {
     
@@ -150,9 +149,9 @@ class Callback extends Action
                 $quote = $this->checkoutSession->getQuote();
                 $paymentDataObject = $this->paymentDataObjectFactory->create($quote->getPayment());
                 if (!$this->customerSession->isLoggedIn()) {
-                  $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
-                  $quote->setCustomerFirstname($quote->getBillingAddress()->getFirstname());
-                  $quote->setCustomerLastname($quote->getBillingAddress()->getLastname());
+                    $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
+                    $quote->setCustomerFirstname($quote->getBillingAddress()->getFirstname());
+                    $quote->setCustomerLastname($quote->getBillingAddress()->getLastname());
                 }
                 $quote->collectTotals()->save();
                 $orders  = $this->quoteManagement->submit($quote);

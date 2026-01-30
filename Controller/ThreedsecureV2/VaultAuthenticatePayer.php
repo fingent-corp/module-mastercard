@@ -33,49 +33,48 @@ use Mastercard\Mastercard\Exception\SystemBusy;
 use Psr\Log\LoggerInterface;
 
 /**
-* Class VaultAuthenticatePayer
-* For vault authenticate payer check
-* @package Mastercard\Mastercard\Controller\ThreedsecureV2
-*/
+ * Class VaultAuthenticatePayer
+ * For vault authenticate payer check
+ */
 class VaultAuthenticatePayer extends Action implements HttpPostActionInterface
 {
-    const COMMAND_NAME = 'vault_authenticate_payer';
+    public const COMMAND_NAME = 'vault_authenticate_payer';
 
     /**
-    * @var PaymentDataObjectFactory
-    */
+     * @var PaymentDataObjectFactory
+     */
     private $paymentDataObjectFactory;
 
     /**
-    * @var JsonFactory
-    */
+     * @var JsonFactory
+     */
     private $jsonFactory;
 
     /**
-    * @var CommandPool
-    */
+     * @var CommandPool
+     */
     private $commandPool;
 
     /**
-    * @var Session
-    */
+     * @var Session
+     */
     private $checkoutSession;
 
     /**
-    * @var LoggerInterface
-    */
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
-    * Check constructor.
-    *
-    * @param PaymentDataObjectFactory $paymentDataObjectFactory
-    * @param JsonFactory $jsonFactory
-    * @param CommandPool $commandPool
-    * @param Context $context
-    * @param Session $checkoutSession
-    * @param LoggerInterface $logger
-    */
+     * Check constructor.
+     *
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
+     * @param JsonFactory $jsonFactory
+     * @param CommandPool $commandPool
+     * @param Context $context
+     * @param Session $checkoutSession
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         PaymentDataObjectFactory $paymentDataObjectFactory,
         JsonFactory $jsonFactory,
@@ -93,10 +92,10 @@ class VaultAuthenticatePayer extends Action implements HttpPostActionInterface
     }
 
     /**
-    * Dispatch request
-    *
-    * @return ResultInterface|ResponseInterface
-    */
+     * Dispatch request
+     *
+     * @return ResultInterface|ResponseInterface
+     */
     public function execute()
     {
         $jsonResult = $this->jsonFactory->create();
@@ -139,7 +138,6 @@ class VaultAuthenticatePayer extends Action implements HttpPostActionInterface
                     'message' => __('An error occurred while processing your transaction'),
                 ]);
         }
-
         return $jsonResult;
     }
 }

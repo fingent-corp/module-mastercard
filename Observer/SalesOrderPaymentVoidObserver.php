@@ -21,26 +21,20 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
 
-/**
- * Class SalesOrderPaymentVoidObserver
- *
- * @package Mastercard\Mastercard\Observer
- */
 class SalesOrderPaymentVoidObserver implements ObserverInterface
 {
 
-
     /**
      * Sale Order status changed to Cancelled after void transaction
-     * @param Observer $observer
      *
+     * @param Observer $observer
      * @return void
-    */
+     */
     public function execute(Observer $observer)
     {
     
-      $order     = $observer->getPayment()->getOrder();
-      $order->setState(Order::STATE_CANCELED)->setStatus(Order::STATE_CANCELED);
-      $order->save();
+        $order     = $observer->getPayment()->getOrder();
+        $order->setState(Order::STATE_CANCELED)->setStatus(Order::STATE_CANCELED);
+        $order->save();
     }
 }

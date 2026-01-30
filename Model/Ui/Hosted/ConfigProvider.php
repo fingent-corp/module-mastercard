@@ -23,7 +23,7 @@ use Mastercard\Mastercard\Gateway\Config\Config;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    const METHOD_CODE = 'tns_hosted';
+    public const METHOD_CODE = 'tns_hosted';
 
     /**
      * @var Config

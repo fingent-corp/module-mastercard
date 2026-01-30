@@ -35,6 +35,8 @@ class AfterGetPlugin
     private $orderExtensionFactory;
 
     /**
+     * Afterplugin constructor
+     *
      * @param AuthorizationInterface $authorization
      * @param OrderExtensionFactory $orderExtensionFactory
      */
@@ -46,12 +48,14 @@ class AfterGetPlugin
         $this->orderExtensionFactory = $orderExtensionFactory;
     }
 
-    /**
-     * @param OrderRepositoryInterface $subject
-     * @param Order $result
-     *
-     * @return Order
-     */
+     /**
+      * Afterplugin for OrderRepository::get.
+      *
+      * @param OrderRepositoryInterface $subject
+      * @param Order $result
+      *
+      * @return Order
+      */
     public function afterGet(OrderRepositoryInterface $subject, $result)
     {
         if (!$this->authorization->isAllowed('Mastercard_Mastercard::sales_order_view_mastercard_payment_token')) {

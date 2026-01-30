@@ -45,6 +45,8 @@ class PaymentHandler implements HandlerInterface
     }
 
     /**
+     * For safely retrieve a value
+     *
      * @param array $data
      * @param string $field
      * @return string|null
@@ -58,6 +60,8 @@ class PaymentHandler implements HandlerInterface
 
 
     /**
+     * Import payment response
+     *
      * @param Payment $payment
      * @param array $response
      * @throws LocalizedException

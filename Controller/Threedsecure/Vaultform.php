@@ -30,34 +30,34 @@ use Magento\Checkout\Model\Session;
 use Mastercard\Mastercard\Gateway\Response\ThreeDSecure\CheckHandler;
 
 /**
-* Class Vaultform
-* For paasing required information to iframe
-* @package Mastercard\Mastercard\Controller\Threedsecure
-*/
-class Vaultform  extends Action
+ * Class Vaultform
+ * For paasing required information to iframe
+ */
+class Vaultform extends Action
 {
     /**
-    * @var RawFactory
-    */
-    protected $rawFactory;
+     * @var RawFactory
+     */
+     protected $rawFactory;
 
     /**
-    * @var LayoutFactory
-    */
-    protected $layoutFactory;
+     * @var LayoutFactory
+     */
+     protected $layoutFactory;
 
     /**
-    * @var Session
-    */
-    protected $session;
+     * @var Session
+     */
+     protected $session;
 
     /**
-    * Acs constructor.
-    * @param Context $context
-    * @param RawFactory $pageFactory
-    * @param LayoutFactory $layoutFactory
-    * @param Session $session
-    */
+     * Acs constructor.
+     *
+     * @param Context $context
+     * @param RawFactory $rawFactory
+     * @param LayoutFactory $layoutFactory
+     * @param Session $session
+     */
     public function __construct(
         Context $context,
         RawFactory $rawFactory,
@@ -71,12 +71,12 @@ class Vaultform  extends Action
     }
 
     /**
-    * Dispatch request
-    *
-    * @return ResultInterface|ResponseInterface
-    * @throws LocalizedException
-    * @throws NoSuchEntityException
-    */
+     * Dispatch request
+     *
+     * @return ResultInterface|ResponseInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function execute()
     {
         /* @var Template $block */
@@ -97,7 +97,7 @@ class Vaultform  extends Action
             
         $payment->setAdditionalInformation(CheckHandler::THREEDSECURE_CHECK, $data);
         $payment->save();
-       $block = $this->layoutFactory
+        $block = $this->layoutFactory
             ->create()
             ->createBlock(\Mastercard\Mastercard\Block\Threedsecure\Vaultform::class);
 

@@ -40,7 +40,9 @@ class ExtraDataBuilder implements BuilderInterface
 
     /**
      * ExtraDataBuilder constructor.
+     *
      * @param ConfigInterface $config
+     * @param Json $json
      * @param string $field
      */
     public function __construct(

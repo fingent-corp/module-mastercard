@@ -104,3 +104,5 @@ routingNumber,Routing Number
 secCode,SEC Code
 It is impossible to continue with this Payment Method. Please try again later.,It is impossible to continue with this Payment Method. Please try again later.
 funding_status,Funding Status
+Security Code,Security Code
+pay_by_link,Mastercard Gateway Hosted Checkout Pay By Link

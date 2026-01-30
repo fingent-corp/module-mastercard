@@ -52,6 +52,8 @@ class Version extends Heading
     }
 
     /**
+     * Get api version info
+     *
      * @return Phrase
      */
     protected function getVersionInfo()
@@ -60,6 +62,8 @@ class Version extends Heading
     }
 
     /**
+     * Get api version
+     *
      * @return string|null
      */
     protected function getVersionNumber()

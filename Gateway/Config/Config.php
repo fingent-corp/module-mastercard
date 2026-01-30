@@ -29,16 +29,16 @@ use Magento\Store\Model\ScopeInterface;
 
 class Config extends \Magento\Payment\Gateway\Config\Config
 {
-    const WEB_HOOK_RESPONSE_URL = 'tns/webhook/response';
-    const API_EUROPE = 'api_eu';
-    const API_AMERICA = 'api_na';
-    const API_ASIA = 'api_as';
-    const API_INDIA = 'api_in';
-    const API_OTHER = 'api_other';
-    const TEST_PREFIX = 'TEST';
-    const AUTHENTICATION_TYPE_PASSWORD = 'password';
-    const AUTHENTICATION_TYPE_CERTIFICATE = 'certificate';
-    const HTTPS_PREFIX = 'https://';
+    public const WEB_HOOK_RESPONSE_URL = 'tns/webhook/response';
+    public const API_EUROPE = 'api_eu';
+    public const API_AMERICA = 'api_na';
+    public const API_ASIA = 'api_as';
+    public const API_INDIA = 'api_in';
+    public const API_OTHER = 'api_other';
+    public const TEST_PREFIX = 'TEST';
+    public const AUTHENTICATION_TYPE_PASSWORD = 'password';
+    public const AUTHENTICATION_TYPE_CERTIFICATE = 'certificate';
+    public const HTTPS_PREFIX = 'https://';
     /**
      * @var UrlInterface
      */
@@ -108,6 +108,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * For getting payment method.
+     *
      * @return string
      */
     public function getMethod()
@@ -116,8 +118,9 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
-     * @param null $storeId
+     * For getting merchant id.
      *
+     * @param int $storeId
      * @return string
      */
     public function getMerchantId($storeId = null)
@@ -126,8 +129,9 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
-     * @param null $storeId
+     * Checking is it test mode.
      *
+     * @param int $storeId
      * @return mixed|null
      */
     public function isTestMode($storeId = null)
@@ -136,8 +140,9 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
-     * @param string|int|null $storeId
+     * For getting merchant password.
      *
+     * @param string|int|null $storeId
      * @return string
      */
     public function getMerchantPassword($storeId = null)
@@ -146,6 +151,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * Checking ssl authentication is enabled or not.
+     *
      * @param string|int|null $storeId
      *
      * @return bool
@@ -156,51 +163,54 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
-     * @param null $storeId
+     * For getting frontend url.
      *
+     * @param string|int|null $storeId
      * @return string
      */
     public function getFrontendAreaUrl($storeId = null)
     {
-            $url = $this->getValue('api_gateway_other', $storeId);
-            if (empty($url)) {
-                return '';
-            }
-            if (!str_starts_with($url, self::HTTPS_PREFIX)) {
-              $url = self::HTTPS_PREFIX . ltrim($url, '/');
-            }
-            if (substr($url, -1) !== '/') {
-                $url .= '/';
-            }
+        $url = $this->getValue('api_gateway_other', $storeId);
+        if (empty($url)) {
+            return '';
+        }
+        if (!str_starts_with($url, self::HTTPS_PREFIX)) {
+            $url = self::HTTPS_PREFIX . ltrim($url, '/');
+        }
+        if (substr($url, -1) !== '/') {
+            $url .= '/';
+        }
 
-            return $url;
+        return $url;
     }
 
     /**
-     * @param null $storeId
+     * For getting api area url.
+     *
+     * @param string|int|null $storeId
      *
      * @return string
      */
     public function getApiAreaUrl($storeId = null)
     {
         $pkiPostfix = $this->isCertificateAutherntification($storeId) ? '_pki' : '';
-            $url = $this->getValue('api_gateway_other' . $pkiPostfix, $storeId);
-            if (empty($url)) {
-                return '';
-            }
-            if (!str_starts_with($url, self::HTTPS_PREFIX)) {
-              $url = self::HTTPS_PREFIX . ltrim($url, '/');
-            }
-            if (substr($url, -1) !== '/') {
-                $url .= '/';
-            }
-
-            return $url;
-        
+        $url = $this->getValue('api_gateway_other' . $pkiPostfix, $storeId);
+        if (empty($url)) {
+            return '';
+        }
+        if (!str_starts_with($url, self::HTTPS_PREFIX)) {
+            $url = self::HTTPS_PREFIX . ltrim($url, '/');
+        }
+        if (substr($url, -1) !== '/') {
+            $url .= '/';
+        }
+        return $url;
     }
 
     /**
-     * @param null $storeId
+     * For getting api url.
+     *
+     * @param string|int|null $storeId
      *
      * @return string
      */
@@ -210,7 +220,9 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
-     * @param null $storeId
+     * For getting webhook secret.
+     *
+     * @param string|int|null $storeId
      *
      * @return string
      */
@@ -220,6 +232,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * For getting webhook notification url.
+     *
      * @param null|int $storeId
      *
      * @return mixed|null|string
@@ -237,6 +251,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * Checking need to send  line items in request or not.
+     *
      * @param int|null $storeId
      *
      * @return bool
@@ -247,6 +263,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * For getting ssl certification path.
+     *
      * @param int|string|null $storeId
      *
      * @return string|null
@@ -270,6 +288,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * For getting ssl key path.
+     *
      * @param int|string|null $storeId
      *
      * @return string|null
@@ -293,6 +313,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * For getting website id.
+     *
      * @param int|string|null $storeId
      *
      * @return int
@@ -305,6 +327,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * Checkignthe hosted checkout form type.
+     *
      * @param int|string|null $storeId
      *
      * @return int
@@ -317,6 +341,8 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
+     * Checking terms and conditions enbaled or not in checkout.
+     *
      * @param int|string|null $storeId
      *
      * @return int

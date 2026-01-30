@@ -28,6 +28,8 @@ class GetTransferFactory extends TransferFactory
     protected $httpMethod = 'GET';
 
     /**
+     * Get Request URL
+     *
      * @param array $request
      * @param int|null $storeId
      * @return string
@@ -40,6 +42,8 @@ class GetTransferFactory extends TransferFactory
     }
 
     /**
+     * Create and initialize a payment transaction request.
+     *
      * @param array $request
      * @param PaymentDataObjectInterface $payment
      * @return TransferInterface

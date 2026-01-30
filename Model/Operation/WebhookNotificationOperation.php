@@ -32,6 +32,7 @@ class WebhookNotificationOperation
 
     /**
      * WebhookNotificationOperation constructor.
+     *
      * @param TransactionRepositoryInterface $transactionRepository
      */
     public function __construct(
@@ -41,6 +42,8 @@ class WebhookNotificationOperation
     }
 
     /**
+     * Update the details with webhook notification
+     *
      * @param OrderPaymentInterface $payment
      * @return OrderPaymentInterface
      * @throws LocalizedException

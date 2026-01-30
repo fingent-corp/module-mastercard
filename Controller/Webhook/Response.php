@@ -41,10 +41,10 @@ use Psr\Log\LoggerInterface;
 
 class Response extends Action implements CsrfAwareActionInterface
 {
-    const X_HEADER_SECRET = 'X-Notification-Secret';
-    const X_HEADER_ATTEMPT = 'X-Notification-Attempt';
-    const X_HEADER_ID = 'X-Notification-Id';
-    const LOG_TYPE = 'webhook';
+    public const X_HEADER_SECRET = 'X-Notification-Secret';
+    public const X_HEADER_ATTEMPT = 'X-Notification-Attempt';
+    public const X_HEADER_ID = 'X-Notification-Id';
+    public const LOG_TYPE = 'webhook';
 
     /**
      * @var RawFactory
@@ -93,6 +93,7 @@ class Response extends Action implements CsrfAwareActionInterface
 
     /**
      * Response constructor.
+     *
      * @param Context $context
      * @param RawFactory $rawFactory
      * @param OrderRepositoryInterface $orderRepository
@@ -185,6 +186,8 @@ class Response extends Action implements CsrfAwareActionInterface
     }
 
     /**
+     * For logging webhook request
+     *
      * @param string $message
      * @param string $callable
      * @return void
@@ -207,6 +210,8 @@ class Response extends Action implements CsrfAwareActionInterface
     }
 
     /**
+     * Getting data
+     *
      * @return array
      * @throws InvalidArgumentException
      */
@@ -287,17 +292,16 @@ class Response extends Action implements CsrfAwareActionInterface
 
         $logMessage = __("MasterCard Gateway WebHook Success");
         $this->logWebHookRequest($logMessage, 'info');
-
         $page->setStatusHeader(200);
         return $page->setContents('');
     }
 
     /**
      * Create exception in case CSRF validation failed.
+     *
      * Return null if default exception will suffice.
      *
      * @param RequestInterface $request
-     *
      * @return InvalidRequestException|null
      */
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
@@ -307,6 +311,7 @@ class Response extends Action implements CsrfAwareActionInterface
 
     /**
      * Perform custom request validation.
+     *
      * Return null if default validation is needed.
      *
      * @param RequestInterface $request

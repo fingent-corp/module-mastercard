@@ -31,10 +31,10 @@ use Mastercard\Mastercard\Gateway\Config\ConfigInterface;
 
 class VerificationStrategyCommand implements CommandInterface
 {
-    const PROCESS_3DS_RESULT = '3ds_process';
-    const CREATE_TOKEN = 'create_token';
-    const CREATE_ORDER_TOKEN = 'tokenize';
-    const METHOD_VERIFY = 'order';
+    public const PROCESS_3DS_RESULT = '3ds_process';
+    public const CREATE_TOKEN = 'create_token';
+    public const CREATE_ORDER_TOKEN = 'tokenize';
+    public const METHOD_VERIFY = 'order';
 
     /**
      * @var Command\CommandPoolInterface
@@ -75,6 +75,8 @@ class VerificationStrategyCommand implements CommandInterface
     }
 
     /**
+     * Check for threed supported or not
+     *
      * @param PaymentDataObjectInterface $paymentDO
      * @return bool
      */
@@ -137,8 +139,7 @@ class VerificationStrategyCommand implements CommandInterface
 
         // Vault enabled from configuration
         // 'Save for later use' checked on frontend
-        if (
-            $this->config->isVaultEnabled() &&
+        if ($this->config->isVaultEnabled() &&
             $paymentInfo->getAdditionalInformation(VaultConfigProvider::IS_ACTIVE_CODE) &&
             !$this->getVaultToken($paymentInfo)
         ) {
@@ -161,11 +162,11 @@ class VerificationStrategyCommand implements CommandInterface
     }
     
     /**
-    * Returns paymenttoken
-    *
-    * @param $paymentInfo
-    * @return string
-    */
+     * Returns paymenttoken
+     *
+     * @param object $paymentInfo
+     * @return string
+     */
     public function getVaultToken($paymentInfo)
     {
         $extensionAttributes = $paymentInfo->getExtensionAttributes();

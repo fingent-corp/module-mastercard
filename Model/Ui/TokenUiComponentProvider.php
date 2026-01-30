@@ -59,6 +59,7 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
      * @param TokenUiComponentInterfaceFactory $componentFactory
      * @param UrlInterface $urlBuilder
      * @param VaultConfigProvider $vaultConfigProvider
+     * @param Json $json
      */
     public function __construct(
         ConfigFactory $configFactory,
@@ -76,6 +77,7 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
 
     /**
      * Get UI component for token
+     *
      * @param PaymentTokenInterface $paymentToken
      * @return TokenUiComponentInterface
      * @throws \InvalidArgumentException
@@ -89,7 +91,7 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
         // then do not render the vault method in hand.
         // Not the best way to decide if a token payment needs to be rendered, need to refactor it
         if (!isset($jsonDetails['merchant_id']) || $this->config->getMerchantId() !== $jsonDetails['merchant_id']) {
-           return $this->componentFactory->create([
+            return $this->componentFactory->create([
                 'config' => [],
                 'name' => null
             ]);

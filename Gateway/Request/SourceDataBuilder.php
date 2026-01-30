@@ -22,8 +22,8 @@ use Magento\Framework\App\State;
 
 class SourceDataBuilder implements BuilderInterface
 {
-    const TXN_SOURCE_FRONTEND = 'INTERNET';
-    const TXN_SOURCE_ADMIN = 'MOTO';
+    public const TXN_SOURCE_FRONTEND = 'INTERNET';
+    public const TXN_SOURCE_ADMIN = 'MOTO';
 
     /**
      * @var State

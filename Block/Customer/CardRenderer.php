@@ -33,6 +33,8 @@ class CardRenderer extends AbstractCardRenderer
     }
 
     /**
+     * Get last 4 digits of card number
+     *
      * @return string
      */
     public function getNumberLast4Digits()
@@ -41,6 +43,8 @@ class CardRenderer extends AbstractCardRenderer
     }
 
     /**
+     * Get expriry date
+     *
      * @return string
      */
     public function getExpDate()
@@ -49,6 +53,8 @@ class CardRenderer extends AbstractCardRenderer
     }
 
     /**
+     * Get icon url
+     *
      * @return string
      */
     public function getIconUrl()
@@ -57,6 +63,8 @@ class CardRenderer extends AbstractCardRenderer
     }
 
     /**
+     * Get icon height
+     *
      * @return int
      */
     public function getIconHeight()
@@ -65,6 +73,8 @@ class CardRenderer extends AbstractCardRenderer
     }
 
     /**
+     * Get icon width
+     *
      * @return int
      */
     public function getIconWidth()

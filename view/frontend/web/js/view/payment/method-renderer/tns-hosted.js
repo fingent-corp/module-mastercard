@@ -133,7 +133,8 @@ define(
                     $.proxy(this.paymentAdapterLoaded, this),
                     $.proxy(this.errorCallback, this),
                     $.proxy(this.cancelCallback, this),
-                    $.proxy(this.completedCallback, this)
+                    $.proxy(this.completedCallback, this),
+                    $.proxy(this.timeoutCallback, this)
                 );
             },
 
@@ -224,6 +225,12 @@ define(
                 alert({
                     content: 'Payment cancelled.'
                 });
+            },
+
+            timeoutCallback: function () { 
+                this.isPlaceOrderActionAllowed(true);
+                let cartUrl = url.build('checkout/cart');
+                window.location.href = cartUrl;
             },
 
             completedCallback: function(resultIndicator, sessionVersion) {

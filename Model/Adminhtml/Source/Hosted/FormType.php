@@ -20,16 +20,13 @@ namespace Mastercard\Mastercard\Model\Adminhtml\Source\Hosted;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Payment\Model\MethodInterface;
 
-/**
- * class FormType
- * @package Mastercard\Mastercard\Model\Adminhtml\Source\Hosted
- */
 class FormType implements OptionSourceInterface
 {
     /**
      * For getting different form types
+     *
      * {@inheritdoc}
-    */
+     */
     public function toOptionArray()
     {
         return [

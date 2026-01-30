@@ -34,6 +34,13 @@
                 	<label>Is Downloaded</label>
                  	<config_path>payment/tns/is_downloaded</config_path>
                	</field>
+                <field id="order_prefix" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Order Prefix</label>
+                    <frontend_class>validate-length maximum-length-10</frontend_class>
+                    <validate>validate-alphanum</validate>
+                    <config_path>payment/tns/order_prefix</config_path>
+                    <comment>Only alphanumeric supported (max 10 chars). Warning: The Gateway prefix is appended to the existing Database prefix; it does not replace it. Ensure the combined length does not exceed the total order prefix character limit 10</comment>
+                </field>
                 <group id="hosted" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Hosted Checkout</label>
                     <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -147,7 +154,22 @@
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/tns_hosted/send_line_items</config_path>
                     </field>
-                    <field id="sort_order" translate="label" type="text" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="timeout" translate="label" type="select" sortOrder="215" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable Timeout</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/tns_hosted/timeout</config_path>
+                        <comment>When enabled, the payer must complete the payment within the defined seconds.</comment>
+                    </field>
+                     <field id="timeout_value" translate="label" type="text" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Timeout Duration</label>
+                        <config_path>payment/tns_hosted/timeout_value</config_path>
+                        <comment>Please enter a whole number between 600 and 1800. decimals, letters, and special characters are not permitted.</comment>
+                        <validate>required-entry validate-digits validate-digits-range digits-range-600-1800</validate>                        
+                        <depends>
+                             <field id="timeout">1</field>
+                        </depends>
+                    </field>
+                    <field id="sort_order" translate="label" type="text" sortOrder="225" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Sort Order</label>
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/tns_hosted/sort_order</config_path>
@@ -271,6 +293,267 @@
                             <config_path>payment/tns_hosted/custom_create_session_request_data</config_path>
                         </field>
                     </group>
+                </group>
+                <group id="pay_by_link" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hosted Checkout - Pay By Link (For Admin Only)</label>
+                    <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/pay_by_link/active</config_path>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                        <config_path>payment/pay_by_link/title</config_path>
+                    </field>
+                    <field id="gateway_action" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Action</label>
+                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\PaymentAction</source_model>
+                        <config_path>payment/pay_by_link/gateway_action</config_path>
+                    </field>
+                    <field id="authentication_type" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Authentication Type</label>
+                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\AuthenticationType</source_model>
+                        <config_path>payment/pay_by_link/authentication_type</config_path>
+                    </field>
+                    <field id="api_username" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API Username</label>
+                        <config_path>payment/pay_by_link/api_username</config_path>
+                    </field>
+                    <field id="api_password" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API Password</label>
+                        <config_path>payment/pay_by_link/api_password</config_path>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <depends>
+                            <field id="authentication_type">password</field>
+                        </depends>
+                    </field>
+                    <field id="api_cert" translate="label" type="file" sortOrder="35" showInDefault="1" showInWebsite="1">
+                        <label>SSL Certificate</label>
+                        <config_path>payment/pay_by_link/api_cert</config_path>
+                        <backend_model>Mastercard\Mastercard\Model\System\Config\Backend\Cert</backend_model>
+                        <depends>
+                            <field id="authentication_type">certificate</field>
+                        </depends>
+                    </field>
+                    <field id="api_key" translate="label" type="file" sortOrder="40" showInDefault="1" showInWebsite="1">
+                        <label>SSL Key</label>
+                        <config_path>payment/pay_by_link/api_key</config_path>
+                        <backend_model>Mastercard\Mastercard\Model\System\Config\Backend\Cert</backend_model>
+                        <depends>
+                            <field id="authentication_type">certificate</field>
+                        </depends>
+                    </field>
+                    <field id="api_gateway_other" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Gateway URL</label>
+                        <config_path>payment/pay_by_link/api_gateway_other</config_path>
+                        <comment> Enter the Gateway URL shared by your payment service provider. Enter the URL with https prefix. For example https://na.gateway.mastercard.com/</comment>
+                    </field>
+                    <field id="api_gateway_other_pki" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Custom PKI Gateway URL</label>
+                        <config_path>payment/pay_by_link/api_gateway_other_pki</config_path>
+                        <comment>Please contact your payment service provider to receive Custom PKI Gateway URL for Certificate Authentication.</comment>
+                        <depends>
+                            <field id="authentication_type">certificate</field>
+                        </depends>
+                    </field>
+                     <field id="test" translate="label" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Test Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/pay_by_link/test</config_path>
+                    </field>
+                    <field id="debug" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Debug</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/pay_by_link/debug</config_path>
+                    </field>
+                    <field id="currency" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Accepted Currency</label>
+                        <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                        <config_path>payment/pay_by_link/currency</config_path>
+                    </field>
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Applicable Countries</label>
+                        <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                        <config_path>payment/pay_by_link/allowspecific</config_path>
+                    </field>
+                    <field id="specificcountry" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment from Specific Countries</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <config_path>payment/pay_by_link/specificcountry</config_path>
+                    </field>
+                    <field id="send_line_items" translate="label" type="select" sortOrder="85" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Send Line Items</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/pay_by_link/send_line_items</config_path>
+                    </field>
+                    <field id="timeout" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable Timeout</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/pay_by_link/timeout</config_path>
+                        <comment>When enabled, the payer must complete the payment within the defined seconds.</comment>
+                    </field>
+                     <field id="timeout_value" translate="label" type="text" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Timeout Duration</label>
+                        <config_path>payment/pay_by_link/timeout_value</config_path>
+                        <comment>Please enter a whole number between 600 and 1800. decimals, letters, and special characters are not permitted.</comment>
+                        <validate>required-entry validate-digits validate-digits-range digits-range-600-1800</validate>                       
+                        <depends>
+                             <field id="timeout">1</field>
+                        </depends>
+                    </field>
+                    <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order</label>
+                        <frontend_class>validate-number</frontend_class>
+                        <config_path>payment/pay_by_link/sort_order</config_path>
+                    </field>
+                    <field id="expiry_unit" translate="label" type="select" sortOrder="105" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Expiry Unit</label>
+                        <config_path>payment/pay_by_link/expiry_unit</config_path>
+                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\ExpiryUnit</source_model>
+                        <comment>Determines whether the payment expires in hours, days, or months.</comment>
+                        <depends>
+                             <field id="active">1</field>
+                        </depends>
+                    </field>
+                    <field id="expiry_value" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Payment Expiry Value</label>
+                        <config_path>payment/pay_by_link/expiry_value</config_path>
+                        <frontend_class>validate-expiry-limit</frontend_class>                        
+                        <comment>Enter the amount of time allowed for the customer to complete the payment. Maximum allowed is 3 months.Please enter a whole number greater than zero; decimals, letters, and special characters are not permitted.</comment>
+                        <validate>required-entry validate-digits validate-greater-than-zero</validate>
+                        <depends>
+                             <field id="active">1</field>
+                        </depends>
+                    </field>
+                    <field id="allowed_attempt" translate="label" type="text" sortOrder="115" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Allowed Payment attempt</label>
+                        <config_path>payment/pay_by_link/allowed_attempt</config_path>
+                        <comment>After this limit is reached, the payment link will be disabled.Please enter a whole number between 1 and 25; decimals, letters, and special characters are not permitted.</comment>
+                        <validate>required-entry validate-digits validate-digits-range digits-range-1-25</validate>   
+                        <depends>
+                             <field id="active">1</field>
+                        </depends>         
+                    </field>
+                    <field id="email_identity" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Sender</label>
+                        <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                        <config_path>payment/pay_by_link/email_identity</config_path>
+                        <comment>Select the business profile or identity that will appear as the sender of the payment emails.</comment>
+                    </field>
+                    <field id="email_template" translate="label" type="select" sortOrder="125" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Send Pay By Link Email Template</label>
+                        <config_path>payment/pay_by_link/email_template</config_path>
+                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Email\Template</source_model>
+                    </field>
+                    <field id="revoke_template" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Revoke Link Email Template</label>
+                        <config_path>payment/pay_by_link/revoke_template</config_path>
+                        <source_model>Mastercard\Mastercard\Model\Adminhtml\Source\Email\Revoke</source_model>
+                    </field>
+                    <field id="enable_merchant_info" translate="label" type="select" sortOrder="135" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable Merchant Information</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/pay_by_link/enable_merchant_info</config_path>
+                        <comment>Enable or disable the display of merchant information on the redirected payment page.</comment>
+                        <depends>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+                    <field id="name" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Merchant Name</label>
+                        <validate>validate-alpha-with-spaces</validate>
+                        <frontend_class>validate-length maximum-length-40</frontend_class>
+                        <config_path>payment/pay_by_link/merchant_name</config_path>
+                        <comment>Name of your business (up to 40 characters) to be shown to the payer during the payment interaction.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+                    <!-- Address Line 1 -->
+                    <field id="address_line1" translate="label" type="text" sortOrder="145" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Address Line 1</label>
+                        <frontend_class>validate-length maximum-length-100</frontend_class>
+                        <config_path>payment/pay_by_link/address_line1</config_path>
+                        <comment>The first line of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+                    <!-- Address Line 2 -->
+                    <field id="address_line2" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Address Line 2</label>
+                        <frontend_class>validate-length maximum-length-100</frontend_class>
+                        <config_path>payment/pay_by_link/address_line2</config_path>
+                        <comment>The second line of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+                    <!-- Postcode/ZIP -->
+                    <field id="postcode" translate="label" type="text" sortOrder="155" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Postcode/ZIP</label>
+                        <frontend_class>validate-length maximum-length-100</frontend_class>
+                        <config_path>payment/pay_by_link/postcode</config_path>
+                        <comment>The postal or ZIP code of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+
+                    <!-- Country/State -->
+                    <field id="country" translate="label" type="text" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Country/State</label>
+                        <frontend_class>validate-length maximum-length-100</frontend_class>
+                        <config_path>payment/pay_by_link/country</config_path>
+                        <comment>The country or state of your business address (up to 100 characters) to be shown to the payer during the payment interaction.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field> 
+
+                    <!-- Email -->
+                    <field id="email" translate="label" type="text" sortOrder="165" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Email</label>
+                        <validate>validate-email</validate>
+                        <config_path>payment/pay_by_link/email</config_path>
+                        <comment>The email address of your business to be shown to the payer during the payment interaction. (e.g. an email address for customer service).</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+
+                    <!-- Phone -->
+                    <field id="phone" translate="label" type="text" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Phone</label>
+                        <frontend_class>validate-length maximum-length-20</frontend_class>
+                        <config_path>payment/pay_by_link/phone</config_path>
+                        <comment>The phone number of your business (up to 20 characters) to be shown to the payer during the payment interaction.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
+
+                    <!-- Upload Business Logo -->
+                    <field id="logo_file" translate="label" type="image" sortOrder="175" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Upload Business Logo</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Image\Pdf</backend_model>
+                        <upload_dir config="system/filesystem/media" scope_info="1">mastercard/logs</upload_dir>
+                        <base_url type="media" scope_info="1">mastercard/logs</base_url>
+                        <config_path>payment/pay_by_link/logo_file</config_path>
+                         <comment>The URL of your business logo (JPEG or PNG) to be shown to the payer during the payment interaction.
+                        The logo should be 140x140 pixels, and the URL must be secure (e.g., https://). Size exceeding 140 pixels will be auto resized.</comment>
+                        <depends>
+                            <field id="enable_merchant_info">1</field>
+                            <field id="form_type">1</field>
+                        </depends>
+                    </field>
                 </group>
                 <group id="hpf" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Hosted Payment Session</label>
@@ -397,7 +680,7 @@
                         <comment>Be sure to Enable CVV in your MasterCard account</comment>
                     </field>
                     <field id="vault_ccv" translate="label comment" type="select" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Require CCV for tokenized card transactions</label>
+                        <label>Require Security Code(CCV) for tokenized card transactions</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/tns_hpf/vault_ccv</config_path>
                         <depends>

@@ -1,0 +1,115 @@
+<!--
+/**
+ * Copyright (c) 2024-2025 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!--@subject {{trans "Payment Request from " }}{{var merchant_name}} @-->
+<!--@vars
+{
+    "var merchant_name": "Merchant Name",
+    "var customer_name": "Customer Name",
+    "var is_not_virtual": "Is Not Virtual Flag",
+    "var order": "Order Object",
+    "var order.increment_id": "Order Increment ID",
+    "var order.created_at|date_format:"%B %d, %Y": "Order Created At",
+    "var order.shipping_description": "Shipping Description",
+    "var order_id": "Order ID",
+    "var formattedBillingAddress|raw": "Formatted Billing Address",
+    "var formattedShippingAddress|raw": "Formatted Shipping Address",
+    "var payment_html": "Payment HTML Block",
+    "var expiry": "Payment Expiration Date",
+    "var allowed_attempt": "Number Of Allowed Attempts",
+    "var order_link": "Order Link URL",
+    "var support_email": "Support Email Address"
+}
+@-->
+
+{{template config_path="design/email/header_template"}}
+<table>
+    <p>{{trans "Hi"}} {{var customer_name}},</p>
+    <p>{{trans "We hope you're doing well."}}</p>
+    <p>{{trans "You have an outstanding order with us.To complete your payment securely."}}
+       {{trans "Please use the payment link provided below."}} </p>
+    <h3>{{trans "Order Summary"}}</h3>
+    <p>
+      Order #{{var order.increment_id}} ({{var order.created_at|date_format:"%B %d, %Y"}})
+    </p>
+    <table class="order-details">
+        <tr>
+            <td class="address-details">
+                <h3>{{trans "Billing Address"}}</h3>
+                    {{var formattedBillingAddress|raw}}
+            </td>
+            {{depend is_not_virtual}}
+            <td class="address-details">
+                <h3>{{trans "Shipping Address"}}</h3>
+                    {{var formattedShippingAddress|raw}}
+            </td>
+            {{/depend}}
+        </tr>
+        <tr>
+            <td class="method-info">
+                <h3>{{trans "Payment Method"}}</h3>
+                    {{var payment_html|raw}}
+            </td>
+            {{depend is_not_virtual}}
+            <td class="method-info">
+                <h3>{{trans "Shipping Method"}}</h3>
+                <p>{{var order.shipping_description}}</p>
+            </td>
+            {{/depend}}
+        </tr>
+    </table>
+    <tr>
+        <td>
+            <h3>{{trans "Order Items"}}</h3>
+            {{layout handle="sales_email_order_items" order_id=$order_id area="frontend"}}
+        </td>
+    </tr>
+    <h3>{{trans "Payment Link Details"}}</h3>
+    <p>{{trans "Expiry Date: " }}{{var expiry}}</p> 
+    <p>{{trans "Allowed Attempts : "}}{{var allowed_attempt}}</p>
+    <p>{{trans "Click the button below to complete your payment securely."}} </p>
+   <table  style="width: 50%; margin: 20px auto; border-spacing: 0; border-collapse: collapse;">
+        <tr>
+            <td style="text-align: center; padding: 0;">
+                <a href="{{var order_link}}"
+                    target="_blank"
+                    style="
+                        display:block;
+                        width:100%;
+                        background-color:#7A00FF;
+                        color:#FFFFFF;
+                        text-align:center;
+                        padding:16px 0;
+                        font-size:18px;
+                        font-weight:bold;
+                        text-decoration:none;
+                        border-radius:0;">
+                    PAY NOW
+                </a>
+            </td>
+        </tr>
+    </table>
+    <p>{{trans "If the button doesn't work, you can copy and paste the following link into your browser."}}</p>
+    <p>
+        <a href="{{var order_link}}" target="_blank">
+            {{var order_link}}
+        </a>
+    </p>
+    <p>{{trans "Thank you for your business and prompt payment."}}</p>
+    <p>{{trans "If you have questions about your order, feel free to contact us at "}} {{var support_email}}.</p>
+</table>
+{{template config_path="design/email/footer_template"}}

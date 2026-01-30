@@ -31,3 +31,4 @@ interface TransferFactoryInterface
      */
     public function create(array $request, PaymentDataObjectInterface $payment);
 }
+

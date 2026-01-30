@@ -1,0 +1,186 @@
+<?php
+/**
+ * Copyright (c) 2024-2026 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @var $block \Mastercard\Mastercard\Block\Adminhtml\Order\View\Createlink
+ */
+?>
+<?php /** @var $block \Mastercard\Mastercard\Block\Adminhtml\Order\View\Createlink */
+
+$orderId = $block->getOrder()->getId();
+$linkAvailable = $block->getpaymentAdditionalinfo();
+$orderStatus = $block->getOrder()->getStatus();
+if ($orderStatus === 'canceled') {
+    return;
+}
+$expiryDate = isset($linkAvailable['expiry_datetime']) ? $linkAvailable['expiry_datetime'] : null;
+$expirytime = isset($linkAvailable['expiry_time']) ? $linkAvailable['expiry_time'] : null;
+$isExpired = false;
+if ($expiryDate) {
+   
+        $expiryTs = strtotime($expirytime);
+        $nowTs = time();
+        $isExpired = ($expiryTs !== false && $expiryTs < $nowTs);
+}
+?>
+<div id="custom-order-link-buttons">
+<?php if (isset($linkAvailable['paybylinkurl'])
+          && empty($linkAvailable['txn_result'])
+          && ($linkAvailable['method'] == 'pay_by_link')):
+?>
+    <button id="paybylink-generate" type="button" class="action-default scalable primary" style="display: none;">
+        <span><?= $block->escapeHtml(__('Create Payment Link')) ?></span>
+    </button>
+    <div id="expiry">
+        <strong>
+            <?= $block->escapeHtml(__('Expiry DateTime:')) ?>
+        </strong>
+        <?php if ($isExpired): ?>
+        <span style="color:red; font-weight:bold;">
+            <?= $block->escapeHtml(__('Expired')) ?>
+        </span>
+    <?php else: ?>
+        <?= $block->escapeHtml($expiryDate ?: __('N/A')) ?>
+    <?php endif; ?>
+    </div>
+
+      <div id="copy-link-container" style="margin-top: 10px;">
+        <input
+            type="text" id="order-link-input"
+            value="<?= $block->escapeHtml($linkAvailable['paybylinkurl']) ?>"
+            readonly
+            style="width: 400px; margin-right: 10px;"
+        />
+        <button id="copy-link-button" class="action-default scalable">
+            <span><?= $block->escapeHtml(__('Copy Link')) ?></span>
+        </button>
+    </div>
+     <button id="paybylink-revoke" type="button" class="action-default scalable primary">
+        <span><?= $block->escapeHtml(__('Revoke Link')) ?></span>
+    </button>
+    <button id="paybylink-regenerate" type="button" class="action-default scalable primary">
+        <span><?= $block->escapeHtml(__('Regenerate Link')) ?></span>
+    </button>
+    <button type="button" id="send-link"
+        class="action-default scalable">
+        <span><?= $block->escapeHtml(__('Resend Email')) ?></span>
+    </button>
+ <?php elseif (
+    empty($linkAvailable['txn_result'])
+    && empty($linkAvailable['paybylinkurl'])
+    && ($linkAvailable['method'] == 'pay_by_link')
+    ):?>
+ <button id="paybylink-generate" type="button" class="action-default scalable primary">
+        <span><?= $block->escapeHtml(__('Create Payment Link')) ?></span>
+    </button>
+      <div id="expiry" style="display: none;"></div>
+    <div id="copy-link-container" style="margin-top: 10px; display: none;">
+        <input type="text" id="order-link-input" readonly style="width: 400px; margin-right: 10px;" />
+        <button id="copy-link-button" class="action-default scalable">
+            <span><?= $block->escapeHtml(__('Copy Link')) ?></span>
+        </button>
+    </div>
+    <button id="paybylink-revoke" type="button" class="action-default scalable primary" style="display: none;">
+        <span><?= $block->escapeHtml(__('Revoke Link')) ?></span>
+    </button>
+    <button id="paybylink-regenerate" type="button" class="action-default scalable primary" style="display: none;">
+        <span><?= $block->escapeHtml(__('Regenerate Link')) ?></span>
+    </button>
+    <button type="button" id="send-link"
+        class="action-default scalable" style="display: none;">
+        <span><?= $block->escapeHtml(__('Resend Email')) ?></span>
+    </button>
+<?php else: ?>
+<?php endif; ?>
+</div>
+<script type="text/javascript">
+require(['jquery'], function ($) {
+    $(function () {
+
+        const orderId = '<?= $block->escapeJs($orderId) ?>';
+        const urls = {
+            generate: '<?= $block->escapeJs($block->getUrl("tnsadmin/link/generate")) ?>',
+            revoke: '<?= $block->escapeJs($block->getUrl("tnsadmin/link/revoke")) ?>',
+            send: '<?= $block->escapeJs($block->getUrl("tnsadmin/link/send")) ?>',
+            regenerate: '<?= $block->escapeJs($block->getUrl("tnsadmin/link/regenerate")) ?>'
+        };
+
+        // Common UI updater
+        function updateUI(res) {
+            $('#order-link-input').val(res.link);
+            $('#copy-link-container, #paybylink-revoke, #send-link, #exp_date, #paybylink-regenerate').show();
+            $('#paybylink-generate').hide();
+
+            $('#expiry').html(
+                '<strong>Expiry DateTime:</strong> ' + (res.expiry_datetime || 'N/A')
+            ).show();
+            alert('Email sent.');
+        }
+
+        function doRequest(url, onSuccess) {
+            $.ajax({
+                url,
+                type: 'GET',
+                showLoader: true,
+                data: { order_id: orderId },
+                success: function (res) {
+                    res.success ? onSuccess(res) : alert(res.message || 'Failed to process.');
+                },
+                error: function () { alert('AJAX request failed.'); }
+            });
+        }
+
+        $('#paybylink-generate').on('click', () => {
+            doRequest(urls.generate, updateUI);
+        });
+
+        $('#paybylink-revoke').on('click', () => {
+             doRequest(urls.revoke, function (res) {
+             updateUI(res);
+             $('#copy-link-container').hide();
+             $('#paybylink-generate').show();
+             $('#paybylink-regenerate, #paybylink-revoke, #send-link, #expiry').hide();
+            });
+        });
+
+        $('#paybylink-regenerate').on('click', () => {
+            doRequest(urls.regenerate, updateUI);
+        });
+
+        $('#send-link').on('click', () => {
+           doRequest(urls.send, function (res) {
+           if (res.success) {
+               alert('Email sent.');
+           } else {
+            alert(res.message || 'Failed to send email.');
+           }
+          });
+        });
+
+        $('#copy-link-button').on('click', function () {
+            const input = $('#order-link-input')[0];
+            input.select();
+            input.setSelectionRange(0, 99999);
+            document.execCommand('copy')
+                ? alert('Link copied!')
+                : alert('Failed to copy link.');
+        });
+
+    });
+});
+</script>
+

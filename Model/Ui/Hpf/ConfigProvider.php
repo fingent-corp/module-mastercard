@@ -24,10 +24,10 @@ use Mastercard\Mastercard\Gateway\Config\Config;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    const METHOD_CODE = 'tns_hpf';
-    const CC_VAULT_CODE = 'tns_hpf_vault';
-    const METHOD_VERIFY = 'order';
-    const URL_SECURE = '_secure';
+    public const METHOD_CODE = 'tns_hpf';
+    public const CC_VAULT_CODE = 'tns_hpf_vault';
+    public const METHOD_VERIFY = 'order';
+    public const URL_SECURE = '_secure';
 
     /**
      * @var Config

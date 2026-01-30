@@ -43,6 +43,8 @@ class InformationTransferFactory implements TransferFactoryInterface
     protected $selectedStore;
 
     /**
+     * Information transfer factory constructor
+     *
      * @param TransferBuilder $transferBuilder
      * @param Config $config
      * @param SelectedStore $selectedStore
@@ -58,8 +60,9 @@ class InformationTransferFactory implements TransferFactoryInterface
     }
 
     /**
-     * @param int|null $storeId
+     * Get merchant username
      *
+     * @param int|null $storeId
      * @return string
      */
     protected function getMerchantUsername($storeId = null)
@@ -68,6 +71,8 @@ class InformationTransferFactory implements TransferFactoryInterface
     }
 
     /**
+     * Create and initialize a payment transaction request.
+     *
      * @param array $request
      *
      * @return TransferInterface

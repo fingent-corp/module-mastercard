@@ -21,7 +21,7 @@ use Mastercard\Mastercard\Observer\DataAssignAbstract;
 
 class DataAssignObserver extends DataAssignAbstract
 {
-    const SESSION = 'session';
+    public const SESSION = 'session';
 
     /**
      * @var array
