@@ -1,0 +1,81 @@
+<!--
+/**
+ * Copyright (c) 2022-2024 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!--@subject {{trans "Payment Link Revoked By " }}{{var merchant_name}} @-->
+<!--@vars
+{
+    "var merchant_name": "Merchant Name",
+    "var customer_name": "Customer Name",
+    "var is_not_virtual": "Is Not Virtual Flag",
+    "var order": "Order Object",
+    "var order.increment_id": "Order Increment ID",
+    "var order.created_at|date_format:"%B %d, %Y": "Order Created At",
+    "var order.shipping_description": "Shipping Description",
+    "var order_id": "Order ID",
+    "var formattedBillingAddress|raw": "Formatted Billing Address",
+    "var formattedShippingAddress|raw": "Formatted Shipping Address",
+    "var payment_html": "Payment HTML Block",
+    "var support_email": "Support Email Address"
+}
+@-->
+
+{{template config_path="design/email/header_template"}}
+<table>
+    <p>{{trans "Dear"}} {{var customer_name}},</p>
+    <p>{{trans "Your previously issued payment link has been revoked by administrator and is no longer valid."}}</p>
+    <p>Here are the details of your order:</p>
+    <h3>{{trans "Order Summary"}}</h3>
+    <p>
+        Order #{{var order.increment_id}} ({{var order.created_at|date_format:"M j, Y"}})
+    </p>
+    <table class="order-details">
+        <tr>
+            <td class="address-details">
+                <h3>{{trans "Billing Address"}}</h3>
+                    {{var formattedBillingAddress|raw}}
+            </td>
+            {{depend is_not_virtual}}
+            <td class="address-details">
+                <h3>{{trans "Shipping Address"}}</h3>
+                    {{var formattedShippingAddress|raw}}
+            </td>
+            {{/depend}}
+        </tr>
+        <tr>
+            <td class="method-info">
+                <h3>{{trans "Payment Method"}}</h3>
+                    {{var payment_html|raw}}
+            </td>
+            {{depend is_not_virtual}}
+            <td class="method-info">
+                <h3>{{trans "Shipping Method"}}</h3>
+                <p>{{var order.shipping_description}}</p>
+            </td>
+            {{/depend}}
+        </tr>
+    </table>
+    <tr>
+        <td>
+            <h3>{{trans "Order Items"}}</h3>
+            {{layout handle="sales_email_order_items" order_id=$order_id area="frontend"}}
+        </td>
+    </tr>
+    <p>
+        {{trans "If you have questions about your order, feel free to contact us at "}} {{var support_email}}.
+    </p>
+</table>
+{{template config_path="design/email/footer_template"}}
