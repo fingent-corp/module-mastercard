@@ -20,6 +20,9 @@ namespace Mastercard\Mastercard\Gateway\Http\Hosted;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Mastercard\Mastercard\Gateway\Http\Client\Rest;
 use Mastercard\Mastercard\Gateway\Http\TransferFactory;
+use Mastercard\Mastercard\Helper\DownloadCount;
+use Magento\Payment\Gateway\Http\TransferBuilder;
+use Mastercard\Mastercard\Gateway\Config\Config;
 
 class TransferFactoryOrder extends TransferFactory
 {
@@ -29,14 +32,50 @@ class TransferFactoryOrder extends TransferFactory
     protected $httpMethod = Rest::GET;
 
     /**
+     * @var Config
+     */
+    protected $config;
+    
+    /**
+     * @var TransferBuilder
+     */
+    protected $transferBuilder;
+    
+    /**
+     * @var DownloadCount
+     */
+    protected $downloadCount;
+
+    /**
+     * @param DownloadCount $downloadCount
+     * @param Config $config
+     * @param TransferBuilder $transferBuilder
+     */
+    public function __construct(
+        DownloadCount $downloadCount,
+        Config $config,
+        TransferBuilder $transferBuilder
+    ) {
+        parent::__construct($config, $transferBuilder);
+        $this->downloadCount = $downloadCount;
+    }
+
+    /**
+     * Get request url
+     *
      * @param PaymentDataObjectInterface $payment
      * @return string
      */
     protected function getUri(PaymentDataObjectInterface $payment)
     {
-        $orderId = $payment->getOrder()->getOrderIncrementId();
-        $storeId = $payment->getOrder()->getStoreId();
-        $this->config->setMethodCode("tns_hosted");
+        $order   = $payment->getOrder();
+        $method  = $payment->getPayment()->getMethod();
+        $storeId = $order->getStoreId();
+        $orderId = $order->getOrderIncrementId();
+        $orderprefix = $this->downloadCount->getOrderPrefix($storeId);
+        $orderId   = $orderprefix
+                   ? $orderprefix.$orderId
+                   : $orderId;
         return $this->getGatewayUri($storeId) . 'order/' . $orderId;
     }
 }

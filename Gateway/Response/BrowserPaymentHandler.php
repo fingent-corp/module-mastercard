@@ -22,26 +22,27 @@ use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Model\Order\Payment;
 
 /**
-* Class BrowserPaymentHandler
-* For handling transaction details
-* @package Mastercard\Mastercard\Gateway\Response
-*/
+ * Class BrowserPaymentHandler
+ *
+ * For handling transaction details
+ */
 class BrowserPaymentHandler implements HandlerInterface
 {
     /**
-    * Handles response
-    * @param array $handlingSubject
-    * @param array $response
-    * @return void
-    */
+     * Handles response
+     *
+     * @param array $handlingSubject
+     * @param array $response
+     * @return void
+     */
     public function handle(array $handlingSubject, array $response)
     {
         $paymentDO = SubjectReader::readPayment($handlingSubject);
         if ($response['transaction']) {
-           /** @var Quote $quote */
-           $payment = $paymentDO->getPayment();
-           $payment->setAdditionalInformation('browser_redirect', 'Y');
-           $payment->save();
+            /** @var Quote $quote */
+            $payment = $paymentDO->getPayment();
+            $payment->setAdditionalInformation('browser_redirect', 'Y');
+            $payment->save();
         }
     }
 }

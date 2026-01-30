@@ -1,19 +1,19 @@
 <?php
 /**
-* Copyright (c) 2016-2019 Mastercard
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace Mastercard\Mastercard\Gateway\Request\Hosted;
 
@@ -27,19 +27,20 @@ use Magento\Store\Model\StoreManagerInterface;
 class InteractionBuilder implements BuilderInterface
 {
 
-    const CHECKOUT_CART_URL = 'checkout/cart';
-    const CALLBACK_URL      = 'tns/hosted/callback';
-    const AUTHORIZE         = 'AUTHORIZE';
-    const PURCHASE          = 'PURCHASE';
-    const URL_SECURE = '_secure';
+    public const CHECKOUT_CART_URL = 'checkout/cart';
+    public const CALLBACK_URL      = 'tns/hosted/callback';
+    public const AUTHORIZE         = 'AUTHORIZE';
+    public const PURCHASE          = 'PURCHASE';
+    public const URL_SECURE        = '_secure';
+
     /**
-    * @var ConfigFactory
-    */
+     * @var ConfigFactory
+     */
     protected $configFactory;
     
     /**
-    * @var UrlInterface
-    */
+     * @var UrlInterface
+     */
     protected $urlInterface;
 
     /**
@@ -49,6 +50,7 @@ class InteractionBuilder implements BuilderInterface
 
     /**
      * InteractionBuilder constructor.
+     *
      * @param ConfigFactory $configFactory
      * @param UrlInterface $urlInterface
      * @param StoreManagerInterface $storeManager
@@ -64,15 +66,16 @@ class InteractionBuilder implements BuilderInterface
     }
 
     /**
-    * @inheritDoc
-    */
+     * Interaction Builder
+     *
+     * @param array $buildSubject
+     * @inheritDoc
+     */
     public function build(array $buildSubject)
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);
         $order = $paymentDO->getOrder();
-
         $storeName   = $this->storeManager->getStore()->getName();
-
         $storeId = $order->getStoreId();
 
         /** @var Payment $payment */
@@ -83,12 +86,9 @@ class InteractionBuilder implements BuilderInterface
 
         $paymentAction = $config->getValue('payment_action');
         if ($paymentAction == "authorize") {
-            
             $operation = static::AUTHORIZE;
-            
-        }else {
+        } else {
             $operation = static::PURCHASE;
-
         }
         
         $returnData =  [
@@ -104,8 +104,7 @@ class InteractionBuilder implements BuilderInterface
                     'operation' => $operation             ]
         ];
 
-        if (($config->getValue('form_type', $storeId) == 1)&&($config->getValue('enable_merchant_info', $storeId))) {
-
+        if (($config->getValue('form_type', $storeId) == 1) && ($config->getValue('enable_merchant_info', $storeId))) {
             $merchantInfo=[
                 'name' => $config->getValue('merchant_name', $storeId),
                 'address' =>[
@@ -115,26 +114,23 @@ class InteractionBuilder implements BuilderInterface
                             'line4'    => $config->getValue('country', $storeId),
                          ]
             ];
-
             if ($config->getValue('email', $storeId)) {
-               $merchantInfo['email'] = $config->getValue('email', $storeId);
+                $merchantInfo['email'] = $config->getValue('email', $storeId);
             }
-
             if ($config->getValue('phone', $storeId)) {
-               $merchantInfo['phone'] = $config->getValue('phone', $storeId);
+                $merchantInfo['phone'] = $config->getValue('phone', $storeId);
             }
-
             if ($config->getValue('logo_file', $storeId)) {
-
                 $merchantInfo['logo'] = $this->getMediaUrl($config->getValue('logo_file', $storeId));
-
             }
-
             $returnData = array_replace_recursive($returnData, [
                          'interaction' =>['merchant' => $merchantInfo]]);
-
         }
-        
+        if ($config->getValue('timeout', $storeId)) {
+            $duration   = $config->getValue('timeout_value');
+            $returnData = array_replace_recursive($returnData, [
+                         'interaction' =>['timeout' => $duration]]);
+        }
         if ($config->getValue('form_type', $storeId) == 1) {
             $returnData = array_replace_recursive($returnData, [
                          'interaction' =>  [
@@ -145,7 +141,6 @@ class InteractionBuilder implements BuilderInterface
                          ]
                       ]);
         }
-        
         return $returnData;
     }
 
@@ -159,8 +154,6 @@ class InteractionBuilder implements BuilderInterface
     {
         $mediaUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
         $filePath = 'mastercard/logs/' . ltrim($filePath, '/');
-
         return $mediaUrl . $filePath;
     }
-
 }

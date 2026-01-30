@@ -21,8 +21,8 @@ use Mastercard\Mastercard\Observer\DataAssignAbstract;
 
 class DataAssignObserver extends DataAssignAbstract
 {
-    const RESULT_INDICATOR = 'resultIndicator';
-    const SESSION_VERSION = 'sessionVersion';
+    public const RESULT_INDICATOR = 'resultIndicator';
+    public const SESSION_VERSION = 'sessionVersion';
 
     /**
      * @var array

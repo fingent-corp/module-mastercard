@@ -23,7 +23,7 @@ use Mastercard\Mastercard\Model\Adminhtml\Source\PaymentAction as BasicPaymentAc
 class MappedPaymentAction extends BasicPaymentAction
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function toOptionArray()
     {

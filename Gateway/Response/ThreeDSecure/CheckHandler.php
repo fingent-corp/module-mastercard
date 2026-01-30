@@ -23,8 +23,8 @@ use Magento\Sales\Model\Order\Payment;
 
 class CheckHandler implements HandlerInterface
 {
-    const THREEDSECURE_CHECK = '3DSecureEnrollment';
-    const THREEDSECURE = '3DSecure';
+    public const THREEDSECURE_CHECK = '3DSecureEnrollment';
+    public const THREEDSECURE = '3DSecure';
 
     /**
      * Handles response

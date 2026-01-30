@@ -23,6 +23,8 @@ use Mastercard\Mastercard\Api\Data\TransactionInterface;
 class AroundSetTxnTypePlugin
 {
     /**
+     * Around plugin for setting the transaction type.
+     *
      * @param Transaction $subject
      * @param callable $proceed
      * @param string $txnType

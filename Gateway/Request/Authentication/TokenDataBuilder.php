@@ -22,33 +22,31 @@ use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Vault\Api\PaymentTokenManagementInterface;
 
-/**
-* Class TokenDataBuilder
-* @package Mastercard\Mastercard\Gateway\Request\Authentication
-*/
 class TokenDataBuilder implements BuilderInterface
 {
 
     /**
-    * @var PaymentTokenManagementInterface
-    */
+     * @var PaymentTokenManagementInterface
+     */
     protected $tokenManagement;
 
     /**
-    * TokenDataBuilder constructor.
-    * @param PaymentTokenManagementInterface $tokenManagement
-    */
+     * TokenDataBuilder constructor.
+     *
+     * @param PaymentTokenManagementInterface $tokenManagement
+     */
     public function __construct(
         PaymentTokenManagementInterface $tokenManagement
     ) {
         $this->tokenManagement = $tokenManagement;
-                        
     }
 
     /**
-    * @param array $buildSubject
-    * @return array
-    */
+     * Token data builder
+     *
+     * @param array $buildSubject
+     * @return array
+     */
     public function build(array $buildSubject)
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);
@@ -56,7 +54,6 @@ class TokenDataBuilder implements BuilderInterface
         $publichash   = $payment->getAdditionalInformation('public_hash');
         $customerid   = $payment->getAdditionalInformation('customer_id');
         $paymentToken = $this->tokenManagement->getByPublicHash($publichash, $customerid);
-
         return [
             'sourceOfFunds' => [
                 'token' => $paymentToken->getGatewayToken()

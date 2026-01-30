@@ -41,6 +41,11 @@
             <argument name="config" xsi:type="object">TnsHostedConfig</argument>
         </arguments>
     </virtualType>
+    <virtualType name="MpgsLinkLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
 
     <!-- Virtual operation classes that specify apiOperation generically -->
     <virtualType name="AuthorizeOperationDataBuilder" type="Mastercard\Mastercard\Gateway\Request\OperationBuilder">
@@ -111,6 +116,13 @@
     <virtualType name="MpgsHostedRestClient" type="Mastercard\Mastercard\Gateway\Http\Client\Rest">
         <arguments>
             <argument name="logger" xsi:type="object">MpgsHostedLogger</argument>
+            <argument name="converter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Converter\JsonToArray</argument>
+            <argument name="adapter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MpgsLinkRestClient" type="Mastercard\Mastercard\Gateway\Http\Client\Rest">
+        <arguments>
+            <argument name="logger" xsi:type="object">MpgsLinkLogger</argument>
             <argument name="converter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Converter\JsonToArray</argument>
             <argument name="adapter" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Client\Adapter\Rest</argument>
         </arguments>
@@ -357,6 +369,19 @@
             <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\PaymentOptionsInquiryValidator</argument>
         </arguments>
     </virtualType>
+        <virtualType name="LinkInformationTransferFactory" type="Mastercard\Mastercard\Gateway\Http\InformationTransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
+        <virtualType name="MpgsCheckLinkGatewayCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\NullDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">LinkInformationTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsLinkRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\PaymentOptionsInquiryValidator</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="MpgsHpfUpdateOrderCommand" type="Mastercard\Mastercard\Gateway\Command\UpdateOrderCommand">
         <arguments>
             <argument name="transferFactory" xsi:type="object">MpgsHpfGetTransferFactory</argument>
@@ -401,6 +426,7 @@
                 <item name="check_gateway_tns_hpf" xsi:type="string">MpgsCheckHpfGatewayCommand</item>
                 <item name="check_gateway_tns_hosted" xsi:type="string">MpgsCheckHostedGatewayCommand</item>
                 <item name="check_gateway_mpgs_ach" xsi:type="string">MpgsCheckAchGatewayCommand</item>
+                <item name="check_gateway_pay_by_link" xsi:type="string">MpgsCheckLinkGatewayCommand</item>
             </argument>
         </arguments>
     </virtualType>
@@ -598,7 +624,6 @@
             <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
         </arguments>
     </virtualType>
-
     <!-- Capture a pre-authorized payment (HC) -->
     <virtualType name="TnsHostedPreAuthCaptureCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
         <arguments>
@@ -652,7 +677,11 @@
             <argument name="config" xsi:type="object">TnsHostedConfig</argument>
         </arguments>
     </type>
-
+    <type name="Mastercard\Mastercard\Gateway\Http\Hosted\TransferFactoryOrder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsHostedConfig</argument>
+        </arguments>
+    </type>
     <virtualType name="MpgsHostedTransferFactory" type="Mastercard\Mastercard\Gateway\Http\TransferFactory">
         <arguments>
             <argument name="config" xsi:type="object">TnsHostedConfig</argument>
@@ -684,7 +713,184 @@
             <argument name="field" xsi:type="string">custom_create_session_request_data</argument>
         </arguments>
     </virtualType>
+    <!-- ******************* -->
+    <!-- HOSTED PAY BY LINK -->
+    <!-- ******************* -->
+     <virtualType name="TnsLinkInfoBlock" type="Mastercard\Mastercard\Block\Info">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item xsi:type="string" name="is_secure_mode">0</item>
+            </argument>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsLinkConfig" type="Mastercard\Mastercard\Gateway\Config\Paybylink\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Mastercard\Mastercard\Model\Ui\Paybylink\ConfigProvider::METHOD_CODE</argument>
+        </arguments>
+    </virtualType>
 
+    <virtualType name="TnsLinkCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="capture" xsi:type="string">TnsLinkCaptureStrategyCommand</item>
+                <item name="capture_simple" xsi:type="string">TnsLinkPreAuthCaptureCommand</item>
+                <item name="refund" xsi:type="string">TnsLinkRefundCommand</item>
+                <item name="void" xsi:type="string">TnsLinkVoidCommand</item>
+                <item name="hosted_order" xsi:type="string">TnsLinkOrderCommand</item>
+                <item name="payby_link" xsi:type="string">TnsHostedPayByLinkCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsLinkFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Mastercard\Mastercard\Model\Ui\Paybylink\ConfigProvider::METHOD_CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">TnsHostedInfoBlock</argument>
+            <argument name="valueHandlerPool" xsi:type="object">TnsLinkValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">TnsLinkValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">TnsLinkCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsLinkValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">TnsLinkCountryValidator</item>
+                <item name="currency" xsi:type="string">TnsLinkCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsLinkCurrencyValidator" type="Mastercard\Mastercard\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsLinkCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsLinkConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="TnsLinkValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">TnsLinkConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Mastercard\Mastercard\Gateway\Http\Paybylink\TransferFactoryOrder">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </type>
+    <type name="Mastercard\Mastercard\Gateway\Http\Paybylink\TransferFactorySession">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </type>
+    <virtualType name="MpgsLinkTransferFactory" type="Mastercard\Mastercard\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="TnsLinkPreAuthCaptureCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsCaptureDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsLinkTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsLinkRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\TransactionIdHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <!-- Refund (HC) -->
+    <virtualType name="TnsLinkRefundCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsRefundDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsLinkTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsLinkRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void (HC) -->
+    <virtualType name="TnsLinkVoidCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsVoidDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">MpgsLinkTransferFactory</argument>
+            <argument name="client" xsi:type="object">MpgsLinkRestClient</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    
+ <virtualType name="TnsHostedPayByLinkBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="operation" xsi:type="string">CreateSessionOperationDataBuilder</item>
+                <item name="interaction" xsi:type="string">Mastercard\Mastercard\Gateway\Request\PayByLink\InteractionBuilder</item>
+                <item name="order" xsi:type="string">Mastercard\Mastercard\Gateway\Request\PayByLink\OrderDataBuilder</item>
+                <item name="line_items" xsi:type="string">Mastercard\Mastercard\Gateway\Request\PayByLink\LineItemsBuilder</item>           
+                <item name="discount" xsi:type="string">Mastercard\Mastercard\Gateway\Request\PayByLink\DiscountBuilder</item>
+                <item name="billing" xsi:type="string">Mastercard\Mastercard\Gateway\Request\BillingDataBuilder</item>
+                <item name="shipping" xsi:type="string">Mastercard\Mastercard\Gateway\Request\ShippingDataBuilder</item>
+                <item name="customer" xsi:type="string">Mastercard\Mastercard\Gateway\Request\CustomerDataBuilder</item>
+                <item name="source" xsi:type="string">Mastercard\Mastercard\Gateway\Request\SourceDataBuilder</item>
+                <item name="version" xsi:type="string">Mastercard\Mastercard\Gateway\Request\VersionDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Create a HC payby link -->
+    <virtualType name="TnsHostedPayByLinkCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">TnsHostedPayByLinkBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Paybylink\TransferFactorySession</argument>
+            <argument name="client" xsi:type="object">MpgsLinkRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\PayByLink\LinkDataHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+       <!-- Order Transaction-->
+     <virtualType name="TnsLinkOrderCommand" type="Mastercard\Mastercard\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Mastercard\Mastercard\Gateway\Request\NullDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">Mastercard\Mastercard\Gateway\Http\Paybylink\TransferFactoryOrder</argument>
+            <argument name="client" xsi:type="object">MpgsLinkRestClient</argument>
+            <argument name="handler" xsi:type="object">Mastercard\Mastercard\Gateway\Response\HostedTransactionHandler</argument>
+            <argument name="validator" xsi:type="object">Mastercard\Mastercard\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    
+     <type name="Mastercard\Mastercard\Controller\Adminhtml\Link\Generate">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsLinkCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+     <type name="Mastercard\Mastercard\Controller\Adminhtml\Link\Regenerate">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsLinkCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+    <type name="Mastercard\Mastercard\Controller\Hosted\Paybylink">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsLinkCommandPool</argument>
+            <argument name="logger" xsi:type="object">Magento\Payment\Model\Method\VirtualLogger</argument>
+        </arguments>
+    </type>
+     <virtualType name="TnsLinkCaptureStrategyCommand" type="Mastercard\Mastercard\Gateway\Command\Hosted\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">TnsLinkCommandPool</argument>
+            <argument name="config" xsi:type="object">TnsLinkConfig</argument>
+        </arguments>
+    </virtualType>
     <!-- ******************* -->
     <!-- HOSTED PAYMENT FORM -->
     <!-- ******************* -->
@@ -1185,6 +1391,7 @@
                 <item name="tns_hpf" xsi:type="string">tns_hpf</item>
                 <item name="tns_hosted" xsi:type="string">tns_hosted</item>
                 <item name="mpgs_ach" xsi:type="string">mpgs_ach</item>
+                <item name="pay_by_link" xsi:type="string">pay_by_link</item>
             </argument>
         </arguments>
     </type>

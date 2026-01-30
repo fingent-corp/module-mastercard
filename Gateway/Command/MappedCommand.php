@@ -74,8 +74,9 @@ class MappedCommand implements CommandInterface
     }
 
     /**
-     * @param array $commandSubject
+     * Executes the configured command(s) based on the provided command subject and store configuration.
      *
+     * @param array $commandSubject
      * @return ResultInterface|null
      * @throws NotFoundException
      * @throws \Magento\Payment\Gateway\Command\CommandException

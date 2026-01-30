@@ -29,6 +29,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     protected $method = 'mpgs_ach';
 
     /**
+     * Checking if the vault enabled or not.
+     *
      * @return bool
      */
     public function isVaultEnabled(): bool
@@ -37,6 +39,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
+     * Checking if the order token is enabled or not.
+     *
      * @return bool
      * @throws NoSuchEntityException
      */

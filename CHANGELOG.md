@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.2] - 2026-01-30
+### Enhancement
+- Introduced Pay By Link Feature.
+- Hosted Checkout now supports Payment Session Timeout configurations.
+- Introduced Order Id prefix field inside the Plugin Configuration section.
+- The system now automatically corrects and saves Gateway URLs, even if they are entered with invalid formatting.
+- The 'Card Code' field in the Hosted Session payment form has been renamed to 'Security Code' to maintain consistency with Hosted Checkout.
+- This release has been verified to support PHP v8.3 and v8.4 running on Magento v2.4.7 and v2.4.8.
+ #### Note: KNET payment feature relies on real-time data integration with an external partner service. While we have optimized the application for stability, occasional service interruptions from the provider may temporarily impact availability.
+
 ## [3.0.1] - 2025-10-31
 ### Enhancement
 - Integrated KNET as a supported payment method within the hosted checkout flow. Please ensure that the MID has KNET enabled for this payment option to appear on the checkout page.

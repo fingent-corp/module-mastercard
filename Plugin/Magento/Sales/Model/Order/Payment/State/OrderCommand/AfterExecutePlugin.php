@@ -32,6 +32,8 @@ class AfterExecutePlugin
     private $verifyPaymentFlag;
 
     /**
+     * afterExecute constructor
+     *
      * @param VerifyPaymentFlagInterface $verifyPaymentFlag
      */
     public function __construct(VerifyPaymentFlagInterface $verifyPaymentFlag)
@@ -40,6 +42,8 @@ class AfterExecutePlugin
     }
 
     /**
+     * After plugin for OrderCommand::execute to modify the result phrase.
+     *
      * @param OrderCommand $subject
      * @param Phrase $result
      * @param OrderPaymentInterface $payment

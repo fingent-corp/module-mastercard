@@ -28,8 +28,8 @@ use Magento\Sales\Model\Order\Payment;
 
 class CaptureStrategyCommand implements CommandInterface
 {
-    const SALE = 'sale';
-    const CAPTURE = 'capture_simple';
+    public const SALE = 'sale';
+    public const CAPTURE = 'capture_simple';
 
     /**
      * @var Command\CommandPoolInterface
@@ -75,6 +75,5 @@ class CaptureStrategyCommand implements CommandInterface
                 ->get(self::CAPTURE)
                 ->execute($commandSubject);
         }
-
     }
 }

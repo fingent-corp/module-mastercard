@@ -32,7 +32,7 @@ class AddPaymentVerifiedStatusAndState implements DataPatchInterface
     /**
      * Custom Order-Status label
      */
-    const ORDER_STATUS_LABEL_PAYMENT_VERIFIED = 'Payment Verified';
+    public const ORDER_STATUS_LABEL_PAYMENT_VERIFIED = 'Payment Verified';
 
     /**
      * @var ModuleDataSetupInterface
@@ -65,7 +65,7 @@ class AddPaymentVerifiedStatusAndState implements DataPatchInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function apply()
     {
@@ -91,7 +91,7 @@ class AddPaymentVerifiedStatusAndState implements DataPatchInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public static function getDependencies()
     {
@@ -99,7 +99,7 @@ class AddPaymentVerifiedStatusAndState implements DataPatchInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getAliases()
     {

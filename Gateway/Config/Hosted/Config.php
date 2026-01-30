@@ -21,7 +21,7 @@ use Mastercard\Mastercard\Gateway\Config\ConfigInterface;
 
 class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements ConfigInterface
 {
-    const COMPONENT_URI = '%sstatic/checkout/checkout.min.js';
+    public const COMPONENT_URI = '%sstatic/checkout/checkout.min.js';
 
     /**
      * @var string
@@ -29,6 +29,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     protected $method = 'tns_hosted';
 
     /**
+     * For getting component url
+     *
      * @return string
      */
     public function getComponentUrl()
@@ -41,7 +43,7 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isVaultEnabled(): bool
     {
@@ -49,7 +51,7 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isOrderTokenizationEnabled(): bool
     {

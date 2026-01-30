@@ -23,6 +23,8 @@ use Magento\Payment\Gateway\Helper\SubjectReader;
 class SessionDataBuilder implements BuilderInterface
 {
     /**
+     * Session data builder
+     *
      * @param array $buildSubject
      * @return array
      */

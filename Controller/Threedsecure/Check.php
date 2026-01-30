@@ -33,8 +33,8 @@ use Mastercard\Mastercard\Gateway\Response\ThreeDSecure\CheckHandler;
 
 class Check extends Action
 {
-    const CHECK_ENROLMENT = '3ds_enrollment';
-    const CHECK_ENROLMENT_TYPE_HPF = 'TnsHpfThreeDSecureEnrollmentCommand';
+    public const CHECK_ENROLMENT = '3ds_enrollment';
+    public const CHECK_ENROLMENT_TYPE_HPF = 'TnsHpfThreeDSecureEnrollmentCommand';
 
     /**
      * @var Session

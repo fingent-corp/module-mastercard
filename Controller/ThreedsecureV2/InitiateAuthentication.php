@@ -30,7 +30,7 @@ use Psr\Log\LoggerInterface;
 
 class InitiateAuthentication extends Action
 {
-    const COMMAND_NAME = 'initiate_authentication';
+    public const COMMAND_NAME = 'initiate_authentication';
     /**
      * @var Session
      */

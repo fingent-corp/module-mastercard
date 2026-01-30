@@ -20,6 +20,8 @@ namespace Mastercard\Mastercard\Api;
 interface VerifyPaymentFlagInterface
 {
     /**
+     * Check is verify payment
+     *
      * @param string $method
      *
      * @return bool

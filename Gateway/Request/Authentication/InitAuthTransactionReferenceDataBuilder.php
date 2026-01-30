@@ -19,18 +19,36 @@ namespace Mastercard\Mastercard\Gateway\Request\Authentication;
 
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
+use Mastercard\Mastercard\Helper\DownloadCount;
 
 class InitAuthTransactionReferenceDataBuilder implements BuilderInterface
 {
+
+    /**
+     * @var DownloadCount
+     */
+    protected $downloadCount;
+    
+     /**
+     * @param DownloadCount $downloadCount
+     */
+    public function __construct(
+         DownloadCount $downloadCount
+    ) {
+        $this->downloadCount  = $downloadCount;
+    }
+
     /**
      * @inheritDoc
      */
     public function build(array $buildSubject)
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);
-        $order = $paymentDO->getOrder();
-        $payment = $paymentDO->getPayment();
-        $orderId = $order->getOrderIncrementId();
+        $order     = $paymentDO->getOrder();
+        $payment   = $paymentDO->getPayment();
+        $storeId   = $order->getStoreId();
+        $orderprefix =  $this->downloadCount->getOrderPrefix($storeId);
+        $orderId =   $orderprefix ? $orderprefix.$order->getOrderIncrementId(): $order->getOrderIncrementId();
         $txnId = $payment->getAdditionalInformation('auth_init_transaction_id');
         if (!$txnId || explode('-', $txnId)[0] !== $orderId) {
             $txnId = uniqid(sprintf('%s-', $orderId));

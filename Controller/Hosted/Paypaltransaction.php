@@ -32,52 +32,51 @@ use Magento\Payment\Gateway\Command\CommandPool;
 /**
  * Class Paypaltransaction
  * Controller for identifying paypal transaction
- * @package Mastercard\Mastercard\Controller\Hosted
  */
 class Paypaltransaction extends Action
 {
 
     /**
-    * @var JsonFactory
-    */
+     * @var JsonFactory
+     */
     private $jsonFactory;
 
     /**
-    * @var LoggerInterface
-    */
+     * @var LoggerInterface
+     */
     private $logger;
 
-
     /**
-    * @var QuoteFactory
-    */
+     * @var QuoteFactory
+     */
     private $quoteFactory;
     
     /**
-    * @var QuoteIdMaskFactory
-    */
+     * @var QuoteIdMaskFactory
+     */
     private $quoteIdMaskFactory;
     
     /**
-    * @var CommandPool
-    */
+     * @var CommandPool
+     */
     private $commandPool;
     
     /**
-    * @var PaymentDataObjectFactory
-    */
+     * @var PaymentDataObjectFactory
+     */
     private $paymentDataObjectFactory;
 
     /**
-    * Callback constructor.
-    * @param JsonFactory $jsonFactory
-    * @param Context $context
-    * @param LoggerInterface $logger
-    * @param QuoteIdMaskFactory $quoteFactory
-    * @param QuoteFactory $quoteFactory
-    * @param PaymentDataObjectFactory $paymentDataObjectFactory
-    * @param CommandPool $commandPool
-    */
+     * Callback constructor.
+     *
+     * @param JsonFactory $jsonFactory
+     * @param Context $context
+     * @param LoggerInterface $logger
+     * @param QuoteFactory $quoteFactory
+     * @param QuoteIdMaskFactory $quoteIdMaskFactory
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
+     * @param CommandPool $commandPool
+     */
     public function __construct(
         JsonFactory $jsonFactory,
         Context $context,
@@ -86,7 +85,6 @@ class Paypaltransaction extends Action
         QuoteIdMaskFactory $quoteIdMaskFactory,
         PaymentDataObjectFactory $paymentDataObjectFactory,
         CommandPool $commandPool
-        
     ) {
         parent::__construct($context);
         $this->jsonFactory              = $jsonFactory;
@@ -98,10 +96,10 @@ class Paypaltransaction extends Action
     }
 
     /**
-    * For identifying paypal transaction
-    *
-    * @return ResultInterface|ResponseInterface
-    */
+     * For identifying paypal transaction
+     *
+     * @return ResultInterface|ResponseInterface
+     */
     public function execute()
     {
         $jsonResult = $this->jsonFactory->create();
@@ -111,26 +109,25 @@ class Paypaltransaction extends Action
             if (!is_numeric($quoteId)) {
                 $quoteIdMask = $this->quoteIdMaskFactory->create()->load($quoteId, 'masked_id');
                 $id = $quoteIdMask->getQuoteId();
-
             }
             $quote   = $this->quoteFactory->create()->load($id);
             $additionaldata = $quote->getPayment()->getAdditionalInformation();
             $jsonResult->setData([
              'result' => "N"
             ]);
-            if (isset ($additionaldata['session'])  && isset ($additionaldata['successIndicator'])) {
-              $paymentDataObject = $this->paymentDataObjectFactory->create($quote->getPayment());
-              $command = $this->commandPool->get("browser_payment");
-              $command->execute([
-                'payment' => $paymentDataObject]);
+            if (isset($additionaldata['session']) && isset ($additionaldata['successIndicator'])) {
+                $paymentDataObject = $this->paymentDataObjectFactory->create($quote->getPayment());
+                $command = $this->commandPool->get("browser_payment");
+                $command->execute([
+                 'payment' => $paymentDataObject]);
                 $additionaldata = $quote->getPayment()->getAdditionalInformation();
-                if (isset ($additionaldata['browser_redirect']) && ($additionaldata['browser_redirect'] == "Y")) {
-                 $jsonResult->setData([
-                   'result' => "Y"
-                  ]);
-                 }
-           }
-           return $jsonResult;
+                if (isset($additionaldata['browser_redirect']) && ($additionaldata['browser_redirect'] == "Y")) {
+                    $jsonResult->setData([
+                    'result' => "Y"
+                    ]);
+                }
+            }
+            return $jsonResult;
         } catch (Exception $e) {
             $this->logger->error((string)$e);
             $this->messageManager->addError(__('unable to fetch quote details.'));

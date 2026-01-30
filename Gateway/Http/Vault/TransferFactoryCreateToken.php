@@ -29,6 +29,8 @@ class TransferFactoryCreateToken extends TransferFactory
     protected $httpMethod = Rest::POST;
 
     /**
+     * Get request url
+     *
      * @param PaymentDataObjectInterface $payment
      * @return string
      */

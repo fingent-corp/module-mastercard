@@ -23,7 +23,7 @@ use Magento\Sales\Model\Order\Payment;
 
 class SessionHandler implements HandlerInterface
 {
-    const SUCCESS_INDICATOR = 'successIndicator';
+    public const SUCCESS_INDICATOR = 'successIndicator';
 
     /**
      * Handles response

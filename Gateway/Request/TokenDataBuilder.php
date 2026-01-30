@@ -23,7 +23,7 @@ use Magento\Payment\Gateway\Helper\ContextHelper;
 
 class TokenDataBuilder implements BuilderInterface
 {
-    const TYPE = 'CARD';
+    public const TYPE = 'CARD';
 
     /**
      * Builds ENV request
@@ -49,8 +49,8 @@ class TokenDataBuilder implements BuilderInterface
                     'type' => static::TYPE,
                 ],
             ];
-        }else {
-           return [];
+        } else {
+            return [];
         }
     }
 }

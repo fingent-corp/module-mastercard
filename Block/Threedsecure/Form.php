@@ -24,6 +24,8 @@ use Mastercard\Mastercard\Gateway\Request\ThreeDSecure\CheckDataBuilder;
 class Form extends Template
 {
     /**
+     * Get return url
+     *
      * @return string
      */
     public function getReturnUrl()

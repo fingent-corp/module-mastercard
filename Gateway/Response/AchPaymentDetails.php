@@ -24,11 +24,11 @@ use Magento\Sales\Api\Data\OrderPaymentInterface;
 
 class AchPaymentDetails implements HandlerInterface
 {
-    const ACCOUNT_TYPE = 'accountType';
-    const ACCOUNT_HOLDER = 'bankAccountHolder';
-    const ACCOUNT_NUMBER = 'bankAccountNumber';
-    const ROUTING_NUMBER = 'routingNumber';
-    const SEC_CODE = 'secCode';
+    private const ACCOUNT_TYPE = 'accountType';
+    private const ACCOUNT_HOLDER = 'bankAccountHolder';
+    private const ACCOUNT_NUMBER = 'bankAccountNumber';
+    private const ROUTING_NUMBER = 'routingNumber';
+    private const SEC_CODE = 'secCode';
 
     /**
      * @var string[]
@@ -42,6 +42,10 @@ class AchPaymentDetails implements HandlerInterface
     ];
 
     /**
+     * For handling the ach payment response
+     *
+     * @param array $handlingSubject
+     * @param array $response
      * @inheridoc
      */
     public function handle(array $handlingSubject, array $response)

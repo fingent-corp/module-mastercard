@@ -68,6 +68,8 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
     }
 
     /**
+     * Get component for token
+     *
      * @param PaymentTokenInterface $paymentToken
      * @return TokenUiComponentInterface
      * @throws \InvalidArgumentException

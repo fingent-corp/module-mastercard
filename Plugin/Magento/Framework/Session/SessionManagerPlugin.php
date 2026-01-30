@@ -59,6 +59,8 @@ class SessionManagerPlugin
     }
 
     /**
+     * Before plugin for SessionManager::start.
+     *
      * @param SessionManager $subject
      */
     public function beforeStart(SessionManager $subject): void
@@ -78,6 +80,8 @@ class SessionManagerPlugin
     }
 
     /**
+     * Checks if the current request is valid for starting a session.
+     *
      * @return bool
      */
     private function isValidRequest(): bool

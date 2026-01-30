@@ -26,8 +26,8 @@ use Magento\Framework\Composer\ComposerFactory;
 
 class VersionDataBuilder implements BuilderInterface
 {
-    const MODULE_NAME = 'Mastercard_Mastercard';
-    const VERSION_PATTERN = '%s_%s_%s__%s';
+    public const MODULE_NAME = 'Mastercard_Mastercard';
+    public const VERSION_PATTERN = '%s_%s_%s__%s';
 
     /**
      * @var ComponentRegistrarInterface

@@ -20,11 +20,15 @@ namespace Mastercard\Mastercard\Gateway\Config;
 interface ConfigInterface extends \Magento\Payment\Gateway\ConfigInterface
 {
     /**
+     * Checking Vault is enabled or not.
+     *
      * @return bool
      */
     public function isVaultEnabled(): bool;
 
     /**
+     * Checking order tokenization is enabled or not.
+     *
      * @return bool
      */
     public function isOrderTokenizationEnabled(): bool;

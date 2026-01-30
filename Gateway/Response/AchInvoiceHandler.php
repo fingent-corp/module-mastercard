@@ -39,6 +39,10 @@ class AchInvoiceHandler implements HandlerInterface
     }
 
     /**
+     * ACH invoice handler
+     *
+     * @param array $handlingSubject
+     * @param array $response
      * @inheridoc
      * multistep_ach not supported
      */

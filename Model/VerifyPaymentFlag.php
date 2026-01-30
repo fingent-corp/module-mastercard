@@ -48,7 +48,7 @@ class VerifyPaymentFlag implements VerifyPaymentFlagInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isVerifyPayment(string $method): bool
     {

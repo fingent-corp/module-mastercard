@@ -19,22 +19,60 @@ namespace Mastercard\Mastercard\Gateway\Http\Authentication;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Mastercard\Mastercard\Gateway\Http\TransferFactory;
+use Mastercard\Mastercard\Helper\DownloadCount;
+use Magento\Payment\Gateway\Http\TransferBuilder;
+use Mastercard\Mastercard\Gateway\Config\Config;
 
 class TransferFactoryInitiateAuthentication extends TransferFactory
 {
+
     /**
+     * @var DownloadCount
+     */
+    protected $downloadCount;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+    
+    /**
+     * @var TransferBuilder
+     */
+    protected $transferBuilder;
+
+    /**
+     * @param DownloadCount $downloadCount
+     * @param Config $config
+     * @param TransferBuilder $transferBuilder
+     */
+    public function __construct(
+        DownloadCount $downloadCount,
+        Config $config,
+        TransferBuilder $transferBuilder
+    ) {
+        parent::__construct($config, $transferBuilder);
+        $this->downloadCount  = $downloadCount;
+    }
+    
+    /**
+     * Get initiate authentication request url
+     *
      * @param PaymentDataObjectInterface $payment
      * @return string
      */
     protected function getUri(PaymentDataObjectInterface $payment)
     {
-        $orderId = $payment->getOrder()->getOrderIncrementId();
+        $storeId = $payment->getOrder()->getStoreId();
+        $orderprefix =  $this->downloadCount->getOrderPrefix($storeId);
+        $orderId = $orderprefix
+                   ? $orderprefix.$payment->getOrder()->getOrderIncrementId()
+                   : $payment->getOrder()->getOrderIncrementId();
         $transactionId = $this->request['transaction']['reference']
             ?? $payment->getPayment()->getAdditionalInformation('auth_init_transaction_id');
         if (!$transactionId || explode('-', $transactionId)[0] !== $orderId) {
             $transactionId = $this->createTxnId($payment);
         }
-        $storeId = $payment->getOrder()->getStoreId();
 
         return $this->getGatewayUri($storeId) . 'order/' . $orderId . '/transaction/' . $transactionId;
     }

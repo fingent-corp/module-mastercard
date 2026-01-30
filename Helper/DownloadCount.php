@@ -32,82 +32,69 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Psr\Log\LoggerInterface;
 use Magento\Directory\Model\CountryFactory;
 
-/**
-* Class DownloadCount
-* @package Mastercard\Mastercard\Helper
-*/
 class DownloadCount extends AbstractHelper
 {
     
     /**
-    * @var ProductMetadataInterface
-    */
+     * @var ProductMetadataInterface
+     */
     protected $productMetadata;
     
     /**
-    * @var ComponentRegistrarInterface
-    */
+     * @var ComponentRegistrarInterface
+     */
     protected $componentRegistrar;
     
     /**
-    * @var ReadFactory
-    */
+     * @var ReadFactory
+     */
     protected $readFactory;
     
     /**
-    * @var Json
-    */
+     * @var Json
+     */
     protected $json;
+
     /**
-    * @var StoreManagerInterface
-    */
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
 
     /**
-    * @var Curl
-    */
+     * @var Curl
+     */
     protected $curl;
 
     /**
-    * @var WriterInterface
-    */
+     * @var WriterInterface
+     */
     protected $configWriter;
 
     /**
-    * @var ScopeConfigInterface
-    */
+     * @var ScopeConfigInterface
+     */
     protected $config;
 
     /**
-    * @var LoggerInterface
-    */
+     * @var LoggerInterface
+     */
     protected $logger;
 
     /**
-    * @var CountryFactory
-    */
+     * @var CountryFactory
+     */
     protected $countryFactory;
     
-    protected $curlOptions = [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1
-        ];
-    
-        const BEARER_TOKEN = 'd8eafdaefe991251fa9386cc13533f43a2d277183b4bd3a04cdaf0882a2f6058';
-        const CHECK_URL    = 'https://mpgs.fingent.wiki/wp-json/mpgs/v2/update-repo-status';
-        const LATEST_RELEASE    = 1;
-        const REPO_NAME         = 'module-mastercard';
-        const PLUGIN_TYPE       = 'enterprise';
-
-
+    public const BEARER_TOKEN = 'd8eafdaefe991251fa9386cc13533f43a2d277183b4bd3a04cdaf0882a2f6058';
+    public const CHECK_URL    = 'https://mpgs.fingent.wiki/wp-json/mpgs/v2/update-repo-status';
+    public const LATEST_RELEASE    = 1;
+    public const REPO_NAME         = 'module-mastercard';
+    public const PLUGIN_TYPE       = 'enterprise';
 
     /**
      * Downloadcount constructor.
      *
+     * @param Context $context
      * @param Curl $curl
      * @param ProductMetadataInterface $productMetadata
      * @param ComponentRegistrarInterface $componentRegistrar
@@ -116,7 +103,8 @@ class DownloadCount extends AbstractHelper
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $config
      * @param LoggerInterface $logger
-
+     * @param Json $json
+     * @param CountryFactory $countryFactory
      */
     public function __construct(
         Context $context,
@@ -130,9 +118,7 @@ class DownloadCount extends AbstractHelper
         LoggerInterface $logger,
         Json $json,
         CountryFactory $countryFactory
-
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->curl               = $curl;
         $this->productMetadata    = $productMetadata;
@@ -144,15 +130,14 @@ class DownloadCount extends AbstractHelper
         $this->logger             = $logger;
         $this->config             = $config;
         $this->countryFactory    = $countryFactory;
-
     }
     
     /**
-    * Send the download count for a specific store.
-    * @param int $storeId
-    *
-    * @return boolean
-    */
+     * Send the download count for a specific store.
+     *
+     * @param int $storeId
+     * @return boolean
+     */
     public function sendDownloadCount($storeId)
     {
     
@@ -161,7 +146,7 @@ class DownloadCount extends AbstractHelper
         $this->configWriter->save(
             'payment/tns/version_info',
             $tagName
-          );
+        );
         $countryCode = $this->config->getValue(
             'general/country/default',
             ScopeInterface::SCOPE_STORE,
@@ -179,36 +164,25 @@ class DownloadCount extends AbstractHelper
                     'shop_name' => $store->getName(),
                     'shop_url' => $store->getBaseUrl()
                 ];
+        $url = static::CHECK_URL;
+        try {
+                $this->curl->addHeader("Content-Type", "application/json");
+                $this->curl->addHeader("Authorization", 'Bearer ' . static::BEARER_TOKEN);
+                $this->curl->post($url, json_encode($data));
+                $this->curl->getBody();
+                return true;
 
-            $this->curl->setOptions($this->curlOptions);
-            $curl = curl_init();
-            curl_setopt_array($curl, [
-                CURLOPT_URL => static::CHECK_URL,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => json_encode($data),
-                CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json',
-                'Authorization: Bearer ' .static::BEARER_TOKEN
-                ),
-            ]);
-            curl_exec($curl);
-            curl_error($curl);
-            curl_close($curl);
-            return true;
-    
+        } catch (\Exception $e) {
+                return false;
+        }
     }
 
     /**
-    * For getting module version
-    * @return string
-    * @throws LocalizedException
-    */
+     * For getting module version
+     *
+     * @return string
+     * @throws LocalizedException
+     */
     public function getModuleversion()
     {
 
@@ -230,40 +204,53 @@ class DownloadCount extends AbstractHelper
     }
 
     /**
+     * Checking and saving module download count.
+     *
+     * @param int $storeId
+     * @param int $test
+     * @return boolean
+     */
+    public function checkAndSaveDownload($storeId, $test)
+    {
+     
+        try {
+              $isDownloaded = $this->config->getValue(
+                  'payment/tns/is_downloaded',
+                  ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                  $storeId
+              );
+              $moduleVersion = $this->config->getValue(
+                  'payment/tns/version_info',
+                  ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                  $storeId
+              );
+              $latestVersion = $this->getModuleversion();
+            if (((!$isDownloaded) || ($latestVersion != $moduleVersion)) && ($test != 1)) {
+                    $this->sendDownloadCount($storeId);
+                    $this->configWriter->save('payment/tns/is_downloaded', 1);
+            }
+        } catch (\Exception $e) {
+            $this->logger->critical('Error occurred while saving download count ' . $e->getMessage(), [
+               'exception' => $e,
+            ]);
+        }
+        return true;
+    }
+
+    /**
     * Checking and saving module download count.
     * @param int $storeId
     * @param int $test
     *
     * @return boolean
     */
-    public function checkAndSaveDownload($storeId, $test)
+    public function getOrderPrefix($storeId)
     {
-     
-      try {
-        
-        $isDownloaded = $this->config->getValue(
-            'payment/tns/is_downloaded',
-            ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-            $storeId
-        );
-
-        $moduleVersion = $this->config->getValue(
-            'payment/tns/version_info',
-            ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-            $storeId
-        );
-        $latestVersion = $this->getModuleversion();
-        if (((!$isDownloaded) || ($latestVersion != $moduleVersion)) && ($test != 1)) {
-
-            $this->sendDownloadCount($storeId);
-            $this->configWriter->save('payment/tns/is_downloaded', 1);
-        }
-     } catch (\Exception $e) {
-        $this->logger->critical('Error occurred while saving download count ' . $e->getMessage(), [
-            'exception' => $e,
-        ]);
-     }
-        return true;
-    }
     
+     return $this->config->getValue(
+         'payment/tns/order_prefix',
+         ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+         $storeId
+        );
+    }
 }

@@ -90,6 +90,8 @@ class Cert extends ConfigValue
     }
 
     /**
+     * Prepares configuration data before saving.
+     *
      * @return $this
      *
      * @throws LocalizedException

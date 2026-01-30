@@ -1,19 +1,19 @@
 <?php
 /**
-* Copyright (c) 2022-2024 Mastercard
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2022-2024 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace Mastercard\Mastercard\Controller\ThreedsecureV2;
 
@@ -33,47 +33,47 @@ use Mastercard\Mastercard\Gateway\Config\Config;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 
 /**
-* Class VaultAuthentication
-* For vault initiate authentication check
-* @package Mastercard\Mastercard\Controller\ThreedsecureV2
-*/
+ * Class VaultAuthentication
+ * For vault initiate authentication check
+ */
 class VaultAuthentication extends Action
 {
-    const COMMAND_NAME = 'vault_initiate_authentication';
+    public const COMMAND_NAME = 'vault_initiate_authentication';
     /**
-    * @var Session
-    */
+     * @var Session
+     */
     private $checkoutSession;
 
     /**
-    * @var PaymentDataObjectFactory
-    */
+     * @var PaymentDataObjectFactory
+     */
     private $paymentDataObjectFactory;
 
     /**
-    * @var JsonFactory
-    */
+     * @var JsonFactory
+     */
     private $jsonFactory;
 
     /**
-    * @var CommandPool
-    */
+     * @var CommandPool
+     */
     private $commandPool;
 
     /**
-    * @var LoggerInterface
-    */
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
-    * Check constructor.
-    * @param Session $checkoutSession
-    * @param PaymentDataObjectFactory $paymentDataObjectFactory
-    * @param JsonFactory $jsonFactory
-    * @param CommandPool $commandPool
-    * @param Context $context
-    * @param LoggerInterface $logger
-    */
+     * Check constructor.
+     *
+     * @param Session $checkoutSession
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
+     * @param JsonFactory $jsonFactory
+     * @param CommandPool $commandPool
+     * @param Context $context
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         Session $checkoutSession,
         PaymentDataObjectFactory $paymentDataObjectFactory,
@@ -91,47 +91,43 @@ class VaultAuthentication extends Action
     }
 
     /**
-    * Dispatch request
-    *
-    * @return ResultInterface|ResponseInterface
-    */
+     * Dispatch request
+     *
+     * @return ResultInterface|ResponseInterface
+     */
     public function execute()
     {
 
-       $jsonResult = $this->jsonFactory->create();
-       try {
-        $quote = $this->checkoutSession->getQuote();
-        $payment = $quote->getPayment();
+        $jsonResult = $this->jsonFactory->create();
+        try {
+            $quote = $this->checkoutSession->getQuote();
+            $payment = $quote->getPayment();
 
-        $publichash = $payment->getAdditionalInformation('public_hash')
+            $publichash = $payment->getAdditionalInformation('public_hash')
             ? $payment->getAdditionalInformation('public_hash')
             : $this->getRequest()->getParam('token');
 
-        $customerid = $payment->getAdditionalInformation('customer_id')
+            $customerid = $payment->getAdditionalInformation('customer_id')
             ? $payment->getAdditionalInformation('customer_id')
             : $quote->getCustomerId();
            
-        $payment->setAdditionalInformation('public_hash', $publichash);
-        $payment->setAdditionalInformation('customer_id', $customerid);
-        $payment->save();
-        
-        $paymentDataObject = $this->paymentDataObjectFactory->create($payment);
+            $payment->setAdditionalInformation('public_hash', $publichash);
+            $payment->setAdditionalInformation('customer_id', $customerid);
+            $payment->save();
 
-        $quote->setReservedOrderId('')->reserveOrderId();
-        $quote->save();
+            $paymentDataObject = $this->paymentDataObjectFactory->create($payment);
+            $quote->setReservedOrderId('')->reserveOrderId();
+            $quote->save();
 
-        $this->commandPool
+            $this->commandPool
              ->get(self::COMMAND_NAME)
              ->execute([
                 'payment' => $paymentDataObject
             ]);
-
-        $payment->save();
-
-
-        $html                  = $payment->getAdditionalInformation('auth_redirect_html');
-        $authenticationstatus = $payment->getAdditionalInformation('auth_threeds_status');
-        $jsonResult->setData(['html' => $html , 'status' => $authenticationstatus]);
+            $payment->save();
+            $html   = $payment->getAdditionalInformation('auth_redirect_html');
+            $authenticationstatus = $payment->getAdditionalInformation('auth_threeds_status');
+            $jsonResult->setData(['html' => $html , 'status' => $authenticationstatus]);
 
         } catch (Exception $e) {
             $this->logger->error((string)$e);

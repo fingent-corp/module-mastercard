@@ -21,15 +21,17 @@ namespace Mastercard\Mastercard\Model\Config\Source;
 
 class Integration implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const HOSTED_CHECKOUT = 'hosted_checkout';
-    const HOSTED_SESSION = 'hosted_session';
+    public const HOSTED_CHECKOUT = 'hosted_checkout';
+    public const HOSTED_SESSION = 'hosted_session';
 
-    const INTEGRATION_MODES = [
+    public const INTEGRATION_MODES = [
         self::HOSTED_CHECKOUT,
         self::HOSTED_SESSION
     ];
 
     /**
+     * Get option array
+     *
      * @return array[]
      */
     public function toOptionArray(): array

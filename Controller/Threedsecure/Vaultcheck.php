@@ -34,43 +34,43 @@ use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Api\Data\OrderPaymentExtensionInterfaceFactory;
 
 /**
-* Class Vaultcheck
-* For vault 3ds entrollment check
-* @package Mastercard\Mastercard\Controller\Threedsecure
-*/
+ * Class Vaultcheck
+ * For vault 3ds entrollment check
+ */
 class Vaultcheck extends Action
 {
-    const CHECK_ENROLMENT = '3ds_enrollment';
-    const CHECK_ENROLMENT_TYPE_HPF = 'TnsHpfVaultThreeDSecureEnrollmentCommand';
+    public const CHECK_ENROLMENT = '3ds_enrollment';
+    public const CHECK_ENROLMENT_TYPE_HPF = 'TnsHpfVaultThreeDSecureEnrollmentCommand';
 
     /**
-    * @var Session
-    */
+     * @var Session
+     */
     private $checkoutSession;
 
     /**
-    * @var PaymentDataObjectFactory
-    */
+     * @var PaymentDataObjectFactory
+     */
     private $paymentDataObjectFactory;
 
     /**
-    * @var JsonFactory
-    */
+     * @var JsonFactory
+     */
     private $jsonFactory;
 
     /**
-    * @var CommandPoolFactory
-    */
+     * @var CommandPoolFactory
+     */
     private $commandPoolFactory;
 
     /**
-    * Check constructor.
-    * @param CommandPoolFactory $commandPoolFactory
-    * @param Session $checkoutSession
-    * @param PaymentDataObjectFactory $paymentDataObjectFactory
-    * @param JsonFactory $jsonFactory
-    * @param Context $context
-    */
+     * Check constructor.
+     *
+     * @param CommandPoolFactory $commandPoolFactory
+     * @param Session $checkoutSession
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
+     * @param JsonFactory $jsonFactory
+     * @param Context $context
+     */
     public function __construct(
         CommandPoolFactory $commandPoolFactory,
         Session $checkoutSession,
@@ -86,12 +86,12 @@ class Vaultcheck extends Action
     }
 
     /**
-    * Dispatch request
-    *
-    * @return ResultInterface|ResponseInterface
-    * @throws LocalizedException
-    * @throws NoSuchEntityException
-    */
+     * Dispatch request
+     *
+     * @return ResultInterface|ResponseInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function execute()
     {
 
@@ -151,5 +151,4 @@ class Vaultcheck extends Action
         }
         return $jsonResult;
     }
-    
 }

@@ -23,23 +23,20 @@ use Mastercard\Mastercard\Gateway\Request\ThreeDSecure\CheckDataBuilder;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\View\Element\Template\Context;
 
-/**
-* Class Vaultform
-* @package Mastercard\Mastercard\Block\Threedsecure
-*/
 class Vaultform extends Template
 {
 
     /**
-    * @var Session
-    */
+     * @var Session
+     */
     private $session;
 
     /**
-    * vault constructor.
-    * @param Context $context
-    * @param Session $session
-    */
+     * Vault constructor.
+     *
+     * @param Context $context
+     * @param Session $session
+     */
     public function __construct(
         Context $context,
         Session $session
@@ -48,11 +45,11 @@ class Vaultform extends Template
         $this->session = $session;
     }
     
-    
     /**
-    * for getting return url
-    * @return string
-    */
+     * For getting return url
+     *
+     * @return string
+     */
     public function getReturnUrl()
     {
         /** @var Url $urlBuilder */
@@ -70,22 +67,23 @@ class Vaultform extends Template
     }
     
     /**
-    * for getting acs url
-    * @return string
-    */
+     * For getting acs url
+     *
+     * @return string
+     */
     public function getacsUrl()
     {
 
         $payment  = $this->session->getQuote()->getPayment();
         $paymentd = $payment->getAdditionalInformation('3DSecureEnrollment');
         return $paymentd['acsurl'] ;
-
     }
     
     /**
-    * For getting pareq
-    * @return string
-    */
+     * For getting pareq
+     *
+     * @return string
+     */
     public function getpaReq()
     {
         $payment  = $this->session->getQuote()->getPayment();

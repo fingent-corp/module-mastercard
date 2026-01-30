@@ -31,6 +31,8 @@ class AroundAddTransactionPlugin
     private $verifyPaymentFlag;
 
     /**
+     * aroundAddTransaction constructor
+     *
      * @param VerifyPaymentFlagInterface $verifyPaymentFlag
      */
     public function __construct(VerifyPaymentFlagInterface $verifyPaymentFlag)
@@ -39,6 +41,8 @@ class AroundAddTransactionPlugin
     }
 
     /**
+     * Handles transaction creation around plugin.
+     *
      * @param Payment $subject
      * @param callable $proceed
      * @param string $type

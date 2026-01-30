@@ -23,49 +23,76 @@ use Magento\Sales\Model\Order\Payment;
 use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Order\Payment\Transaction;
+use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Framework\DB\Transaction as dbTransaction;
+use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 
 /**
-* Class HostedTransactionHandler
-* For handling transaction details
-* @package Mastercard\Mastercard\Gateway\Response
-*/
+ * Class HostedTransactionHandler
+ *
+ * For handling transaction details
+ *
+ */
 class HostedTransactionHandler implements HandlerInterface
 {
 
     /**
-    * @var OrderFactory
-    */
+     * @var OrderFactory
+     */
     protected $orderFactory;
 
     /**
-    * HostedTransactionHandler constructor.
-    * @param OrderFactory $orderFactory
-    */
-    public function __construct(
-        OrderFactory $orderFactory
+     * @var InvoiceService
+     */
+    protected $invoiceService;
+    
+    /**
+     * @var dbTransaction
+     */
+    protected $transaction;
+    
+    /**
+     * @var InvoiceSender
+     */
+    private $invoiceSender;
 
+    /**
+     * HostedTransactionHandler constructor.
+     *
+     * @param OrderFactory $orderFactory
+     * @param InvoiceService $invoiceService
+     * @param dbTransaction $transaction
+     * @param InvoiceSender $invoiceSender
+     */
+    public function __construct(
+        OrderFactory $orderFactory,
+        InvoiceService $invoiceService,
+        dbTransaction $transaction,
+        InvoiceSender $invoiceSender
     ) {
         $this->orderFactory = $orderFactory;
-
+        $this->invoiceService = $invoiceService;
+        $this->transaction   = $transaction;
+        $this->invoiceSender = $invoiceSender;
     }
     /**
-    * Handles response
-    * @param array $handlingSubject
-    * @param array $response
-    * @return void
-    */
+     * Handles response
+     *
+     * @param array $handlingSubject
+     * @param array $response
+     * @return void
+     */
     public function handle(array $handlingSubject, array $response)
     {
         
         SubjectReader::readPayment($handlingSubject);
         $orderId  = $response['transaction'][0]['order']['id'];
         $order    = $this->getOrderByIncrementId($orderId);
-
-        if ($order) {
-        $payment = $order->getPayment();
-        ContextHelper::assertOrderPayment($payment);
-        }
         $responsedata = end($response['transaction']);
+        if ($order) {
+            $payment = $order->getPayment();
+            ContextHelper::assertOrderPayment($payment);
+        }
         $payment->setTransactionId($responsedata['transaction']['id']);
         $payment->setAdditionalInformation('gateway_code', $responsedata['response']['gatewayCode']);
         $payment->setAdditionalInformation('txn_result', $responsedata['result']);
@@ -80,7 +107,7 @@ class HostedTransactionHandler implements HandlerInterface
             }
         }
         if (isset($responsedata['risk'])) {
-           $payment->setAdditionalInformation('risk', $responsedata['risk']);
+            $payment->setAdditionalInformation('risk', $responsedata['risk']);
         }
         if (isset($responsedata['sourceOfFunds']) && isset($responsedata['sourceOfFunds']['provided']['card'])) {
             $cardDetails = $responsedata['sourceOfFunds']['provided']['card'];
@@ -101,65 +128,99 @@ class HostedTransactionHandler implements HandlerInterface
             $order->setState($orderState)->setStatus($orderState);
             $order->save();
         }
+        if ($responsedata['transaction']['type'] == "PAYMENT") {
+            $this->createInvoice($order, $responsedata['transaction']['id']);
+        }
         $this->createPaymentTransaction($payment, $responsedata, $response['amount']);
         $this->updateInvoiceTransactionId($order, $responsedata['transaction']['id']);
     }
     
     /**
-    * Load order by increment ID using OrderFactory
-    *
-    * @param string $incrementId
-    * @return \Magento\Sales\Model\Order|null
-    */
+     * Load order by increment ID using OrderFactory
+     *
+     * @param string $incrementId
+     * @return \Magento\Sales\Model\Order|null
+     */
     public function getOrderByIncrementId($incrementId)
     {
         return $this->orderFactory->create()->loadByIncrementId($incrementId);
     }
     
     /**
-    * @param array $data
-    * @param string $field
-    * @return string|null
-    */
-    public static function safeValue($data, $field)
+     * For getting safe value
+     *
+     * @param array $data
+     * @param string $field
+     * @return string|null
+     */
+    public function safeValue($data, $field)
     {
         return isset($data[$field]) ? $data[$field] : null;
     }
 
     /**
-    * Update Invoice transaction Id
-    *
-    * @param $order
-    * @param $transactionId
-    * @return boolean
-    */
+     * Create Invoice
+     *
+     * @param object $order
+     * @param int $transactionId
+     * @return boolean
+     */
+    public function createInvoice($order, $transactionId)
+    {
+        $invoiceExist = $order->getInvoiceCollection()->getFirstItem();
+        if ($invoiceExist->getId()) {
+            return true;
+        }
+        $invoice = $this->invoiceService->prepareInvoice($order);
+        $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+        $invoice->setTransactionId($transactionId);
+        $invoice->register();
+                
+        $this->transaction
+             ->addObject($invoice)
+             ->addObject($invoice->getOrder())
+             ->save();
+
+        $this->invoiceSender->send($invoice);
+        $order->addStatusHistoryComment(__('Notified customer about invoice #%1.', $invoice->getId()))
+              ->setIsCustomerNotified(true)
+              ->save();
+        return true;
+    }
+
+    /**
+     * Update Invoice transaction Id
+     *
+     * @param object $order
+     * @param int $transactionId
+     * @return boolean
+     */
     public function updateInvoiceTransactionId($order, $transactionId)
     {
         $invoice = $order->getInvoiceCollection()->getFirstItem();
         if ($invoice->getId()) {
-           $invoice->setTransactionId($transactionId);
-           $invoice->save();
+            $invoice->setTransactionId($transactionId);
+            $invoice->save();
         }
         return true;
     }
 
     /**
-    * Create and save a payment transaction based on the response data.
-    *
-    * @param Mage_Sales_Model_Order_Payment $payment
-    * @param array $responseData
-    * @param float $amount
-    * @return Mage_Sales_Model_Order_Payment_Transaction The created transaction.
-    */
+     * Create and save a payment transaction based on the response data.
+     *
+     * @param Mage_Sales_Model_Order_Payment $payment
+     * @param array $responsedata
+     * @param float $amount
+     * @return Mage_Sales_Model_Order_Payment_Transaction The created transaction.
+     */
     public function createPaymentTransaction($payment, $responsedata, $amount)
     {
         if ($responsedata['transaction']['type'] == "AUTHORIZATION") {
             $type =  Transaction::TYPE_AUTH;
-        }else {
+        } else {
             $type = Transaction::TYPE_CAPTURE;
         }
         $transaction = $payment->addTransaction($type, null, true);
- 
         $transaction->setIsClosed(false);
         $transaction->setTxnId($responsedata['transaction']['id']);
         $transaction->setAmount($amount);
@@ -168,12 +229,12 @@ class HostedTransactionHandler implements HandlerInterface
     }
 
     /**
-    * Set card details on the payment object based on the response data.
-    *
-    * @param Mage_Sales_Model_Order_Payment $payment The payment object.
-    * @param array $cardDetails containing card information.
-    * @return boolean
-    */
+     * Set card details on the payment object based on the response data.
+     *
+     * @param Mage_Sales_Model_Order_Payment $payment The payment object.
+     * @param array $cardDetails containing card information.
+     * @return boolean
+     */
     public function setCardDetails($payment, $cardDetails)
     {
         $payment->setAdditionalInformation('card_scheme', $cardDetails['scheme']);
@@ -190,13 +251,13 @@ class HostedTransactionHandler implements HandlerInterface
             )
         );
         if (isset($cardDetails['fundingMethod'])) {
-            $payment->setAdditionalInformation('fundingMethod', static::safeValue($cardDetails, 'fundingMethod'));
+            $payment->setAdditionalInformation('fundingMethod', $this->safeValue($cardDetails, 'fundingMethod'));
         }
         if (isset($cardDetails['issuer'])) {
-            $payment->setAdditionalInformation('issuer', static::safeValue($cardDetails, 'issuer'));
+            $payment->setAdditionalInformation('issuer', $this->safeValue($cardDetails, 'issuer'));
         }
         if (isset($cardDetails['nameOnCard'])) {
-            $payment->setAdditionalInformation('nameOnCard', static::safeValue($cardDetails, 'nameOnCard'));
+            $payment->setAdditionalInformation('nameOnCard', $this->safeValue($cardDetails, 'nameOnCard'));
         }
         return true;
     }

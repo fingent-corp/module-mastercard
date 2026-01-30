@@ -38,6 +38,8 @@ class OrderTokenCreateHandler implements HandlerInterface
     }
 
     /**
+     * Order token creation handler
+     *
      * @param array $handlingSubject
      * @param array $response
      *

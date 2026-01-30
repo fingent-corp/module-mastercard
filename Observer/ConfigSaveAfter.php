@@ -36,7 +36,7 @@ use Magento\Framework\App\Cache\TypeListInterface;
 
 class ConfigSaveAfter implements ObserverInterface
 {
-    const HTTPS_PREFIX = 'https://';
+    public const HTTPS_PREFIX = 'https://';
 
     /**
      * @var WebsiteRepositoryInterface
@@ -89,18 +89,18 @@ class ConfigSaveAfter implements ObserverInterface
     protected $downloadCount;
     
     /**
-    * @var configWriter
-    */
+     * @var configWriter
+     */
     protected $configWriter;
     
     /**
-    * @var StoreManagerInterface
-    */
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
     
     /**
-    * @var TypeListInterface
-    */
+     * @var TypeListInterface
+     */
     protected $cacheTypeList;
 
     /**
@@ -114,7 +114,9 @@ class ConfigSaveAfter implements ObserverInterface
      * @param SelectedStore $selectedStore
      * @param ScopeConfigInterface $config
      * @param LoggerInterface $logger
+     * @param DownloadCount $downloadCount
      * @param WriterInterface $configWriter
+     * @param StoreManagerInterface $storeManager
      * @param TypeListInterface $cacheTypeList
      * @param array $methods
      */
@@ -146,7 +148,6 @@ class ConfigSaveAfter implements ObserverInterface
         $this->configWriter       = $configWriter;
         $this->storeManager       = $storeManager;
         $this->cacheTypeList      = $cacheTypeList;
-
     }
 
     /**
@@ -164,13 +165,11 @@ class ConfigSaveAfter implements ObserverInterface
        
             $storeId   = $this->getStoreId($request);
             $test      = 1;
-            $urlchange = 0;
             $this->selectedStore->setStoreId($storeId);
             foreach ($this->methods as $method => $label) {
                 $config = $this->configFactory->create(['methodCode' => $method]);
                 $test = $this->istestMethod($config, $storeId, $test);
-                $vaildurl   = $this->isValidateUrl($method, $configData);
-                $urlchange  = $urlchange + $vaildurl ;
+                $this->isValidateUrl($method, $configData);
                 $isCertificate = $config->isCertificateAutherntification($storeId);
                 $validMethod   = $this->isValidMethod($method, $config, $storeId);
                 if ($isCertificate) {
@@ -184,12 +183,9 @@ class ConfigSaveAfter implements ObserverInterface
                         continue;
                     }
                 }
-                  $this->checkGatewayconnection($method, $label);
-                }
-                if ($urlchange > 0) {
-                  $this->clearCache();
-                }
-                $this->downloadCount->checkAndSaveDownload($storeId, $test);
+                $this->checkGatewayconnection($method, $label);
+            }
+            $this->downloadCount->checkAndSaveDownload($storeId, $test);
 
         } catch (\Exception $e) {
             $this->logger->critical('Error occurred while testing MasterCard configuration: ' . $e->getMessage(), [
@@ -199,18 +195,22 @@ class ConfigSaveAfter implements ObserverInterface
     }
 
     /**
-    * Checking the configuration data
-    * @return boolean
-    */
+     * Checking the configuration data
+     *
+     * @param array $configData
+     * @return boolean
+     */
     private function isInvalidConfigData($configData)
     {
-       return empty($configData['section']) || $configData['section'] !== 'payment';
+        return empty($configData['section']) || $configData['section'] !== 'payment';
     }
 
     /**
-    * For getting store id
-    * @return int
-    */
+     * For getting store id
+     *
+     * @param array $request
+     * @return int
+     */
     public function getStoreId($request)
     {
         $websiteId = $request->getParam('website');
@@ -226,9 +226,12 @@ class ConfigSaveAfter implements ObserverInterface
     }
     
     /**
-    * Checking the certificate validation
-    * @return boolean
-    */
+     * Checking the certificate validation
+     *
+     * @param object $config
+     * @param int $storeId
+     * @return boolean
+     */
     private function isValidCertificate($config, $storeId)
     {
         $sslCertPath = $config->getSSLCertificatePath($storeId);
@@ -237,9 +240,13 @@ class ConfigSaveAfter implements ObserverInterface
     }
 
     /**
-    * Checking the method validation
-    * @return boolean
-    */
+     * Checking the method validation
+     *
+     * @param string $method
+     * @param object $config
+     * @param int $storeId
+     * @return boolean
+     */
     private function isValidMethod($method, $config, $storeId)
     {
         $merchantId = $config->getMerchantId($storeId);
@@ -251,15 +258,17 @@ class ConfigSaveAfter implements ObserverInterface
             ? ScopeInterface::SCOPE_STORE
             : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
             $storeId
-            );
+        );
         return !$enabled || !$apiUrl || !$merchantId ? false : true;
     }
 
-
     /**
-    * Checking gateway connection
-    * @return boolean
-    */
+     * Checking gateway connection
+     *
+     * @param string $method
+     * @param string $label
+     * @return boolean
+     */
     private function checkGatewayconnection($method, $label)
     {
         try {
@@ -281,25 +290,30 @@ class ConfigSaveAfter implements ObserverInterface
     }
 
     /**
-    * Checking sandbox mode on live mode enabled.
-    * @param int $storeId
-    * @param int $test
-    *
-    * @return boolean
-    */
+     * Checking sandbox mode on live mode enabled.
+     *
+     * @param object $config
+     * @param int $storeId
+     * @param int $test
+     *
+     * @return boolean
+     */
     public function istestMethod($config, $storeId, $test)
     {
         if (($config->isTestMode($storeId = null) != 1) && ($test == 1)) {
             return $config->isTestMode($storeId = null);
-        }else {
+        } else {
             return $test;
         }
     }
 
     /**
-    * For validating url
-    * @return int
-    */
+     * For validating url
+     *
+     * @param string $method
+     * @param array $configData
+     * @return int
+     */
     public function isValidateUrl($method, $configData)
     {
     
@@ -317,31 +331,47 @@ class ConfigSaveAfter implements ObserverInterface
         }
 
         $gatewayUrl =  $this->config->getValue($path, $scope, $scopeId);
-        $fixedUrl = $gatewayUrl;
-        if (!str_starts_with($fixedUrl, self::HTTPS_PREFIX)) {
+        if (empty($gatewayUrl)) {
+            return;
+        }
+        $fixedUrl = trim($gatewayUrl);
+        // Replace backslashes with forward slashes
+        $fixedUrl = str_replace('\\', '/', $fixedUrl);
+
+        // Fix common malformed schemes like "https//"
+        $fixedUrl = preg_replace('#^(tps|htps|tp|hp|ttps)[;:/]+#i', self::HTTPS_PREFIX, $fixedUrl);
+        $fixedUrl = preg_replace('#^(https?|ftp)(//)#i', '$1://', $fixedUrl);
+        // Remove any invalid or malformed scheme (e.g., http:, https:, tps:)
+        $fixedUrl = preg_replace('#^\p{L}+:/+#u', '', $fixedUrl);
+        // Prepend correct scheme
+        $fixedUrl = self::HTTPS_PREFIX . ltrim($fixedUrl, '/');
+        // Parse URL to extract components
+        $parts = parse_url($fixedUrl);
+        // If scheme is missing, prepend https://
+        if (empty($parts['scheme'])) {
             $fixedUrl = self::HTTPS_PREFIX . ltrim($fixedUrl, '/');
         }
-        // If doesn't end with slash, append it
-        if (substr($fixedUrl, -1) !== '/') {
-            $fixedUrl .= '/';
-        }
-        // Save back only if changed
-        if ($fixedUrl !== $gatewayUrl) {
-            $this->configWriter->save($path, $fixedUrl, $scope, $scopeId);
-            $count = $count + 1;
-        }
-        return $count;
+
+        // Ensure it ends with a single slash
+        $fixedUrl = rtrim($fixedUrl, '/') . '/';
+            // Save back only if changed
+            if ($fixedUrl !== $gatewayUrl) {
+                $this->configWriter->save($path, $fixedUrl, $scope, $scopeId);
+                $count = $count + 1;
+                $this->clearCache();
+            }
+            return $count;
     }
     
     /**
-    * For clearing cache on url change
-    * @return boolean
-    */
+     * For clearing cache on url change
+     *
+     * @return boolean
+     */
     public function clearCache()
     {
         // Clear just the config cache type
         $this->cacheTypeList->cleanType('config');
         return true;
     }
-    
 }

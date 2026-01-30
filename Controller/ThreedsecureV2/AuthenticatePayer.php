@@ -34,7 +34,7 @@ use Psr\Log\LoggerInterface;
 
 class AuthenticatePayer extends Action implements HttpPostActionInterface
 {
-    const COMMAND_NAME = 'authenticate_payer';
+    public const COMMAND_NAME = 'authenticate_payer';
 
     /**
      * @var PaymentDataObjectFactory
