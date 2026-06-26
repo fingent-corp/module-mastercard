@@ -29,9 +29,9 @@ require([
         return true
     }, 'Invalid JSON string.');
     $.validator.addMethod('validate-expiry-limit', function (value, element) {
-        var unitField = $('[name$="[expiry_unit][value]"]');
-        var unit = unitField.val(); 
-        var val = parseInt(value);
+        let unitField = $('[name$="[expiry_unit][value]"]');
+        let unit = unitField.val(); 
+        let val = parseInt(value);
         if (unit === 'months' && val > 3) {
                 $.validator.messages['validate-expiry-limit'] = $.mage.__('For Months, the value cannot exceed 3.');
                 return false;

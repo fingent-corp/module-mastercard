@@ -1719,4 +1719,9 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\Webapi\Rest\Response">
+       <plugin name="mastercard_secure_headers_plugin" 
+                type="Mastercard\Mastercard\Plugin\WebapiResponsePlugin" 
+                sortOrder="10" />
+    </type>
 </config>

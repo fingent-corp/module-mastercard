@@ -120,10 +120,10 @@ class Details extends Template
      * @return boolean
      */
     public function isPaybylink()
-    { 
+    {
         $method =  $this->getOrder()->getPayment()->getMethod();
         $status = $this->getOrder()->getStatus();
-        if ($method == "pay_by_link" && ( $status == "pending" || $status == "canceled")) {
+        if ($method == "pay_by_link" && ($status == "pending" || $status == "canceled")) {
             return true;
         }
         return false;

@@ -22,10 +22,12 @@ use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Framework\DB\Transaction as dbTransaction;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 /**
  * Class HostedTransactionHandler
@@ -35,6 +37,14 @@ use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
  */
 class HostedTransactionHandler implements HandlerInterface
 {
+
+    public const IRIS_PAY_TYPE = 'IRIS_PAY';
+
+    public const FAILED_ORDER_STATUSES = [
+        'FAILED',
+        'CANCELLED',
+        'CANCELED'
+    ];
 
     /**
      * @var OrderFactory
@@ -57,23 +67,31 @@ class HostedTransactionHandler implements HandlerInterface
     private $invoiceSender;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * HostedTransactionHandler constructor.
      *
      * @param OrderFactory $orderFactory
      * @param InvoiceService $invoiceService
      * @param dbTransaction $transaction
      * @param InvoiceSender $invoiceSender
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
         OrderFactory $orderFactory,
         InvoiceService $invoiceService,
         dbTransaction $transaction,
-        InvoiceSender $invoiceSender
+        InvoiceSender $invoiceSender,
+        OrderRepositoryInterface $orderRepository
     ) {
         $this->orderFactory = $orderFactory;
         $this->invoiceService = $invoiceService;
         $this->transaction   = $transaction;
         $this->invoiceSender = $invoiceSender;
+        $this->orderRepository = $orderRepository;
     }
     /**
      * Handles response
@@ -92,6 +110,10 @@ class HostedTransactionHandler implements HandlerInterface
         if ($order) {
             $payment = $order->getPayment();
             ContextHelper::assertOrderPayment($payment);
+        }
+        if ($this->isIrisPay($responsedata) && $this->shouldCancelIrisPayOrder($responsedata)) {
+            $this->cancelIrisPayOrder($order, $responsedata);
+            return;
         }
         $payment->setTransactionId($responsedata['transaction']['id']);
         $payment->setAdditionalInformation('gateway_code', $responsedata['response']['gatewayCode']);
@@ -114,14 +136,14 @@ class HostedTransactionHandler implements HandlerInterface
             $this->setCardDetails($payment, $cardDetails);
 
         }
-        $payment->save();
-        $order->save();
         if (isset($responsedata['response']['cardSecurityCode'])) {
             $payment->setAdditionalInformation(
                 'cvv_validation',
                 $responsedata['response']['cardSecurityCode']['gatewayCode']
             );
         }
+        $payment->save();
+        $order->save();
         if ($responsedata['transaction']['type'] == "VOID_AUTHORIZATION") {
             $order = $payment->getOrder();
             $orderState = Order::STATE_CANCELED;
@@ -139,13 +161,70 @@ class HostedTransactionHandler implements HandlerInterface
      * Load order by increment ID using OrderFactory
      *
      * @param string $incrementId
-     * @return \Magento\Sales\Model\Order|null
+     * @return Order
      */
     public function getOrderByIncrementId($incrementId)
     {
         return $this->orderFactory->create()->loadByIncrementId($incrementId);
     }
     
+    /**
+     * Checking for Iris Pay
+     *
+     * @param array $responsedata
+     * @return bool
+     */
+    private function isIrisPay(array $responsedata): bool
+    {
+        $type = $responsedata['sourceOfFunds']['browserPayment']['type'] ?? '';
+        return strtoupper((string)$type) === self::IRIS_PAY_TYPE;
+    }
+
+    /**
+     * Checking is the order need to be cancelled
+     *
+     * @param array $responsedata
+     * @return bool
+     */
+    private function shouldCancelIrisPayOrder(array $responsedata): bool
+    {
+        $orderStatus = strtoupper((string)($responsedata['order']['status'] ?? ''));
+        if (in_array($orderStatus, self::FAILED_ORDER_STATUSES, true)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Cancel Iris Pay order
+     *
+     * @param Order $order
+     * @param array $responsedata
+     * @return void
+     */
+    private function cancelIrisPayOrder(Order $order, array $responsedata): void
+    {
+        if ($order->getState() === Order::STATE_CANCELED) {
+            return;
+        }
+
+        $orderStatus = $responsedata['order']['status'] ?? 'UNKNOWN';
+        $comment = __(
+            'Iris Pay payment failed. Gateway order status: %1.',
+            $orderStatus
+        );
+
+        if ($order->canCancel()) {
+            $order->cancel();
+        } else {
+            $order->setState(Order::STATE_CANCELED);
+            $order->setStatus(Order::STATE_CANCELED);
+        }
+
+        $order->addStatusHistoryComment($comment)->setIsCustomerNotified(false);
+        $this->orderRepository->save($order);
+    }
+
     /**
      * For getting safe value
      *

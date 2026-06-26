@@ -69,7 +69,6 @@ class TransferFactoryOrder extends TransferFactory
     protected function getUri(PaymentDataObjectInterface $payment)
     {
         $order   = $payment->getOrder();
-        $method  = $payment->getPayment()->getMethod();
         $storeId = $order->getStoreId();
         $orderId = $order->getOrderIncrementId();
         $orderprefix = $this->downloadCount->getOrderPrefix($storeId);
