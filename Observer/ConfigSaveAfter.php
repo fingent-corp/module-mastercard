@@ -332,7 +332,7 @@ class ConfigSaveAfter implements ObserverInterface
 
         $gatewayUrl =  $this->config->getValue($path, $scope, $scopeId);
         if (empty($gatewayUrl)) {
-            return;
+            return 0;
         }
         $fixedUrl = trim($gatewayUrl);
         // Replace backslashes with forward slashes

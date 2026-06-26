@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.2.1] - 2026-06-26
+### Enhancement
+- IRIS Pay Support.
+
 ## [3.0.2] - 2026-01-30
 ### Enhancement
 - Introduced Pay By Link Feature.

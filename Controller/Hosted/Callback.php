@@ -33,6 +33,7 @@ use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
 use Magento\Payment\Gateway\Command\CommandPool;
+use Magento\Sales\Model\Order;
 
 /**
  * Class Callback
@@ -148,11 +149,7 @@ class Callback extends Action
             if ($params['resultIndicator']) {
                 $quote = $this->checkoutSession->getQuote();
                 $paymentDataObject = $this->paymentDataObjectFactory->create($quote->getPayment());
-                if (!$this->customerSession->isLoggedIn()) {
-                    $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
-                    $quote->setCustomerFirstname($quote->getBillingAddress()->getFirstname());
-                    $quote->setCustomerLastname($quote->getBillingAddress()->getLastname());
-                }
+                $this->prepareGuestCustomer($quote);
                 $quote->collectTotals()->save();
                 $orders  = $this->quoteManagement->submit($quote);
                 $orderId = $orders->getEntityId();
@@ -166,6 +163,12 @@ class Callback extends Action
                 }
         
                 $order  = $this->order->load($orderId);
+                if ($order->getState() === Order::STATE_CANCELED) {
+                    $this->messageManager->addErrorMessage(
+                        __('Payment was not completed. Your order has been cancelled.')
+                    );
+                    $redirectPath = static::CHECKOUT_CART_URL;
+                } else {
                 $quotes = $this->quoteFactory->create()
                                ->load($order->getQuoteId());
                 $quotes->setIsActive(0)->save();
@@ -184,7 +187,9 @@ class Callback extends Action
                 }
                 $this->orderSender->send($order);
                 $this->checkoutSession->replaceQuote($quotes);
-                return $this->_redirect('checkout/onepage/success');
+                $redirectPath = 'checkout/onepage/success';
+                }
+                return $this->_redirect($redirectPath);
             } else {
                 $quote = $this->checkoutSession->getQuote();
                 $quote->setIsActive(1)
@@ -192,13 +197,28 @@ class Callback extends Action
                     ->save();
                 $this->checkoutSession->replaceQuote($quote);
                 $this->messageManager->addError(__('Payment Failed.'));
-                return $this->_redirect(static::CHECKOUT_CART_URL);
+                $redirectPath = static::CHECKOUT_CART_URL;
             }
-
         } catch (Exception $e) {
             $this->logger->error((string)$e);
             $this->messageManager->addError(__('Transaction has been declined.'));
-            return $this->_redirect(static::CHECKOUT_CART_URL);
+            $redirectPath = static::CHECKOUT_CART_URL;
+        }
+        return $this->_redirect($redirectPath);
+    }
+
+    /**
+     * Set guest customer data if not logged in
+     *
+     * @param \Magento\Quote\Model\Quote $quote
+     * @return void
+     */
+    public function prepareGuestCustomer($quote)
+    {
+        if (!$this->customerSession->isLoggedIn()) {
+            $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
+            $quote->setCustomerFirstname($quote->getBillingAddress()->getFirstname());
+            $quote->setCustomerLastname($quote->getBillingAddress()->getLastname());
         }
     }
 }
