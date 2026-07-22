@@ -29,36 +29,31 @@ use Magento\Framework\Component\ComponentRegistrarInterface;
 use Magento\Framework\Filesystem\Directory\ReadFactory;
 use Magento\Framework\Serialize\Serializer\Json;
 
-/**
- * Class ReleaseNotification
- *
- * @package Mastercard\Mastercard\Model\System\Message
- */
 class ReleaseNotification implements MessageInterface
 {
 
     /**
-    * @var Session
-    */
+     * @var Session
+     */
     protected $session;
     
     /**
-    * @var Curl
-    */
+     * @var Curl
+     */
     protected $curl;
     
     /**
-    * @var ComponentRegistrarInterface
-    */
+     * @var ComponentRegistrarInterface
+     */
     protected $componentRegistrar;
     
     /**
-    * @var ReadFactory
-    */
+     * @var ReadFactory
+     */
     protected $readFactory;
     /**
-    * @var Json
-    */
+     * @var Json
+     */
     protected $json;
 
     /**
@@ -68,6 +63,7 @@ class ReleaseNotification implements MessageInterface
      * @param Curl $curl
      * @param ComponentRegistrarInterface $componentRegistrar
      * @param ReadFactory $readFactory
+     * @param Json $json
      */
     public function __construct(
         Session $session,
@@ -86,24 +82,23 @@ class ReleaseNotification implements MessageInterface
     /**
      * Message identity
      */
-    const MESSAGE_IDENTITY = 'release_notification';
+    public const MESSAGE_IDENTITY = 'release_notification';
 
     /**
      * API Endpoint for checking latest github release
      */
-    const API_ENDPOINT = 'https://api.github.com/repos/fingent-corp/module-mastercard/releases/latest';
+    public const API_ENDPOINT = 'https://api.github.com/repos/fingent-corp/module-mastercard/releases/latest';
 
     /**
      * Get MPGS Module name
      */
-    const MODULE_FULL_NAME = 'Mastercard_Mastercard';
+    public const MODULE_FULL_NAME = 'Mastercard_Mastercard';
 
     /**
      * Release notes url
      */
-    const RELEASE_NOTES_URL =
+    public const RELEASE_NOTES_URL =
     'https://mpgs.fingent.wiki/enterprise/magento-2-mastercard-gateway/release-notes/';
-
 
     /**
      * Retrieve unique system message identity
@@ -214,5 +209,4 @@ class ReleaseNotification implements MessageInterface
     {
         return self::SEVERITY_NOTICE;
     }
-
 }

@@ -117,6 +117,8 @@ class Details extends Template
     }
 
     /**
+     * Checking the method is pay by link and the order status
+     *
      * @return boolean
      */
     public function isPaybylink()

@@ -332,7 +332,7 @@ class ConfigSaveAfter implements ObserverInterface
 
         $gatewayUrl =  $this->config->getValue($path, $scope, $scopeId);
         if (empty($gatewayUrl)) {
-            return 0;
+            return $count;
         }
         $fixedUrl = trim($gatewayUrl);
         // Replace backslashes with forward slashes
@@ -351,13 +351,12 @@ class ConfigSaveAfter implements ObserverInterface
         if (empty($parts['scheme'])) {
             $fixedUrl = self::HTTPS_PREFIX . ltrim($fixedUrl, '/');
         }
-
         // Ensure it ends with a single slash
         $fixedUrl = rtrim($fixedUrl, '/') . '/';
             // Save back only if changed
             if ($fixedUrl !== $gatewayUrl) {
                 $this->configWriter->save($path, $fixedUrl, $scope, $scopeId);
-                $count = $count + 1;
+                $count++;
                 $this->clearCache();
             }
             return $count;

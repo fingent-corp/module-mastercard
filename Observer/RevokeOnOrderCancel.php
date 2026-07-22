@@ -26,21 +26,21 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 
 class RevokeOnOrderCancel implements ObserverInterface
 {
-     /**
-      * @var Data
-      */
-     protected $data;
+    /**
+     * @var Data
+     */
+    protected $data;
      
-     /**
-      * RevokeOnOrderCancel constructor
-      *
-      * @param Data $data
-      */
-     public function __construct(
+    /**
+     * RevokeOnOrderCancel constructor
+     *
+     * @param Data $data
+     */
+    public function __construct(
          Data $data
-     ) {
+    ) {
         $this->data = $data;
-     }
+    }
     
     /**
      * Execute the observer for revoke link on cancel.

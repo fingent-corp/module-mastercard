@@ -1724,4 +1724,9 @@
                 type="Mastercard\Mastercard\Plugin\WebapiResponsePlugin" 
                 sortOrder="10" />
     </type>
+    <type name="Magento\Downloadable\Observer\SetLinkStatusObserver">
+        <plugin name="mastercard_fix_null_offset_bug" 
+                type="Mastercard\Mastercard\Plugin\FixNullOffsetObserverPlugin" 
+                sortOrder="1"/>
+    </type>
 </config>

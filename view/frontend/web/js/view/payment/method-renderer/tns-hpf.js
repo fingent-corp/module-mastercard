@@ -25,6 +25,8 @@ define(
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Vault/js/view/payment/vault-enabler',
         'Mastercard_Mastercard/js/lib/postponed-adapter-activator-factory',
+        'Magento_CheckoutAgreements/js/model/agreements-assigner',
+        'Magento_CheckoutAgreements/js/model/agreement-validator'
     ],
     function (
         $,
@@ -35,7 +37,9 @@ define(
         layout,
         fullScreenLoader,
         VaultEnabler,
-        postponedAdapterActivatorFactory
+        postponedAdapterActivatorFactory,
+        agreementsAssigner,
+        agreementsValidator
     ) {
         'use strict';
 
@@ -243,10 +247,13 @@ hideAllCardFieldErrors: function (fields) {
 },
  handleValidSession: function (response) {
      this.sessionId = response.session.id;
+     
     let action
     if (this.is3DsEnabled() || this.is3Ds2Enabled()) {
         action = setPaymentInformationAction(this.messageContainer, this.getData());
-
+        if (!agreementsValidator.validate()) { 
+            return false; 
+         }
         $.when(action).done($.proxy(function () {
             this.delegate(this.is3Ds2Enabled() ? 'threeDSecureV2Start' : 'threeDSecureOpen', this);
         }, this)).fail(

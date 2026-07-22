@@ -24,25 +24,25 @@ use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 class DiscountBuilder implements BuilderInterface
 {
     /**
-    * @var ConfigFactory
-    */
+     * @var ConfigFactory
+     */
     protected $configFactory;
 
     /**
-    * DiscountBuilder constructor.
-    * @param ConfigFactory $configFactory
-    */
+     * DiscountBuilder constructor.
+     * @param ConfigFactory $configFactory
+     */
     public function __construct(ConfigFactory $configFactory)
     {
         $this->configFactory = $configFactory;
     }
 
     /**
-    * Builds ENV request
-    *
-    * @param array $buildSubject
-    * @return array
-    */
+     * Builds ENV request
+     *
+     * @param array $buildSubject
+     * @return array
+     */
     public function build(array $buildSubject)
     {
         $paymentDO = SubjectReader::readPayment($buildSubject);

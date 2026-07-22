@@ -364,6 +364,7 @@ class Data extends AbstractHelper
     /**
      * Get Sender identity
      *
+     * @param string $senderIdentityConfigPath
      * @param int|null $storeId
      * @return string
      */
@@ -374,5 +375,28 @@ class Data extends AbstractHelper
             ScopeInterface::SCOPE_STORE,
             $storeId
         );
+    }
+
+    /**
+     * Getting logo file path
+     *
+     * @param int $storeId
+     *
+     * @return string
+     */
+    public function getLogofile($storeId)
+    {
+        $logoFile = $this->scopeConfig->getValue(
+            'payment/tns/pay_by_link/logo_file',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+      
+        return $logoFile
+                ?: $this->scopeConfig->getValue(
+                    'payment/pay_by_link/logo_file',
+                    ScopeInterface::SCOPE_STORE,
+                    $storeId
+                );
     }
 }

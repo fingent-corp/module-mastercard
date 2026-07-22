@@ -23,7 +23,7 @@ use Mastercard\Mastercard\Gateway\Config\Config;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    const METHOD_CODE = 'pay_by_link';
+    public const METHOD_CODE = 'pay_by_link';
 
     /**
      * @var Config

@@ -27,36 +27,36 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 class OrderPrefixObserver implements ObserverInterface
 {
 
-     /**
+    /**
      * @var DownloadCount
      */
      protected $downloadCount;
-     /**
-      * @var Session
-      */
-      protected $checkoutSession;
+    /**
+     * @var Session
+     */
+    protected $checkoutSession;
 
-     /**
-      * @var OrderRepositoryInterface
-      */
+    /**
+     * @var OrderRepositoryInterface
+     */
       protected $orderRepository;
 
-     /**
+    /**
      * Orderprefix constructor
      *
      * @param DownloadCount $downloadCount
      * @param Session $checkoutSession
      * @param OrderRepositoryInterface $orderRepository
      */
-     public function __construct(
-         DownloadCount $downloadCount,
-         Session $checkoutSession,
-         OrderRepositoryInterface $orderRepository
-     ) {
+    public function __construct(
+        DownloadCount $downloadCount,
+        Session $checkoutSession,
+        OrderRepositoryInterface $orderRepository
+    ) {
         $this->downloadCount      = $downloadCount;
         $this->checkoutSession    = $checkoutSession;
         $this->orderRepository    = $orderRepository;
-     }
+    }
     
     /**
      * Execute the observer
@@ -78,8 +78,8 @@ class OrderPrefixObserver implements ObserverInterface
                 if ($newIncrementId) {
                     $order->setIncrementId($newIncrementId);
                     $this->orderRepository->save($order);
-                  }
-          }
+                }
+            }
         }
     }
 }

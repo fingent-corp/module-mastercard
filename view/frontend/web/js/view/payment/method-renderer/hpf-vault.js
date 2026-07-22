@@ -23,9 +23,22 @@ define([
     'Magento_Checkout/js/action/set-payment-information',
     'mage/url',
     'Magento_Ui/js/modal/modal',
-    'Magento_Checkout/js/model/full-screen-loader'
-], function ($, VaultComponent, $t, alert,setPaymentInformationAction,url,modal, fullScreenLoader) {
-    'use strict';
+    'Magento_Checkout/js/model/full-screen-loader',
+    'Magento_CheckoutAgreements/js/model/agreements-assigner',
+    'Magento_CheckoutAgreements/js/model/agreement-validator'
+], function (
+       $,
+       VaultComponent,
+       $t,
+       alert,
+       setPaymentInformationAction,
+       url,
+       modal,
+       fullScreenLoader,
+       agreementsAssigner,
+       agreementsValidator
+    ) {
+       'use strict';
 
      let options = {
         type: 'slide',
@@ -162,18 +175,23 @@ define([
         handleValidSession: function (session) {
             this.session(session);
             const token = this.getToken();
-            if (this.is3DsEnabled()) {
-                setPaymentInformationAction(this.messageContainer, this.getData());
-                fullScreenLoader.startLoader();
-                this.ThreedsVaultCheck(token);
-            } else if (this.is3Ds2Enabled()) {
-                fullScreenLoader.startLoader();
-                this.Threeds2VaultCheck(token);
-            } else {
-                this.isPlaceOrderActionAllowed(true);
-                this.placeOrder();
+            if (!agreementsValidator.validate()) { 
+                return false; 
             }
-    },
+            const action = setPaymentInformationAction(this.messageContainer, this.getData());
+            $.when(action).done($.proxy(function () {
+	    if (this.is3DsEnabled()) {
+	        fullScreenLoader.startLoader();
+	        this.ThreedsVaultCheck(token);
+	    } else if (this.is3Ds2Enabled()) {
+	        fullScreenLoader.startLoader();
+	        this.Threeds2VaultCheck(token);
+	    } else {
+	        this.isPlaceOrderActionAllowed(true);
+	        this.placeOrder();
+	    }
+            }, this));
+       },
 
         loadAdapter: function () {
             if (this.isConfigured()) {

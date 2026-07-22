@@ -26,6 +26,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Mastercard\Mastercard\Helper\Data;
 
 class InteractionBuilder implements BuilderInterface
 {
@@ -63,6 +64,11 @@ class InteractionBuilder implements BuilderInterface
     protected $scopeConfig;
 
     /**
+     * @var Data
+     */
+    protected $data;
+
+    /**
      * InteractionBuilder constructor.
      *
      * @param ConfigFactory $configFactory
@@ -70,19 +76,22 @@ class InteractionBuilder implements BuilderInterface
      * @param StoreManagerInterface $storeManager
      * @param DateTime $dateTime
      * @param ScopeConfigInterface $scopeConfig
+     * @param Data $data
      */
     public function __construct(
         ConfigFactory $configFactory,
         UrlInterface $urlInterface,
         StoreManagerInterface $storeManager,
         DateTime $dateTime,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Data $data
     ) {
         $this->configFactory = $configFactory;
         $this->urlInterface  = $urlInterface;
         $this->storeManager  = $storeManager;
         $this->dateTime      = $dateTime;
         $this->scopeConfig   = $scopeConfig;
+        $this->data          = $data;
     }
 
     /**
@@ -144,9 +153,9 @@ class InteractionBuilder implements BuilderInterface
                 $merchantInfo['phone'] = $config->getValue('phone', $storeId);
             }
 
-            if ($config->getValue('logo_file', $storeId)) {
+            if ($this->data->getLogofile($storeId)) {
 
-                $merchantInfo['logo'] = $this->getMediaUrl($config->getValue('logo_file', $storeId));
+                $merchantInfo['logo'] = $this->getMediaUrl($this->data->getLogofile($storeId));
             }
 
             $returnData = array_replace_recursive($returnData, [

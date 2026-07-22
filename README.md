@@ -16,9 +16,8 @@ The Mastercard Gateway Magento extension works with these Magento platforms:
 - Community/Open-Source Edition
 - Enterprise/Commerce/Cloud Edition
 
-Plugin versions 3.0.0 , 3.0.1 and 3.0.2 are developed and tested for compatibility with Magento version 2.4.7 and 2.4.8.
-
-Note : Plugin version 2.4.7 has been tested for compatibility only with Magento versions 2.4.3 to 2.4.7.
+Plugin version 3.0.4 expands compatibility to include Magento 2.4.9 alongside versions 2.4.7 and 2.4.8.
+Previous plugin releases from v3.0.0 to v3.0.3 remain compactible for Magento 2.4.7 and 2.4.8 only.
 
 ## Mastercard Payment Module Features
 
@@ -40,6 +39,11 @@ The Mastercard Payment Module is packed with tools to make payment processing ea
     Give your customers the flexibility of IRIS Pay for quick and secure payments right from the hosted checkout page. To get started, ensure your MID is enabled for IRIS Pay processing. Once live, this integration ensures a streamlined, worry-free checkout experience, making it easier than ever for shoppers to authorize payments with minimal effort.
 
     Note: IRIS Pay is only available via full-page redirect when using the Purchase Method within Hosted Checkout.
+- **Click to Pay (Supported in Hosted Checkout Only)**<br/>
+    Bring a faster, password-free checkout experience to your store with Click to Pay. Available seamlessly through the hosted checkout page, this feature eliminates manual data entry by automatically recognizing returning shoppers and their preferred cards.
+
+    To activate this feature, ensure your merchant ID (MID) is enabled for Click to Pay within your gateway configuration. Once live, it delivers a highly secure, frictionless payment journey that boosts conversion rates and makes card authorization effortless for your global customers.
+
 - **Automated Clearing House (ACH)**<br/>
    Automated Clearing House (ACH) payments let customers pay directly from their bank accounts through electronic transfers, making bank-to-bank payments easy and fast.
 
