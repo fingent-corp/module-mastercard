@@ -21,21 +21,35 @@ use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Model\Order\Payment;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
+use Magento\Framework\UrlInterface;
 
 class OrderDataBuilder implements BuilderInterface
 {
+
+    public const WEB_HOOK_RESPONSE_URL = 'tns/webhook/response';
+    
     /**
      * @var ConfigFactory
      */
     protected $configFactory;
+    
+    /**
+     * @var UrlInterface
+     */
+    protected $urlInterface;
 
     /**
      * OrderDataBuilder constructor.
      * @param ConfigFactory $configFactory
+     * @param UrlInterface $urlInterface
      */
-    public function __construct(ConfigFactory $configFactory)
+    public function __construct(
+        ConfigFactory $configFactory,
+        UrlInterface $urlInterface
+    )
     {
         $this->configFactory = $configFactory;
+        $this->urlInterface  = $urlInterface;
     }
 
     /**
@@ -55,12 +69,14 @@ class OrderDataBuilder implements BuilderInterface
         $order   = $payment->getOrder();
         $total   = $order->getBaseGrandTotal();
         $orderId = $paymentDO->getOrder()->getOrderIncrementId();
+        $url     =  $this->urlInterface->getBaseUrl();
 
         return [
             'order' => [
                 'amount' => sprintf('%.2F', $total),
                 'currency' => $order->getOrderCurrencyCode(),
                 'id' => $orderId,
+                'notificationUrl' => $url.static::WEB_HOOK_RESPONSE_URL,
                 'description'=> "Ordered goods"
 
             ]

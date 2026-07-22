@@ -238,19 +238,39 @@ class DownloadCount extends AbstractHelper
     }
 
     /**
-    * Checking and saving module download count.
-    * @param int $storeId
-    * @param int $test
-    *
-    * @return boolean
-    */
+     * Checking and saving module download count.
+     *
+     * @param int $storeId
+     * @return boolean
+     */
     public function getOrderPrefix($storeId)
     {
     
-     return $this->config->getValue(
-         'payment/tns/order_prefix',
-         ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-         $storeId
+        return $this->config->getValue(
+            'payment/tns/order_prefix',
+            ($storeId !== null) ? ScopeInterface::SCOPE_STORE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            $storeId
         );
+    }
+
+    /**
+     * Getting logo file path
+     *
+     * @param int $storeId
+     * @return string
+     */
+    public function getLogofile($storeId)
+    {
+        $logoFile = $this->config->getValue(
+            'payment/tns/hosted/logo_file',
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+        return $logoFile
+               ?: $this->config->getValue(
+                   'payment/tns_hosted/logo_file',
+                   ScopeInterface::SCOPE_STORE,
+                   $storeId
+               );
     }
 }

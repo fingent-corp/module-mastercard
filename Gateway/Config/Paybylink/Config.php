@@ -27,9 +27,8 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
      */
     protected $method = 'pay_by_link';
 
-
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isVaultEnabled(): bool
     {
@@ -37,7 +36,7 @@ class Config extends \Mastercard\Mastercard\Gateway\Config\Config implements Con
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isOrderTokenizationEnabled(): bool
     {

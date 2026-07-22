@@ -55,14 +55,15 @@ class LineItemsBuilder implements BuilderInterface
             if ($item->getParentItemId() !== null) {
                 continue;
             }
-            $unitPrice = $item->getBaseRowTotal() - $item->getBaseTotalDiscountAmount();
-            $result[] = [
+            $unitPrice =  $item->getBasePrice();
+            $discountTaxCompensation =
+                       $item->getBaseDiscountTaxCompensationAmount() / max(1, $item->getQty());
+            $result[]  = [
                 'name' => $item->getName(),
                 'description' => $item->getDescription(),
                 'sku' => $item->getSku(),
-                'unitPrice' => sprintf('%.2F', $unitPrice + $item->getBaseDiscountTaxCompensationAmount()),
-                'quantity' => 1
-                ];
+                'unitPrice' => sprintf('%.2F', $unitPrice + $discountTaxCompensation),
+                'quantity' => (int)$item->getQtyOrdered(),            ];
         }
         return $result;
     }
@@ -83,8 +84,7 @@ class LineItemsBuilder implements BuilderInterface
 
         if ($config->isSendLineItems($order->getStoreId())) {
             $shippingAmount = $payment->getBaseShippingAmount();
-            $taxAmount = $payment->getOrder()->getBaseTaxAmount();
-
+            $taxAmount      = $payment->getOrder()->getBaseTaxAmount();
             return [
                 'order' => [
                     'item' => $this->getOrderItems($order->getItems()),

@@ -115,7 +115,7 @@ class Paypaltransaction extends Action
             $jsonResult->setData([
              'result' => "N"
             ]);
-            if (isset($additionaldata['session']) && isset ($additionaldata['successIndicator'])) {
+            if (isset($additionaldata['session']) && isset($additionaldata['successIndicator'])) {
                 $paymentDataObject = $this->paymentDataObjectFactory->create($quote->getPayment());
                 $command = $this->commandPool->get("browser_payment");
                 $command->execute([

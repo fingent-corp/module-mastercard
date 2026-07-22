@@ -56,12 +56,14 @@ class LineItemsBuilder implements BuilderInterface
             if ($item->getParentItemId() !== null) {
                 continue;
             }
-            $unitPrice = ($item->getBaseRowTotal() - $item->getBaseTotalDiscountAmount()) / $item->getQty();
+            $unitPrice =  $item->getBasePrice();
+            $discountTaxCompensation =
+                       $item->getBaseDiscountTaxCompensationAmount() / max(1, $item->getQty());
             $result[]  = [
                 'name' => $item->getName(),
                 'description' => $item->getDescription(),
                 'sku' => $item->getSku(),
-                'unitPrice' => sprintf('%.2F', $unitPrice + $item->getBaseDiscountTaxCompensationAmount()),
+                'unitPrice' => sprintf('%.2F', $unitPrice + $discountTaxCompensation),
                 'quantity' => $item->getQty(),
             ];
         }
@@ -86,7 +88,8 @@ class LineItemsBuilder implements BuilderInterface
         if ($config->isSendLineItems($order->getStoreId())) {
         $shippingAddress = $payment->getQuote()->getShippingAddress();
         $shippingAmount  = $shippingAddress->getShippingAmount();
-        $taxAmount       = $shippingAddress->getTaxAmount();
+        $quote           = $payment->getQuote();
+        $taxAmount       = $this->getCalculatedTaxAmount($quote, $shippingAddress);
         $orderData = [
                     'item' => $this->getOrderItems($order->getItems()),
                     'shippingAndHandlingAmount' => $shippingAmount
@@ -101,5 +104,26 @@ class LineItemsBuilder implements BuilderInterface
          ];
         }
         return [];
+    }
+    
+    /**
+    * Get Tax amount
+    *
+    * @param object $quote
+    * @param object $shippingAddress
+    * @return float
+    */
+    public function getCalculatedTaxAmount($quote, $shippingAddress): float
+    {
+        if ($quote->getIsVirtual() === 0 && $shippingAddress->getShippingAmount() > 0) {
+            return (float) $shippingAddress->getTaxAmount();
+        }
+        $grandTotal           = $quote->getGrandTotal();
+        $subtotalWithDiscount = $quote->getSubtotalWithDiscount();
+        $taxAmount = $grandTotal - $subtotalWithDiscount;
+        if ($taxAmount > 0) {
+            return (float) $taxAmount;
+        }
+        return (float) $quote->getTaxAmount();
     }
 }

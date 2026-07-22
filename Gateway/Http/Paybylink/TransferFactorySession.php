@@ -29,6 +29,8 @@ class TransferFactorySession extends TransferFactory
     protected $httpMethod = Rest::POST;
 
     /**
+     * Get session request url
+     *
      * @param PaymentDataObjectInterface $payment
      * @return string
      */

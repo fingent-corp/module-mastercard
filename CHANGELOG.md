@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.0.4] - 2026-07-22
+### Enhancement
+- Added Retrieve Transaction API as an alternative mechanism to address the mismatch issue observed on the portal.
+- Updated the “Send Line Item” feature for digital products.
+- Webhook Secret for Pay by link option.
+- Supports Magento  v2.4.9.
+- Click to pay support in hosted checkout.
+## Fixed
+- Bug fix for replacing merchant logo when uploading a new one.
+- Terms & Conditions to be considered in Hosted Session (3DS1 & 3DS2).
+- Updated tax calculation logic for error encountred in redirect method with inclusive tax.
+
 ## [3.0.3] - 2026-06-26
 ### Enhancement
 - IRIS Pay Support.

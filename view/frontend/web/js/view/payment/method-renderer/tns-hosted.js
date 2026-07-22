@@ -59,6 +59,33 @@ define(
                 this.isPlaceOrderActionAllowed.subscribe($.proxy(this.buttonTitleHandler, this));
                 this.adapterLoaded.subscribe($.proxy(this.buttonTitleHandler, this));
                 let self = this;
+                let lastLoadedCountry = null;
+                ko.computed(function () {
+                    let billingAddress = quote.billingAddress();
+                    let isDigital = self.isCartDigital();
+                    let config = self.getConfig();
+                    let isTnsHostedSelected = self.isActive() && (self.isChecked() === 'tns_hosted');
+                    if (billingAddress && isDigital && isTnsHostedSelected && config.form_type != 1) {
+                        var countryId = typeof billingAddress.countryId === 'function' ? billingAddress.countryId() : billingAddress.countryId;
+                        
+                        let street = typeof billingAddress.street === 'function' ? billingAddress.street() : billingAddress.street;
+                        let hasStreet = Array.isArray(street) ? (street[0] && street[0].length > 0) : (street && street.length > 0);
+                        if (countryId && hasStreet && countryId !== lastLoadedCountry) {
+                            let termsRequired = window.checkoutConfig?.checkoutAgreements?.isEnabled || (config && config.terms_conditions == 1);                        
+                            lastLoadedCountry = countryId;
+                            self.isSessionCreated = false;
+                            if(termsRequired){
+                                self.isButtonVisible(true);
+                                self.handleWithTermsConditions(config, this);
+                            }else {
+                                $("#embed-target").removeAttr("style").hide();
+                                self.isButtonVisible(false);
+                                self.savePaymentAndCheckout(); 
+                                $('#embed-target').show();
+                            }
+                        }
+                    }
+                }, this);
                 let agreementsInputPath = '.payment-method._active div.checkout-agreements input';
                 $(document).on('change', agreementsInputPath, function () {
                  if (!$(this).prop('checked')) {
@@ -68,7 +95,6 @@ define(
                  } 
             });
             
-
                 return this;
             },
 
@@ -77,11 +103,25 @@ define(
                     this.buttonTitle(this.buttonTitleEnabled);
                 }
             },
+            isCartDigital: function () { 
+                var cartItems = quote.getItems();
+                if (!cartItems || cartItems.length === 0) {
+                    return false;
+                }
+                return cartItems.every(function (item) {
+                    let isVirtualType = item.product_type === 'virtual' || item.product_type === 'downloadable';
+                    let isVirtualFlag = item.is_virtual == true || item.is_virtual == "1";
+                    return isVirtualType || isVirtualFlag;
+                });
+            },
             onActiveChange: function (isActive) {
                 let config = this.getConfig();
                 $('#embed-target').hide();
                 if (isActive && !this.adapterLoaded()) {
                     this.loadAdapter();
+                }
+                if (this.isCartDigital() && config.form_type != 1) {
+                    return false;
                 }
                 if((config.form_type != 1) && (this.isChecked() == 'tns_hosted') && (config.terms_conditions != 1)){
                     $("#embed-target").removeAttr("style").hide();
@@ -280,8 +320,17 @@ define(
              * Get payment method data
              */
             getData: function() {
-                let data = this._super();
-                data['additional_data'] = this.resultIndicator;
+               let data = this._super();
+               if (this.resultIndicator && this.resultIndicator.data) {
+                   let resultIndicatorStr = this.resultIndicator.data.resultIndicator || '';
+                   let sessionVersionStr = this.resultIndicator.data.sessionVersion || '';
+                    data['additional_data'] = {
+                        resultIndicator: resultIndicatorStr,
+                        sessionVersion: sessionVersionStr
+                    };
+                } else if (this.resultIndicator) {
+                    data['additional_data'] = this.resultIndicator;
+                }
                 return data;
             }
         });

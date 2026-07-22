@@ -23,6 +23,7 @@ use Magento\Sales\Model\Order\Payment;
 use Mastercard\Mastercard\Gateway\Config\ConfigFactory;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Mastercard\Mastercard\Helper\DownloadCount;
 
 class InteractionBuilder implements BuilderInterface
 {
@@ -49,20 +50,28 @@ class InteractionBuilder implements BuilderInterface
     protected $storeManager;
 
     /**
+     * @var DownloadCount
+     */
+    protected $downloadCount;
+
+    /**
      * InteractionBuilder constructor.
      *
      * @param ConfigFactory $configFactory
      * @param UrlInterface $urlInterface
      * @param StoreManagerInterface $storeManager
+     * @param DownloadCount $downloadCount
      */
     public function __construct(
         ConfigFactory $configFactory,
         UrlInterface $urlInterface,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        DownloadCount $downloadCount,
     ) {
         $this->configFactory = $configFactory;
         $this->urlInterface  = $urlInterface;
         $this->storeManager  = $storeManager;
+        $this->downloadCount = $downloadCount;
     }
 
     /**
@@ -120,8 +129,8 @@ class InteractionBuilder implements BuilderInterface
             if ($config->getValue('phone', $storeId)) {
                 $merchantInfo['phone'] = $config->getValue('phone', $storeId);
             }
-            if ($config->getValue('logo_file', $storeId)) {
-                $merchantInfo['logo'] = $this->getMediaUrl($config->getValue('logo_file', $storeId));
+            if ($this->downloadCount->getLogofile($storeId)) {
+                $merchantInfo['logo'] = $this->getMediaUrl($this->downloadCount->getLogofile($storeId));
             }
             $returnData = array_replace_recursive($returnData, [
                          'interaction' =>['merchant' => $merchantInfo]]);

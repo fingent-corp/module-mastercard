@@ -29,6 +29,8 @@ class TransferFactoryOrder extends TransferFactory
     protected $httpMethod = Rest::GET;
 
     /**
+     * Get request url
+     *
      * @param PaymentDataObjectInterface $payment
      * @return string
      */
